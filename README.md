@@ -8,6 +8,7 @@
 ---
 ## Table of Contents
 
+- [Quick-start](#quick-start)
 - [Mission Statement](#mission-statement)
 - [Overview](#overview)
 - [Why Open Integration Engine?](#why-open-integration-engine)
@@ -18,6 +19,12 @@
 - [History and Roadmap](#history-and-roadmap)
 - [Licensing](#licensing)
 - [Acknowledgments](#acknowledgments)
+
+---
+## Quick-start
+
+Start an instance of OIE with `docker run -p 8443:8443 ghcr.io/mgaffigan/oie` and
+connect using [Ballista](https://github.com/kayyagari/ballista) to https://localhost:8443/ using login admin/admin.
 
 ---
 ## Mission Statement
