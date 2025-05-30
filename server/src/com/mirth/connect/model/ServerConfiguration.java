@@ -424,4 +424,4 @@ public class ServerConfiguration implements Serializable, Migratable, Auditable 
     
     @Override
     public void migrate3_12_0(DonkeyElement element) {}
-}
+}
