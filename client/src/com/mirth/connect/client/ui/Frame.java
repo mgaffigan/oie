@@ -18,7 +18,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.GridBagConstraints;
-import java.awt.Image;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
@@ -98,9 +97,6 @@ import org.jdesktop.swingx.action.BoundAction;
 import org.jdesktop.swingx.painter.MattePainter;
 import org.syntax.jedit.JEditTextArea;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mirth.connect.client.core.Client;
 import com.mirth.connect.client.core.ClientException;
 import com.mirth.connect.client.core.ConnectServiceUtil;
@@ -161,7 +157,6 @@ import com.mirth.connect.util.ChannelDependencyException;
 import com.mirth.connect.util.ChannelDependencyGraph;
 import com.mirth.connect.util.CharsetUtils;
 import com.mirth.connect.util.DirectedAcyclicGraphNode;
-import com.mirth.connect.util.HttpUtil;
 import com.mirth.connect.util.JavaScriptSharedUtil;
 import com.mirth.connect.util.MigrationUtil;
 
@@ -278,11 +273,11 @@ public class Frame extends JXFrame {
             titleText.append(PlatformUI.SERVER_URL);
         }
 
-        titleText.append(" - " + UIConstants.TITLE_TEXT);
+        titleText.append(" - " + BrandingConstants.WINDOW_TITLE);
 
         setTitle(titleText.toString());
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        setIconImage(UIConstants.MIRTH_FAVICON.getImage());
+        setIconImage(BrandingConstants.FAVICON.getImage());
         makePaneContainer();
 
         connectionError = false;
@@ -767,18 +762,15 @@ public class Frame extends JXFrame {
         padlockWarning.setForeground(Color.WHITE);
         
         JLabel mirthConnectImage = new JLabel();
-        ImageIcon imageIcon = UIConstants.MIRTHCONNECT_LOGO_GRAY; // load the image to a imageIcon
-        Image image = imageIcon.getImage(); // transform it
-        Image newimg = image.getScaledInstance(218, 29, java.awt.Image.SCALE_SMOOTH); // scale it the smooth way 
-        imageIcon = new ImageIcon(newimg);
+        ImageIcon imageIcon = BrandingConstants.LOGO_GRAY; // load the image to a imageIcon
         mirthConnectImage.setIcon(imageIcon);
-        mirthConnectImage.setToolTipText(UIConstants.MIRTHCONNECT_TOOLTIP);
+        mirthConnectImage.setToolTipText(BrandingConstants.PRODUCT_TOOLTIP);
         mirthConnectImage.setCursor(new Cursor(Cursor.HAND_CURSOR));
         mirthConnectImage.setVerticalAlignment(SwingConstants.BOTTOM);
         mirthConnectImage.addMouseListener(new java.awt.event.MouseAdapter() {
 
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                BareBonesBrowserLaunch.openURL(UIConstants.MIRTHCONNECT_URL);
+                BareBonesBrowserLaunch.openURL(BrandingConstants.PRODUCT_URL);
             }
         });
         
@@ -1020,7 +1012,7 @@ public class Frame extends JXFrame {
     private void createViewPane() {
         // Create View pane
         viewPane = new JXTaskPane();
-        viewPane.setTitle("Mirth Connect");
+        viewPane.setTitle(BrandingConstants.PRODUCT_NAME);
         viewPane.setName(TaskConstants.VIEW_KEY);
         viewPane.setFocusable(false);
 
@@ -1030,7 +1022,7 @@ public class Frame extends JXFrame {
         addTask(TaskConstants.VIEW_SETTINGS, "Settings", "Contains local and system settings.", "S", new ImageIcon(com.mirth.connect.client.ui.Frame.class.getResource("images/wrench.png")), viewPane, null);
         addTask(TaskConstants.VIEW_ALERTS, "Alerts", "Contains alert settings.", "A", new ImageIcon(com.mirth.connect.client.ui.Frame.class.getResource("images/error.png")), viewPane, null);
         addTask(TaskConstants.VIEW_EVENTS, "Events", "Show the event logs for the system.", "E", new ImageIcon(com.mirth.connect.client.ui.Frame.class.getResource("images/table.png")), viewPane, null);
-        addTask(TaskConstants.VIEW_EXTENSIONS, "Extensions", "View and manage Mirth Connect extensions", "X", new ImageIcon(com.mirth.connect.client.ui.Frame.class.getResource("images/plugin.png")), viewPane, null);
+        addTask(TaskConstants.VIEW_EXTENSIONS, "Extensions", String.format("View and manage %s extensions", BrandingConstants.PRODUCT_NAME), "X", new ImageIcon(com.mirth.connect.client.ui.Frame.class.getResource("images/plugin.png")), viewPane, null);
 
         setNonFocusable(viewPane);
         taskPaneContainer.add(viewPane);
@@ -1258,13 +1250,13 @@ public class Frame extends JXFrame {
         otherPane.setTitle("Other");
         otherPane.setName(TaskConstants.OTHER_KEY);
         otherPane.setFocusable(false);
-        addTask(TaskConstants.OTHER_NOTIFICATIONS, UIConstants.VIEW_NOTIFICATIONS, "View notifications from NextGen Healthcare.", "", new ImageIcon(com.mirth.connect.client.ui.Frame.class.getResource("images/flag_orange.png")), otherPane, null);
-        addTask(TaskConstants.OTHER_VIEW_USER_API, "View User API", "View documentation for the Mirth Connect User API.", "", new ImageIcon(com.mirth.connect.client.ui.Frame.class.getResource("images/page_white_text.png")), otherPane, null);
-        addTask(TaskConstants.OTHER_VIEW_CLIENT_API, "View Client API", "View documentation for the Mirth Connect Client API.", "", new ImageIcon(com.mirth.connect.client.ui.Frame.class.getResource("images/page_white_text.png")), otherPane, null);
-        addTask(TaskConstants.OTHER_HELP, "Help", "View the Mirth Connect wiki.", "", new ImageIcon(com.mirth.connect.client.ui.Frame.class.getResource("images/help.png")), otherPane, null);
-        addTask(TaskConstants.OTHER_ABOUT, "About Mirth Connect", "View the about page for Mirth Connect.", "", new ImageIcon(com.mirth.connect.client.ui.Frame.class.getResource("images/information.png")), otherPane, null);
-        addTask(TaskConstants.OTHER_VISIT_MIRTH, "Visit nextgen.com", "View Mirth Connect's homepage.", "", new ImageIcon(com.mirth.connect.client.ui.Frame.class.getResource("images/house.png")), otherPane, null);
-        addTask(TaskConstants.OTHER_REPORT_ISSUE, "Report Issue", "Visit Mirth Connect's issue tracker.", "", new ImageIcon(com.mirth.connect.client.ui.Frame.class.getResource("images/bug.png")), otherPane, null);
+        addTask(TaskConstants.OTHER_NOTIFICATIONS, UIConstants.VIEW_NOTIFICATIONS, String.format("View notifications from %s.", BrandingConstants.PRODUCT_NAME), "", new ImageIcon(com.mirth.connect.client.ui.Frame.class.getResource("images/flag_orange.png")), otherPane, null);
+        addTask(TaskConstants.OTHER_VIEW_USER_API, "View User API", String.format("View documentation for the %s User API.", BrandingConstants.PRODUCT_NAME), "", new ImageIcon(com.mirth.connect.client.ui.Frame.class.getResource("images/page_white_text.png")), otherPane, null);
+        addTask(TaskConstants.OTHER_VIEW_CLIENT_API, "View Client API", String.format("View documentation for the %s Client API.", BrandingConstants.PRODUCT_NAME), "", new ImageIcon(com.mirth.connect.client.ui.Frame.class.getResource("images/page_white_text.png")), otherPane, null);
+        addTask(TaskConstants.OTHER_HELP, "Help", String.format("View help for %s.", BrandingConstants.PRODUCT_NAME), "", new ImageIcon(com.mirth.connect.client.ui.Frame.class.getResource("images/help.png")), otherPane, null);
+        addTask(TaskConstants.OTHER_ABOUT, String.format("About %s", BrandingConstants.PRODUCT_NAME), String.format("View the about page for %s.", BrandingConstants.PRODUCT_NAME), "", new ImageIcon(com.mirth.connect.client.ui.Frame.class.getResource("images/information.png")), otherPane, null);
+        addTask(TaskConstants.OTHER_VISIT_MIRTH, "Visit homepage", String.format("View %s's homepage.", BrandingConstants.PRODUCT_NAME), "", new ImageIcon(com.mirth.connect.client.ui.Frame.class.getResource("images/house.png")), otherPane, null);
+        addTask(TaskConstants.OTHER_REPORT_ISSUE, "Report Issue", String.format("Visit %s's issue tracker.", BrandingConstants.PRODUCT_NAME), "", new ImageIcon(com.mirth.connect.client.ui.Frame.class.getResource("images/bug.png")), otherPane, null);
         addTask(TaskConstants.OTHER_LOGOUT, "Logout", "Logout and return to the login screen.", "", new ImageIcon(com.mirth.connect.client.ui.Frame.class.getResource("images/disconnect.png")), otherPane, null);
         setNonFocusable(otherPane);
         taskPaneContainer.add(otherPane);
@@ -1516,7 +1508,7 @@ public class Frame extends JXFrame {
                     connectionError = true;
                     statusUpdaterExecutor.shutdownNow();
 
-                    alertWarning(parentComponent, "Sorry your connection to Mirth Connect has either timed out or there was an error in the connection.  Please login again.");
+                    alertWarning(parentComponent, String.format("Sorry your connection to %s has either timed out or there was an error in the connection. Please login again.", BrandingConstants.PRODUCT_NAME));
                     if (!exportChannelOnError()) {
                         return;
                     }
@@ -1534,7 +1526,7 @@ public class Frame extends JXFrame {
                     } else {
                         server = PlatformUI.SERVER_URL;
                     }
-                    alertWarning(parentComponent, "The Mirth Connect server " + server + " is no longer running.  Please start it and log in again.");
+                    alertWarning(parentComponent, String.format("The %s server %s is no longer running. Please start it and log in again.", BrandingConstants.PRODUCT_NAME, server));
                     if (!exportChannelOnError()) {
                         return;
                     }
@@ -2076,7 +2068,7 @@ public class Frame extends JXFrame {
     // --- All bound actions are beneath this point --- //
     // ////////////////////////////////////////////////////////////
     public void goToMirth() {
-        BareBonesBrowserLaunch.openURL("https://www.nextgen.com/products-and-services/integration-engine");
+        BareBonesBrowserLaunch.openURL(BrandingConstants.PRODUCT_URL);
     }
 
     public void goToUserAPI() {
@@ -2092,7 +2084,7 @@ public class Frame extends JXFrame {
     }
 
     public void doReportIssue() {
-        BareBonesBrowserLaunch.openURL(UIConstants.ISSUE_TRACKER_LOCATION);
+        BareBonesBrowserLaunch.openURL(BrandingConstants.ISSUE_TRACKER_LOCATION);
     }
 
     public void doShowDashboard() {
@@ -4813,47 +4805,7 @@ public class Frame extends JXFrame {
     }
 
     public void doHelp() {
-        final String workingId = startWorking("Retrieving help URL...");
-
-        SwingWorker<String, Void> worker = new SwingWorker<String, Void>() {
-            @Override
-            protected String doInBackground() throws Exception {
-                return HttpUtil.executeGetRequest(UIConstants.HELP_URL_LOCATION, 30000, true, PlatformUI.HTTPS_PROTOCOLS, PlatformUI.HTTPS_CIPHER_SUITES);
-            }
-
-            @Override
-            protected void done() {
-                String url = userPreferences.get("helpDefaultLocation", UIConstants.HELP_DEFAULT_LOCATION);
-
-                try {
-                    String webhelpJson = get();
-                    ObjectNode webhelpObj = (ObjectNode) new ObjectMapper().readTree(webhelpJson);
-
-                    // Get version-specific node, or "default"
-                    JsonNode urlNode;
-                    if (webhelpObj.has(Version.getLatest().toString())) {
-                        urlNode = webhelpObj.get(Version.getLatest().toString());
-                    } else {
-                        urlNode = webhelpObj.get("default");
-                    }
-
-                    String newUrl = urlNode.asText();
-                    
-                    if (StringUtils.isNotBlank(newUrl)) {
-                        url = newUrl;
-                        userPreferences.put("helpDefaultLocation", url);
-                    }
-                } catch (Throwable t) {
-                    logger.error("Unable to retrieve help URL, using default.", t);
-                } finally {
-                    stopWorking(workingId);
-                }
-
-                BareBonesBrowserLaunch.openURL(url);
-            }
-        };
-
-        worker.execute();
+        BareBonesBrowserLaunch.openURL(BrandingConstants.HELP_URL_LOCATION);
     }
 
     public void goToNotifications() {
@@ -4966,7 +4918,7 @@ public class Frame extends JXFrame {
         StringBuilder message = new StringBuilder();
 
         if (version == null) {
-            message.append("The " + objectName + " being imported is from an older or unknown version of Mirth Connect.\n");
+            message.append(String.format("The %s being imported is from an older or unknown version of %s.\n", objectName, BrandingConstants.PRODUCT_NAME));
         } else {
             int comparison = MigrationUtil.compareVersions(version, PlatformUI.SERVER_VERSION);
 
@@ -4975,16 +4927,36 @@ public class Frame extends JXFrame {
             }
 
             if (comparison > 0) {
-                alertInformation(this, "The " + objectName + " being imported originated from Mirth Connect version " + version + ".\nYou are using Mirth Connect version " + PlatformUI.SERVER_VERSION + ".\nThe " + objectName + " cannot be imported, because it originated from a newer version of Mirth Connect.");
+                alertInformation(
+                    this,
+                    String.format(
+                        "The %s being imported originated from %s version %s.\nYou are using %s version %s.\nThe %s cannot be imported, because it originated from a newer version of %s.",
+                        objectName,
+                        BrandingConstants.PRODUCT_NAME,
+                        version,
+                        BrandingConstants.PRODUCT_NAME,
+                        PlatformUI.SERVER_VERSION,
+                        objectName,
+                        BrandingConstants.PRODUCT_NAME
+                    )
+                );
                 return false;
             }
 
             if (comparison < 0) {
-                message.append("The " + objectName + " being imported originated from Mirth Connect version " + version + ".\n");
+                message.append(String.format("The %s being imported originated from %s version %s.\n", objectName, BrandingConstants.PRODUCT_NAME, version));
             }
         }
 
-        message.append("You are using Mirth Connect version " + PlatformUI.SERVER_VERSION + ".\nWould you like to automatically convert the " + objectName + " to the " + PlatformUI.SERVER_VERSION + " format?");
+        message.append(
+            String.format(
+                "You are using %s version %s.\nWould you like to automatically convert the %s to the %s format?",
+                BrandingConstants.PRODUCT_NAME,
+                PlatformUI.SERVER_VERSION,
+                objectName,
+                PlatformUI.SERVER_VERSION
+            )
+        );
         return JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(this, message.toString(), "Select an Option", JOptionPane.YES_NO_OPTION);
     }
 

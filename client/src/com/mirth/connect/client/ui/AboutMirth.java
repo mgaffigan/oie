@@ -11,7 +11,6 @@ package com.mirth.connect.client.ui;
 
 import java.awt.Dimension;
 import java.awt.Point;
-import java.util.Calendar;
 
 import com.mirth.connect.client.ui.util.DisplayUtil;
 
@@ -55,21 +54,22 @@ public class AboutMirth extends MirthDialog {
         StringBuilder content = new StringBuilder();
 
         if (PlatformUI.SERVER_VERSION != null) {
-            content.append("Mirth Connect Server " + PlatformUI.SERVER_VERSION + "\n\n");
+            content.append(String.format("%s Server %s\n\n", BrandingConstants.PRODUCT_NAME, PlatformUI.SERVER_VERSION));
         }
 
         if (PlatformUI.BUILD_DATE != null) {
-            content.append("Built on " + PlatformUI.BUILD_DATE + "\n\n");
+            content.append("Built on ").append(PlatformUI.BUILD_DATE).append("\n\n");
         }
 
         if (PlatformUI.SERVER_ID != null) {
-            content.append("Server ID: " + PlatformUI.SERVER_ID + "\n\n");
+            content.append("Server ID: ").append(PlatformUI.SERVER_ID).append("\n\n");
         }
 
-        content.append("Java version: " + System.getProperty("java.version") + "\n\n");
+        content.append("Java version: ").append(System.getProperty("java.version")).append("\n\n");
 
-        content.append("(c) 2005-2024 NextGen Healthcare. All rights reserved. Visit http://www.nextgen.com\n\n");
-        content.append("The following is a list of acknowledgements for third-party software that is included with Mirth Connect:\n\n");
+        content.append("(c) 2025 Open Integration Engine contributors. Visit https://openintegrationengine.org\n\n");
+        content.append("(c) 2005-2024 NextGen Healthcare.\n\n");
+        content.append("The following is a list of acknowledgements for third-party software that is included with ").append(BrandingConstants.PRODUCT_NAME).append(":\n\n");
         content.append("This product includes software developed by the Apache Software Foundation (http://www.apache.org/).\n\n");
         content.append("This product includes all or a portion of the HL7 Vocabulary database, or is derived from the HL7 Vocabulary database, subject to a license from Health Level Seven, Inc.\n\n");
         content.append("This product includes a portion of images from http://www.famfamfam.com/lab/icons/silk/.\n\n");
@@ -116,7 +116,7 @@ public class AboutMirth extends MirthDialog {
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel2.setText("About Mirth Connect");
+        jLabel2.setText(String.format("About %s", BrandingConstants.PRODUCT_NAME));
 
         javax.swing.GroupLayout mirthHeadingPanel1Layout = new javax.swing.GroupLayout(mirthHeadingPanel1);
         mirthHeadingPanel1.setLayout(mirthHeadingPanel1Layout);

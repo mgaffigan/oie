@@ -57,6 +57,7 @@ import org.apache.http.entity.ContentType;
 import org.jdesktop.swingx.decorator.Highlighter;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 
+import com.mirth.connect.client.ui.BrandingConstants;
 import com.mirth.connect.client.ui.ConnectorTypeDecoration;
 import com.mirth.connect.client.ui.Frame;
 import com.mirth.connect.client.ui.Mirth;
@@ -1038,7 +1039,7 @@ public class HttpListener extends ConnectorSettingsPanel {
     protected void initToolTips() {
         messageContentPlainBodyRadio.setToolTipText("<html>If selected, the request body will be sent to the channel as a raw string.</html>");
         responseContentTypeField.setToolTipText("The MIME type to be used for the response.");
-        charsetEncodingCombobox.setToolTipText("<html>Select the character set encoding to be used for the response to the sending system.<br>Set to Default to assume the default character set encoding for the JVM running Mirth Connect.</html>");
+        charsetEncodingCombobox.setToolTipText(String.format("<html>Select the character set encoding to be used for the response to the sending system.<br>Set to Default to assume the default character set encoding for the JVM running %s.</html>", BrandingConstants.PRODUCT_NAME));
         contextPathField.setToolTipText("The context path for the HTTP Listener URL.");
         receiveTimeoutField.setToolTipText("Enter the maximum idle time in milliseconds for a connection.");
         httpUrlField.setToolTipText("<html>Displays the generated HTTP URL for the HTTP Listener.</html>");

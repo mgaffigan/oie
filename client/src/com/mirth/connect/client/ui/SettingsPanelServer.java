@@ -81,7 +81,7 @@ public class SettingsPanelServer extends AbstractSettingsPanel {
         addTask(TaskConstants.SETTINGS_SERVER_RESTORE, "Restore Config", "Restore your server configuration from a server configuration XML file. This will remove and restore your channels, alerts, code templates, server properties, global scripts, and plugin properties.", "", new ImageIcon(com.mirth.connect.client.ui.Frame.class.getResource("images/report_go.png")));
         addTask(TaskConstants.SETTINGS_CLEAR_ALL_STATS, "Clear All Statistics", "Reset the current and lifetime statistics for all channels.", "", new ImageIcon(com.mirth.connect.client.ui.Frame.class.getResource("images/chart_bar_delete.png")));
 
-        provideUsageStatsMoreInfoLabel.setToolTipText(UIConstants.PRIVACY_TOOLTIP);
+        provideUsageStatsMoreInfoLabel.setToolTipText(BrandingConstants.PRIVACY_TOOLTIP);
         provideUsageStatsMoreInfoLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         queueBufferSizeField.setDocument(new MirthFieldConstraints(8, false, false, true));
         smtpTimeoutField.setDocument(new MirthFieldConstraints(0, false, false, false));
@@ -201,7 +201,7 @@ public class SettingsPanelServer extends AbstractSettingsPanel {
                     } else {
                         titleText.append(PlatformUI.SERVER_URL);
                     }
-                    titleText.append(" - " + UIConstants.TITLE_TEXT);
+                    titleText.append(" - " + BrandingConstants.WINDOW_TITLE);
                     statusBarText.append(PlatformUI.SERVER_URL);
                     titleText.append(" - (" + PlatformUI.SERVER_VERSION + ")");
                     getFrame().setTitle(titleText.toString());
@@ -685,7 +685,7 @@ public class SettingsPanelServer extends AbstractSettingsPanel {
 
         environmentNameLabel = new JLabel("Environment name:");
         environmentNameField = new MirthTextField();
-        environmentNameField.setToolTipText("<html>The name of this Mirth Connect environment. There is one environment name per Mirth Connect database.</html>");
+        environmentNameField.setToolTipText(String.format("<html>The name of this environment. There is one environment name per %s database.</html>", BrandingConstants.PRODUCT_NAME));
 
         serverNameLabel = new JLabel("Server name:");
         serverNameField = new MirthTextField();
@@ -713,15 +713,23 @@ public class SettingsPanelServer extends AbstractSettingsPanel {
 
         provideUsageStatsYesRadio = new MirthRadioButton("Yes");
         provideUsageStatsYesRadio.setBackground(getBackground());
-        provideUsageStatsYesRadio.setToolTipText("<html>Toggles sending usage statistics to NextGen Healthcare.  These statistics <br>do not contain any PHI or channel/script implementations,<br> and help NextGen Healthcare determine which connectors or areas of<br>Mirth Connect are most widely used.</html>");
+        provideUsageStatsYesRadio.setToolTipText(String.format(
+            "<html>Toggles sending usage statistics to %s. These statistics <br>do not contain any PHI or channel/script implementations.</html>",
+            BrandingConstants.COMPANY_NAME
+        ));
         provideUsageStatsButtonGroup.add(provideUsageStatsYesRadio);
 
         provideUsageStatsNoRadio = new MirthRadioButton("No");
         provideUsageStatsNoRadio.setBackground(getBackground());
-        provideUsageStatsNoRadio.setToolTipText("<html>Toggles sending usage statistics to NextGen Healthcare.  These statistics <br>do not contain any PHI or channel/script implementations,<br> and help NextGen Healthcare determine which connectors or areas of<br>Mirth Connect are most widely used.</html>");
+        provideUsageStatsNoRadio.setToolTipText(String.format(
+            "<html>Toggles sending usage statistics to %s. These statistics <br>do not contain any PHI or channel/script implementations.</html>",
+            BrandingConstants.COMPANY_NAME
+        ));
         provideUsageStatsButtonGroup.add(provideUsageStatsNoRadio);
 
         provideUsageStatsMoreInfoLabel = new JLabel("<html><font color=blue><u>More Info</u></font></html>");
+        provideUsageStatsMoreInfoLabel.setEnabled(false);
+        provideUsageStatsMoreInfoLabel.setVisible(false);
         provideUsageStatsMoreInfoLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
                 provideUsageStatsMoreInfoLabelMouseClicked(evt);
@@ -969,7 +977,7 @@ public class SettingsPanelServer extends AbstractSettingsPanel {
     }
 
     private void provideUsageStatsMoreInfoLabelMouseClicked(MouseEvent evt) {
-        BareBonesBrowserLaunch.openURL(UIConstants.PRIVACY_URL);
+        BareBonesBrowserLaunch.openURL(BrandingConstants.PRIVACY_URL);
     }
 
     private void requireAuthenticationNoRadioActionPerformed(ActionEvent evt) {

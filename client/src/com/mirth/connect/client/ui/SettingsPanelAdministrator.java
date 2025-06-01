@@ -597,12 +597,18 @@ public class SettingsPanelAdministrator extends AbstractSettingsPanel {
 
         checkForNotificationsYesRadio = new MirthRadioButton("Yes");
         checkForNotificationsYesRadio.setBackground(userSettingsPanel.getBackground());
-        checkForNotificationsYesRadio.setToolTipText("<html>Checks for notifications from NextGen Healthcare (announcements, available updates, etc.)<br/>relevant to this version of Mirth Connect whenever user logs in.</html>");
+        checkForNotificationsYesRadio.setToolTipText(String.format(
+            "<html>Checks for notifications from %s (announcements, available updates, etc.)</html>",
+            BrandingConstants.COMPANY_NAME
+        ));
         notificationButtonGroup.add(checkForNotificationsYesRadio);
 
         checkForNotificationsNoRadio = new MirthRadioButton("No");
         checkForNotificationsNoRadio.setBackground(userSettingsPanel.getBackground());
-        checkForNotificationsNoRadio.setToolTipText("<html>Checks for notifications from NextGen Healthcare (announcements, available updates, etc.)<br/>relevant to this version of Mirth Connect whenever user logs in.</html>");
+        checkForNotificationsNoRadio.setToolTipText(String.format(
+            "<html>Checks for notifications from %s (announcements, available updates, etc.)</html>",
+            BrandingConstants.COMPANY_NAME
+        ));
         notificationButtonGroup.add(checkForNotificationsNoRadio);
 
         backgroundColorLabel = new JLabel("Administrator Background Color:");

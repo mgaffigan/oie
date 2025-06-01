@@ -18,7 +18,6 @@ import java.util.TimerTask;
 
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -58,7 +57,7 @@ public class CustomBannerPanelDialog extends JDialog {
     private void initComponents() {
         setLayout(new MigLayout("insets 12")); // layout sets 12 pixel border
         setTitle(title);
-        setIconImage(UIConstants.MIRTH_FAVICON.getImage());
+        setIconImage(BrandingConstants.FAVICON.getImage());
         getContentPane().setBackground(UIConstants.BACKGROUND_COLOR); // set dialog box to background color
         setBackground(UIConstants.BACKGROUND_COLOR); // get all other backgrounds for each piece
 

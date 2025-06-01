@@ -25,6 +25,7 @@ import org.jdesktop.swingx.decorator.Highlighter;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 
 import com.mirth.connect.client.core.ClientException;
+import com.mirth.connect.client.ui.BrandingConstants;
 import com.mirth.connect.client.ui.CellData;
 import com.mirth.connect.client.ui.Frame;
 import com.mirth.connect.client.ui.ImageCellRenderer;
@@ -587,7 +588,7 @@ public class ExtensionManagerPanel extends javax.swing.JPanel {
 
         restartRequiredLabel.setForeground(new java.awt.Color(204, 0, 0));
         restartRequiredLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        restartRequiredLabel.setText("The Mirth Connect Server and Administrator must be restarted before your changes will take effect.");
+        restartRequiredLabel.setText(String.format("The %s Server and Administrator must be restarted before your changes will take effect.", BrandingConstants.PRODUCT_NAME));
 
         javax.swing.GroupLayout restartRequiredPanelLayout = new javax.swing.GroupLayout(restartRequiredPanel);
         restartRequiredPanel.setLayout(restartRequiredPanelLayout);
