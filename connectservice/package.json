@@ -1,0 +1,26 @@
+{
+  "name": "connectservice",
+  "version": "1.0.0",
+  "description": "Example statistics and notification service",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OpenIntegrationEngine/engine.git"
+  },
+  "author": "",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/OpenIntegrationEngine/engine/issues"
+  },
+  "homepage": "https://github.com/OpenIntegrationEngine/engine#readme",
+  "dependencies": {
+    "@elastic/elasticsearch": "^9.0.2",
+    "express": "^5.1.0",
+    "xml2js": "^0.6.2",
+    "yup": "^1.6.1"
+  }
+}
