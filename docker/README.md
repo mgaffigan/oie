@@ -4,7 +4,7 @@
 * [Supported tags and respective Dockerfile links](#supported-tags)
 * [Supported Architectures](#supported-architectures)
 * [Quick Reference](#quick-reference)
-* [What is Mirth Connect](#what-is-connect)
+* [What is Open Integration Engine](#what-is-connect)
 * [How to use this image](#how-to-use)
   * [Start a Connect instance](#start-connect)
   * [Using `docker stack deploy` or `docker-compose`](#using-docker-compose)
@@ -24,18 +24,18 @@
 
 ##### Eclipse Temurin OpenJDK 21
 
-* [latest-jdk](https://github.com/ghcr.io/mgaffigan/oie-docker/blob/master/Dockerfile)
+* [latest-jdk](https://github.com/openintegrationengine/engine/blob/main/Dockerfile)
 
 ##### Eclipse Temurin OpenJRE 21 (Alpine)
 
-* [latest](https://github.com/ghcr.io/mgaffigan/oie-docker/blob/master/Dockerfile)
+* [latest](https://github.com/openintegrationengine/engine/blob/main/Dockerfile)
 
 ------------
 
 <a name="supported-architectures"></a>
 # Supported Architectures [↑](#top)
 
-Docker images for Mirth Connect 4.4.0 and later versions support both `linux/amd64` and `linux/arm64` architectures. Earlier versions only support `linux/amd64`. As an example, to pull the latest `linux/arm64` image, use the command
+Docker images for Open Integration Engine 4.4.0 and later versions support both `linux/amd64` and `linux/arm64` architectures. Earlier versions only support `linux/amd64`. As an example, to pull the latest `linux/arm64` image, use the command
 ```
 docker pull --platform linux/arm64 ghcr.io/mgaffigan/oie:latest
 ```
@@ -52,11 +52,9 @@ Engage with the community and project through [the options listed on the main Gi
 ------------
 
 <a name="what-is-connect"></a>
-# What is Mirth Connect [↑](#top)
+# What is Open Integration Engine [↑](#top)
 
-An open-source message integration engine focused on healthcare. For more information please visit our [GitHub page](https://github.com/ghcr.io/mgaffigan/oie).
-
-<img src="https://s3.us-east-1.amazonaws.com/downloads.mirthcorp.com/images/MirthConnect_Logo_WordMark_RGB.png"/>
+An open-source message integration engine focused on healthcare. For more information please visit our [GitHub page](https://github.com/openintegrationengine/engine).
 
 ------------
 
@@ -137,18 +135,18 @@ services:
       - 5432
 ```
 
-[![Try in PWD](https://raw.githubusercontent.com/play-with-docker/stacks/master/assets/images/button.png)](http://play-with-docker.com/?stack=https://raw.githubusercontent.com/ghcr.io/mgaffigan/oie-docker/master/examples/play-with-docker-example.yml)
+[![Try in PWD](https://raw.githubusercontent.com/play-with-docker/stacks/master/assets/images/button.png)](http://play-with-docker.com/?stack=https://raw.githubusercontent.com/OpenIntegrationEngine/engine/refs/heads/main/docker/examples/play-with-docker-example.yml)
 
 Try it out with Play With Docker! Note that in order to access the 8080/8443 ports from your workstation, follow [their guide](https://github.com/play-with-docker/play-with-docker#how-can-i-connect-to-a-published-port-from-the-outside-world) to format the URL correctly. When you login via the Administrator GUI, use port 443 on the end instead of 8443.
 
-There are other example stack files in the [examples directory](https://github.com/ghcr.io/mgaffigan/oie-docker/tree/master/examples)!
+There are other example stack files in the [examples directory](https://github.com/OpenIntegrationEngine/engine/tree/main/docker/examples)!
 
 ------------
 
 <a name="environment-variables"></a>
 ## Environment Variables [↑](#top)
 
-You can use environment variables to configure the [mirth.properties](https://github.com/ghcr.io/mgaffigan/oie/blob/development/server/conf/mirth.properties) file or to add custom JVM options. More information on the available mirth.properties options can be found in the [Connect User Guide](http://downloads.mirthcorp.com/connect-user-guide/latest/mirth-connect-user-guide.pdf).
+You can use environment variables to configure the [mirth.properties](https://github.com/OpenIntegrationEngine/engine/blob/main/server/conf/mirth.properties) file or to add custom JVM options. More information on the available mirth.properties options can be found in the [Connect User Guide](http://downloads.mirthcorp.com/connect-user-guide/latest/mirth-connect-user-guide.pdf).
 
 To set environment variables, use the `-e` option for each variable on the command line:
 
@@ -182,7 +180,7 @@ docker run --env-file=myenvfile.txt -p 8443:8443 ghcr.io/mgaffigan/oie
 <a name="env-database"></a>
 #### `DATABASE`
 
-The database type to use for the NextGen Connect Integration Engine backend database. Options:
+The database type to use for the Open Integration Engine backend database. Options:
 
 * derby
 * mysql
@@ -409,12 +407,3 @@ Example:
     environment:
       ...
 ```
-
-------------
-
-<a name="license"></a>
-# License [↑](#top)
-
-The Dockerfiles, entrypoint script, and any other files used to build these Docker images are Copyright © NextGen Healthcare and licensed under the [Mozilla Public License 2.0](https://www.mozilla.org/en-US/MPL/2.0/).
-
-You can find a copy of the NextGen Connect license in [server/docs/LICENSE.txt](https://github.com/ghcr.io/mgaffigan/oie/blob/development/server/docs/LICENSE.txt). All licensing information regarding third-party libraries is located in the [server/docs/thirdparty](https://github.com/ghcr.io/mgaffigan/oie/tree/development/server/docs/thirdparty) folder.

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Mirth Connect Server Launcher Script
+# Open Integration Engine Server Launcher Script
 
 APP_ARGS=("$@")
 
@@ -85,8 +85,8 @@ JAVA_OPTS=("${VMOPTIONS[@]}"
            "com.mirth.connect.server.launcher.MirthLauncher" 
            "${APP_ARGS[@]}")
 
-# Launch Mirth Connect (as this PID with exec)
-echo "Starting Mirth Connect..."
+# Launch Open Integration Engine (as this PID with exec)
+echo "Starting Open Integration Engine..."
 # This doesn't include quotes, which could be confusing. Not sure if there's a
 # better way to do this.
 echo "$JAVA_PATH ${JAVA_OPTS[*]}"
