@@ -64,16 +64,6 @@ if ! [ -z "${KEYSTORE_TYPE+x}" ]; then
 	sed -i "s/^keystore\.type\s*=\s*.*\$/keystore.type = ${KEYSTORE_TYPE//\//\\/}/" /opt/connect/conf/mirth.properties
 fi
 
-# license key
-if ! [ -z "${LICENSE_KEY+x}" ]; then
-	LINE_COUNT=`grep "license.key" /opt/connect/conf/mirth.properties | wc -l`
-	if [ $LINE_COUNT -lt 1 ]; then
-		echo -e "\nlicense.key = ${LICENSE_KEY//\//\\/}" >> /opt/connect/conf/mirth.properties
-	else
-		sed -i "s/^license\.key\s*=\s*.*\$/license.key = ${LICENSE_KEY//\//\\/}/" /opt/connect/conf/mirth.properties
-	fi
-fi
-
 # session store
 if ! [ -z "${SESSION_STORE+x}" ]; then
 	LINE_COUNT=`grep "server.api.sessionstore" /opt/connect/conf/mirth.properties | wc -l`
