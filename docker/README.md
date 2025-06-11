@@ -24,6 +24,10 @@
 
 ##### Eclipse Temurin OpenJDK 21
 
+* [latest-jdk](https://github.com/ghcr.io/mgaffigan/oie-docker/blob/master/Dockerfile)
+
+##### Eclipse Temurin OpenJRE 21 (Alpine)
+
 * [latest](https://github.com/ghcr.io/mgaffigan/oie-docker/blob/master/Dockerfile)
 
 ------------

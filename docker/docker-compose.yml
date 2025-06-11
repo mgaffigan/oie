@@ -1,0 +1,27 @@
+# Build and release compose file
+# -----------------------------------------------------------------------------
+# For production or testing use, see README.md or examples/
+name: OIE-release
+
+services:
+  jre:
+    image: ${repo}:${tag:-dev}
+    build:
+      context: ../
+      dockerfile: Dockerfile
+      target: jre-run
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64
+  
+  jdk:
+    image: ${repo}:${tag:-dev}-jdk
+    build:
+      context: ../
+      dockerfile: Dockerfile
+      target: jdk-run
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64
