@@ -38,7 +38,6 @@ RUN groupadd mirth \
     && chown -R mirth:mirth /opt/connect
 
 WORKDIR /opt/connect
-COPY --chmod=0755 docker/entrypoint.sh docker/mirth-connect.sh ./
 COPY --chown=mirth:mirth --from=builder \
     --exclude=cli-lib \
     --exclude=mirth-cli-launcher.jar \
@@ -68,7 +67,6 @@ RUN addgroup -S mirth \
     && chown -R mirth:mirth /opt/connect
 
 WORKDIR /opt/connect
-COPY --chmod=0755 docker/entrypoint.sh docker/mirth-connect.sh ./
 COPY --chown=mirth:mirth --from=builder \
     --exclude=cli-lib \
     --exclude=mirth-cli-launcher.jar \
