@@ -13,7 +13,8 @@
 #     : append <path> to classpath.
 #
 # -java-cmd <path to java command>
-#     : use the java binary specified to launch the engine.
+#     : use the java binary specified to launch the engine. Relative paths are relative to
+#     : the engine home directory.
 #
 # Additionally, the form ${ENV_VAR} can be used anywhere in the file to substitute the value
 # from an environment variable.
