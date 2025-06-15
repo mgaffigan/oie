@@ -46,25 +46,26 @@ MIN_JAVA_VERSION=17
 
 # Set OIE_HOME to the script directory
 OIE_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-CLASSPATH="$OIE_HOME/mirth-server-launcher.jar"
+LAUNCHER_JAR="$OIE_HOME/mirth-server-launcher.jar"
+CLASSPATH="$LAUNCHER_JAR"
 VMOPTIONS=()
 # This will hold the validated path to the Java executable. It is intentionally left empty for now.
 FINAL_JAVA_CMD=""
 # This will temporarily hold the result from parsing the vmoptions file.
 VMOPTIONS_JAVA_CMD=""
+VMOPTIONS_JAVA_CMD_FILE=""
 
 
 # --- Function to resolve a path to a canonical absolute path ---
 # Resolves a given path, handling tilde, relative, and '..' components.
 # @param $1: The path to resolve.
 # @echo: The resolved, canonical absolute path.
-resolve_absolute_path() {
+resolve_canonical_path() {
     local path_to_resolve="$1"
 
     # Explicitly handle tilde expansion first
     if [[ "$path_to_resolve" =~ ^~ ]]; then
         # Use eval to expand the tilde to the user's home directory.
-        # This correctly handles "~", "~/path", and "~username/path".
         path_to_resolve=$(eval echo "$path_to_resolve")
     fi
 
@@ -77,23 +78,19 @@ resolve_absolute_path() {
     if [[ -d "$(dirname "$path_to_resolve")" ]]; then
         echo "$(cd "$(dirname "$path_to_resolve")" && pwd)/$(basename "$path_to_resolve")"
     else
-        # If the directory doesn't exist, we can't resolve '..'. Return the concatenated path.
-        # Subsequent checks in is_valid_java_version will then fail it gracefully.
         echo "$path_to_resolve"
     fi
 }
 
 # --- Function to validate Java version ---
 # Checks if a given command points to a Java executable of the required minimum version.
-# @param $1: The java command or path to check (e.g., "java", "/opt/jdk-17/bin/java")
+# @param $1: The java command or path to check
 # @return: 0 on success (is valid), 1 on failure.
 is_valid_java_version() {
     local java_cmd="$1"
-    local error_message="Warning: '$java_cmd' is specified by $2, which is not a valid Java executable of at least version $MIN_JAVA_VERSION. Ignoring."
 
     # Check if the command is found and is executable
     if ! command -v "$java_cmd" &> /dev/null || ! [[ -x "$(command -v "$java_cmd")" ]]; then
-        echo "$error_message" >&2
         return 1
     fi
 
@@ -104,7 +101,6 @@ is_valid_java_version() {
 
     # Check if the version command succeeded
     if [[ $? -ne 0 ]]; then
-        echo "$error_message" >&2
         return 1
     fi
 
@@ -114,10 +110,8 @@ is_valid_java_version() {
 
     # Check if the extracted version is a number and meets the minimum requirement
     if [[ "$major_version" =~ ^[0-9]+$ ]] && [[ "$major_version" -ge "$MIN_JAVA_VERSION" ]]; then
-        echo "Info: Found suitable java version specified by $2"
         return 0 # Success
     else
-        echo "$error_message" >&2
         return 1 # Failure
     fi
 }
@@ -165,14 +159,9 @@ parse_vmoptions() {
             CLASSPATH="${BASH_REMATCH[1]}:${CLASSPATH}"
         elif [[ "$line" =~ ^-java-cmd[[:space:]]+(.+) ]]; then
             # Handle -java-cmd directive
-            local candidate_java_cmd="${BASH_REMATCH[1]}"
-            # Resolve path to an absolute one before validation
-            local resolved_candidate_cmd
-            resolved_candidate_cmd=$(resolve_absolute_path "$candidate_java_cmd")
-            
-            if [[ -z "$FINAL_JAVA_CMD" ]] && is_valid_java_version "$resolved_candidate_cmd" "the -java-cmd directive in '$file'"; then
-                VMOPTIONS_JAVA_CMD="$resolved_candidate_cmd"
-            fi
+            # Store the path and the file it was found in. Validation is deferred.
+            VMOPTIONS_JAVA_CMD=$(resolve_canonical_path "${BASH_REMATCH[1]}")
+            VMOPTIONS_JAVA_CMD_FILE="$file"
         else
             # Add the option to the accumulated string
             VMOPTIONS+=("$line")
@@ -181,39 +170,73 @@ parse_vmoptions() {
     return 0
 }
 
-# The OIE_JAVA_PATH has highest priority for specifying the Java executable.
-# If a valid version is found, the '-java-cmd' directive will be ignored when parsing the VM options file.
-if [[ -n "$OIE_JAVA_PATH" ]]; then
-    # Resolve path to an absolute one before validation
-    resolved_oie_java_path=$(resolve_absolute_path "$OIE_JAVA_PATH")
+# --- Main Logic ---
 
-    if is_valid_java_version "$resolved_oie_java_path" "the OIE_JAVA_PATH environment variable"; then
-        FINAL_JAVA_CMD="$resolved_oie_java_path"
-    fi
-fi
-
-# Recursively parse the VM options file
+# 1. Recursively parse the VM options file to populate vmoptions variables.
 parse_vmoptions "$OIE_HOME/oieserver.vmoptions"
 
-# Find the Java executable if not already set by '$OIE_JAVA_PATH'
-if [[ -z "$FINAL_JAVA_CMD" ]]; then
-    # Check for the result from parsing the vmoptions file.
-    # Validation is done during parsing.
-    if [[ -n "$VMOPTIONS_JAVA_CMD" ]]; then
-        FINAL_JAVA_CMD="$VMOPTIONS_JAVA_CMD"
-    # If not found, check JAVA_HOME
-    elif [[ -n "$JAVA_HOME" ]] && [[ -f "$JAVA_HOME/bin/java" ]] && is_valid_java_version "$JAVA_HOME/bin/java" "the JAVA_HOME environment variable"; then
-        FINAL_JAVA_CMD="$JAVA_HOME/bin/java"
-    # If still not found, check for 'java' in the system PATH
-    elif is_valid_java_version "java" "the system PATH"; then
-        FINAL_JAVA_CMD="java"
+# 2. Ensure the launcher JAR is always in the classpath.
+case "$CLASSPATH" in
+    *"$LAUNCHER_JAR"*)
+        # It's already there, do nothing.
+        ;;
+    *)
+        # Prepend the launcher JAR if a custom classpath was provided.
+        echo "Info: Prepending mirth-server-launcher.jar to the classpath."
+        CLASSPATH="$LAUNCHER_JAR:$CLASSPATH"
+        ;;
+esac
+
+# 3. Discover the Java executable using the documented priority order.
+
+# Check OIE_JAVA_PATH (fail-fast on invalid).
+if [[ -n "$OIE_JAVA_PATH" ]]; then
+    resolved_path=$(resolve_canonical_path "$OIE_JAVA_PATH")
+    if is_valid_java_version "$resolved_path"; then
+        echo "Info: Found suitable java version specified by the OIE_JAVA_PATH environment variable"
+        FINAL_JAVA_CMD="$resolved_path"
+    else
+        echo "Error: '$resolved_path' is specified by the OIE_JAVA_PATH environment variable, which is not a valid Java executable of at least version $MIN_JAVA_VERSION. Exiting." >&2
+        exit 1
     fi
 fi
 
-# Final check for a valid Java path before execution.
+# Check -java-cmd from vmoptions (fail-fast on invalid, only if not already found).
+if [[ -z "$FINAL_JAVA_CMD" ]] && [[ -n "$VMOPTIONS_JAVA_CMD" ]]; then
+    if is_valid_java_version "$VMOPTIONS_JAVA_CMD"; then
+        echo "Info: Found suitable java version specified by the -java-cmd directive in '$VMOPTIONS_JAVA_CMD_FILE'"
+        FINAL_JAVA_CMD="$VMOPTIONS_JAVA_CMD"
+    else
+        echo "Error: '$VMOPTIONS_JAVA_CMD' is specified by the -java-cmd directive in '$VMOPTIONS_JAVA_CMD_FILE', which is not a valid Java executable of at least version $MIN_JAVA_VERSION. Exiting." >&2
+        exit 1
+    fi
+fi
+
+# Check JAVA_HOME (no fail-fast).
+if [[ -z "$FINAL_JAVA_CMD" ]] && [[ -n "$JAVA_HOME" ]]; then
+    java_home_path="$JAVA_HOME/bin/java"
+    if is_valid_java_version "$java_home_path"; then
+        echo "Info: Found suitable java version specified by the JAVA_HOME environment variable"
+        FINAL_JAVA_CMD="$java_home_path"
+    else
+        echo "Warning: '$java_home_path' is specified by the JAVA_HOME environment variable, which is not a valid Java executable of at least version $MIN_JAVA_VERSION. Ignoring." >&2
+    fi
+fi
+
+# Check system PATH (no fail-fast).
+if [[ -z "$FINAL_JAVA_CMD" ]]; then
+    if is_valid_java_version "java"; then
+        echo "Info: Found suitable java version in the PATH"
+        FINAL_JAVA_CMD="java"
+    else
+        echo "Warning: 'java' does not exist in your PATH or is not a valid Java executable of at least version $MIN_JAVA_VERSION." >&2
+    fi
+fi
+
+# 4. Final check for a valid Java path before execution.
 if [[ -z "$FINAL_JAVA_CMD" ]]; then
     echo "Error: Could not find a Java ${MIN_JAVA_VERSION}+ installation." >&2
-    echo "Please configure -java-cmd in conf/custom.vmoptions, set JAVA_HOME, set OIE_JAVA_PATH, or ensure 'java' in your PATH is version ${MIN_JAVA_VERSION} or higher." >&2
+    echo "Please configure -java-cmd in conf/custom.vmoptions, set OIE_JAVA_PATH, set JAVA_HOME, or ensure 'java' in your PATH is version ${MIN_JAVA_VERSION} or higher." >&2
     exit 1
 fi
 
@@ -224,6 +247,5 @@ JAVA_OPTS=("${VMOPTIONS[@]}"
 
 # Launch Open Integration Engine (as this PID with exec)
 echo "Starting Open Integration Engine..."
-echo "Using Java from: $FINAL_JAVA_CMD"
 echo "$FINAL_JAVA_CMD ${JAVA_OPTS[*]}"
 exec "$FINAL_JAVA_CMD" "${JAVA_OPTS[@]}"
