@@ -64,10 +64,7 @@ resolve_canonical_path() {
     local path_to_resolve="$1"
 
     # Explicitly handle tilde expansion first
-    if [[ "$path_to_resolve" =~ ^~ ]]; then
-        # Use eval to expand the tilde to the user's home directory.
-        path_to_resolve=$(eval echo "$path_to_resolve")
-    fi
+    path_to_resolve=$(sed -E "s,^~(/|$),${HOME}\1," <<< "$path_to_resolve")
 
     # If the path is not absolute, assume it's relative to OIE_HOME
     if [[ ! "$path_to_resolve" =~ ^/ ]]; then
@@ -80,6 +77,23 @@ resolve_canonical_path() {
     else
         echo "$path_to_resolve"
     fi
+}
+
+# --- Function to expand environment variable in a string ---
+# @param $1: The line to expand
+# @echo: The expanded line
+expand_line_variables() {
+    local line="$1"
+    # Safely handle `${VAR}` style environment variables
+    while [[ "$line" =~ (\$\{([a-zA-Z_][a-zA-Z0-9_]*)\}) ]]; do
+        local full_match="${BASH_REMATCH[1]}"
+        local var_name="${BASH_REMATCH[2]}"
+        # Use indirect expansion to get the variable's value. Default to empty string if not set.
+        local var_value="${!var_name:-}"
+        # Replace the first found match with its value
+        line="${line/"$full_match"/"$var_value"}"
+    done
+    echo "$line"
 }
 
 # --- Function to validate Java version ---
@@ -135,9 +149,7 @@ parse_vmoptions() {
             continue
         fi
 
-        # Evaluate environment variables to be their actual values
-        # NOTE: This eval also handles tilde expansion for vmoptions lines.
-        line=$(eval echo "$line")
+        line=$(expand_line_variables "$line")
         
         # Check for -include-options directive
         if [[ "$line" =~ ^-include-options[[:space:]]+(.+) ]]; then
@@ -213,7 +225,7 @@ if [[ -z "$FINAL_JAVA_CMD" ]] && [[ -n "$VMOPTIONS_JAVA_CMD" ]]; then
 fi
 
 # Check JAVA_HOME (no fail-fast).
-if [[ -z "$FINAL_JAVA_CMD" ]] && [[ -n "$JAVA_HOME" ]]; then
+if [[ -z "$FINAL_JAVA_CMD" ]] && [[ -d "$JAVA_HOME" ]]; then
     java_home_path="$JAVA_HOME/bin/java"
     if is_valid_java_version "$java_home_path"; then
         echo "Info: Found suitable java version specified by the JAVA_HOME environment variable"
