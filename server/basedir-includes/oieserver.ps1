@@ -281,7 +281,7 @@ if (-not $FinalJavaCmd) {
 $javaOpts = [System.Collections.Generic.List[string]]::new()
 $javaOpts.AddRange($script:VmOptions)
 $javaOpts.Add("-cp")
-$javaOpts.Add(('"{0}"' -f ($script:Classpath -split "[:;]" -join [System.IO.Path]::PathSeparator)))
+$javaOpts.Add('"{0}"' -f $script:Classpath)
 $javaOpts.Add("com.mirth.connect.server.launcher.MirthLauncher")
 $javaOpts.AddRange($AppArgs)
 
