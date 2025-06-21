@@ -333,7 +333,7 @@ public class DefaultUserController extends UserController {
                     if (loginRequirementsChecker.isPasswordExpired(passwordTime, currentTime)) {
                         // Let 0 be infinite grace period, -1 be no grace period
                         if (passwordRequirements.getGracePeriod() == 0) {
-                            loginStatus = new LoginStatus(LoginStatus.Status.SUCCESS_GRACE_PERIOD, "Your password has expired. Please change your password now.");
+                            loginStatus = new LoginStatus(LoginStatus.Status.SUCCESS_GRACE_PERIOD, "Your password has expired. Please change your password now.", validUser.getUsername());
                         } else if (passwordRequirements.getGracePeriod() > 0) {
                             // If there has never been a grace time, start it now
                             long gracePeriodStartTime;
@@ -351,7 +351,7 @@ public class DefaultUserController extends UserController {
 
                             long graceTimeRemaining = loginRequirementsChecker.getGraceTimeRemaining(gracePeriodStartTime, currentTime);
                             if (graceTimeRemaining > 0) {
-                                loginStatus = new LoginStatus(LoginStatus.Status.SUCCESS_GRACE_PERIOD, "Your password has expired. You are required to change your password in the next " + loginRequirementsChecker.getPrintableGraceTimeRemaining(graceTimeRemaining) + ".");
+                                loginStatus = new LoginStatus(LoginStatus.Status.SUCCESS_GRACE_PERIOD, "Your password has expired. You are required to change your password in the next " + loginRequirementsChecker.getPrintableGraceTimeRemaining(graceTimeRemaining) + ".", validUser.getUsername());
                             }
                         }
 
@@ -374,7 +374,7 @@ public class DefaultUserController extends UserController {
 
                 // If nothing failed (loginStatus != null), set SUCCESS now
                 if (loginStatus == null) {
-                    loginStatus = new LoginStatus(LoginStatus.Status.SUCCESS, "");
+                    loginStatus = new LoginStatus(LoginStatus.Status.SUCCESS, "", validUser.getUsername());
 
                     // Clear the user's grace period if one exists
                     if (validUser.getGracePeriodStart() != null) {

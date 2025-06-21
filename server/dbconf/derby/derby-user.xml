@@ -33,7 +33,7 @@
 		FROM PERSON
 		<where>
          	<if test='id != null'>ID = #{id}</if>
-         	<if test='username != null'>AND USERNAME = #{username}</if>
+         	<if test='username != null'>AND LOWER(USERNAME) = LOWER(#{username})</if>
       	</where>
 	</select>
 
