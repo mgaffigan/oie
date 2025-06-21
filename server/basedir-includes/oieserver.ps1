@@ -100,30 +100,33 @@ function Expand-LineVariables {
     param(
         [string]$Line
     )
-    $resultBuilder = [System.Text.StringBuilder]::new()
-    $remainingLine = $Line
-
-    # This loop consumes the line from left to right, preventing recursive expansion.
-    while ($remainingLine -match '\$\{([a-zA-Z_][a-zA-Z0-9_]*)\}') {
-        # Append the text before the match to our result.
-        $prefix = $remainingLine.Substring(0, $matches[0].Index)
-        $resultBuilder.Append($prefix) | Out-Null
+    
+    # Define a "match evaluator" script block. This block will be called
+    # for every match the regex finds.
+    $evaluator = {
+        param($match)
         
-        # Get the variable name and its value.
-        $varName = $matches[1]
+        # The variable name is in the first capture group.
+        $varName = $match.Groups[1].Value
+        
+        # Look for a PowerShell variable first.
         $varValue = (Get-Variable -Name $varName -Scope "global" -ErrorAction SilentlyContinue).Value
+        # If not found, look for an environment variable.
         if ($null -eq $varValue) {
             $varValue = (Get-Variable -Name "env:$varName" -ErrorAction SilentlyContinue).Value
         }
-        $resultBuilder.Append($varValue) | Out-Null
         
-        # Update the line to be only the portion *after* the match.
-        $remainingLine = $remainingLine.Substring($matches[0].Index + $matches[0].Length)
+        # Return the found value. This will be the replacement for the match.
+        return $varValue
     }
 
-    # Append any remaining part of the line after the last match and return.
-    $resultBuilder.Append($remainingLine) | Out-Null
-    return $resultBuilder.ToString()
+    # Define the regex pattern to find ${...} variables.
+    $regex = '\$\{([a-zA-Z_][a-zA-Z0-9_]*)\}'
+
+    # Use the static Replace method, passing the input line, the regex, and our evaluator.
+    $expandedLine = [regex]::Replace($Line, $regex, $evaluator)
+    
+    return $expandedLine
 }
 
 # --- Function to validate Java version ---
