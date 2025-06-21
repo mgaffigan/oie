@@ -3,62 +3,63 @@
 # SPDX-FileCopyrightText: 2025 Tony Germano and Mitch Gaffigan
 #
 
-# =============================================================================
-# Open Integration Engine Server Launcher Script (PowerShell Version)
-#
-# Description:
-#   This script is the main launcher for the Open Integration Engine (OIE)
-#   server. It prepares the Java environment and executes the server launcher
-#   JAR file.
-#
-#   The script automatically finds a compatible Java runtime (version 17+ by
-#   default) by searching for a valid executable in the following priority order:
-#     1. The OIE_JAVA_PATH environment variable.
-#     2. The -java-cmd directive in the oieserver.vmoptions file or included
-#        .vmoptions files. Must specify the path to the 'java' executable.
-#        This is the preferred way to declare the desired version for running
-#        the server and can be overridden by OIE_JAVA_PATH. Can be a relative
-#        path from the location of this script.
-#     3. The JAVA_HOME environment variable.
-#     4. The 'java' command available in the system's PATH.
-#
-#   It also parses the 'oieserver.vmoptions' file to configure JVM options,
-#   system properties (-D...), and classpath modifications.
-#
-# Usage:
-#   ./oieserver.ps1 [app-arguments]
-#
-#   All [app-arguments] are passed directly to the underlying Java application
-#   (com.mirth.connect.server.launcher.MirthLauncher).
-#
-# Configuration via Environment Variables:
-#   OIE_JAVA_PATH   - (Highest priority) Set the full path to the 'java'
-#                   executable to be used. Can be a relative path from the
-#                   location of this script or a tilde path
-#                   (e.g., ~/path/to/java).
-#   JAVA_HOME       - Set the path to the root of a Java installation. The
-#                   script will look for 'bin/java' within this path.
-# =============================================================================
+<#
+.SYNOPSIS
+    Open Integration Engine Server Launcher Script (PowerShell Version)
 
-# --- Script Parameters and Initial Variables ---
+.DESCRIPTION
+    This script is the main launcher for the Open Integration Engine (OIE)
+    server. It prepares the Java environment and executes the server launcher
+    JAR file.
+
+    The script automatically finds a compatible Java runtime (version 17+ by
+    default) by searching for a valid executable in the following priority order:
+
+    1. The OIE_JAVA_PATH environment variable.
+    2. The -java-cmd directive in the oieserver.vmoptions file or included .vmoptions 
+       files. Must specify the path to the 'java' executable. This is the preferred 
+       way to declare the desired version for running the server and can be overridden
+       by OIE_JAVA_PATH. Can be a relative path from the location of this script.
+    3. The JAVA_HOME environment variable.
+    4. The 'java' command available in the system's PATH.
+
+    It also parses the 'oieserver.vmoptions' file to configure JVM options,
+    system properties (-D...), and classpath modifications.
+
+.NOTES
+    Configuration via Environment Variables:
+        OIE_JAVA_PATH   - (Highest priority) Set the full path to the 'java'
+                        executable to be used. Can be a relative path from the
+                        location of this script or a tilde path
+                        (e.g., ~/path/to/java).
+        JAVA_HOME       - Set the path to the root of a Java installation. The
+                        script will look for 'bin/java' within this path.
+
+.PARAMETER AppArgs
+    Arguments passed directly to the underlying Java application
+    (com.mirth.connect.server.launcher.MirthLauncher).
+
+.EXAMPLE
+    ./oieserver.ps1
+
+.EXAMPLE
+    $env:OIE_JAVA_PATH = 'C:\path\to\java.exe';
+    ./oieserver.ps1 -Dproperty=value --some-arg value
+#>
+
 param(
-    [string[]]$AppArgs = $args
+    [parameter(ValueFromRemainingArguments = $true)][string[]] $AppArgs
 )
 
+# Stop on any error and exit non-zero
+$ErrorActionPreference = "Stop"
 $MinJavaVersion = 17
 
 # Set OieHome to the script directory using PowerShell's built-in variable
 $OieHome = $PSScriptRoot
-# The engine expects it's working directory to be OieHome
-try {
-    Set-Location -Path $OieHome -ErrorAction Stop
-}
-catch {
-    Write-Error "Could not change to the OieHome directory: $OieHome"
-    exit 1
-}
 $LauncherJar = Join-Path -Path $OieHome -ChildPath "mirth-server-launcher.jar"
-$script:Classpath = $LauncherJar # Use script scope to be modifiable by functions
+ # Use script scope to be modifiable by functions
+$script:Classpath = [System.Collections.Generic.List[string]]::new()
 $script:VmOptions = [System.Collections.Generic.List[string]]::new()
 
 # This will hold the validated path to the Java executable.
@@ -67,79 +68,8 @@ $FinalJavaCmd = $null
 $script:VmOptionsJavaCmd = $null
 $script:VmOptionsJavaCmdFile = $null
 
-# --- Function to resolve a path to a canonical absolute path ---
-function Resolve-CanonicalPath {
-    param(
-        [string]$PathToResolve
-    )
-
-    # Explicitly handle simple tilde expansion first (`~/` or `~`)
-    if ($PathToResolve -match '^~(/|$)') {
-        $homePath = $env:HOME
-        if ([string]::IsNullOrWhiteSpace($homePath)) {
-            $homePath = $env:USERPROFILE
-        }
-        $PathToResolve = ($PathToResolve -replace '^~/', "$($homePath)/") -replace '^~$', $homePath
-    }
-    
-    # If the path is not absolute, assume it's relative to OIE_HOME
-    if (-not [System.IO.Path]::IsPathRooted($PathToResolve)) {
-        $PathToResolve = Join-Path -Path $OieHome -ChildPath $PathToResolve
-    }
-    
-    try {
-        return (Resolve-Path -LiteralPath $PathToResolve).Path
-    }
-    catch {
-        return $PathToResolve
-    }
-}
-
-# --- Function to safely expand specific variable formats in a string ---
-function Expand-LineVariables {
-    param(
-        [string]$Line
-    )
-    
-    # Define a "match evaluator" script block. This block will be called
-    # for every match the regex finds.
-    $evaluator = {
-        param($match)
-        
-        # The variable name is in the first capture group.
-        $varName = $match.Groups[1].Value
-        
-        # Look for a PowerShell variable first.
-        $varValue = (Get-Variable -Name $varName -Scope "global" -ErrorAction SilentlyContinue).Value
-        # If not found, look for an environment variable.
-        if ($null -eq $varValue) {
-            $varValue = (Get-Variable -Name "env:$varName" -ErrorAction SilentlyContinue).Value
-        }
-        
-        # Return the found value. This will be the replacement for the match.
-        return $varValue
-    }
-
-    # Define the regex pattern to find ${...} variables.
-    $regex = '\$\{([a-zA-Z_][a-zA-Z0-9_]*)\}'
-
-    # Use the static Replace method, passing the input line, the regex, and our evaluator.
-    $expandedLine = [regex]::Replace($Line, $regex, $evaluator)
-    
-    return $expandedLine
-}
-
 # --- Function to validate Java version ---
-function Test-IsValidJavaVersion {
-    param(
-        [string]$JavaCmd
-    )
-
-    # Check if the command is found and is executable
-    if (-not (Get-Command $JavaCmd -ErrorAction SilentlyContinue)) {
-        return $false
-    }
-
+function Test-IsValidJavaVersion([string] $JavaCmd) {
     # Execute 'java -version' and capture the output from stderr
     # Example output: openjdk version "17.0.2" 2022-07-19
     try {
@@ -155,18 +85,11 @@ function Test-IsValidJavaVersion {
 
     # Extract the major version number. This works for formats like "1.8.0" and "17.0.2".
     $match = $versionOutput | Select-String -Pattern '"(\d+)\.'
-    if ($match -and ($match.Matches[0].Groups[1].Value -as [int]) -ge $MinJavaVersion) {
-        return $true
-    } else {
-        return $false
-    }
+    return ($match -and ($match.Matches[0].Groups[1].Value -as [int]) -ge $MinJavaVersion)
 }
 
 # --- Function to parse vmoptions file ---
-function Parse-VmOptions {
-    param(
-        [string]$File
-    )
+function Parse-VmOptions([string] $File) {
     
     if (-not (Test-Path -LiteralPath $File -PathType Leaf)) {
         Write-Warning "VM options file not found: $File"
@@ -182,32 +105,33 @@ function Parse-VmOptions {
             return
         }
 
-        $line = Expand-LineVariables -Line $line
-
-        if ($line -match '^-include-options\s+(.+)') {
-            $includedFile = $matches[1].Trim()
+        # Expand environment variables (converting the ${ABC} syntax to %ABC%)
+        $line = [Environment]::ExpandEnvironmentVariables(($line -replace '\$\{([a-zA-Z_][a-zA-Z0-9_]*)\}', '%$1%'))
+        
+        # Command is space-separated, discarding all intermediate whitespace
+        $lineCommand, $lineArgument = $line.Split(' ', 2, 'RemoveEmptyEntries')
+        if ($lineCommand -eq '-include-options') {
             # Resolve relative paths to the current file's directory
-            if (-not [System.IO.Path]::IsPathRooted($includedFile)) {
-                $includedFile = Join-Path -Path (Split-Path -Path $File -Parent) -ChildPath $includedFile
-            }
+            $lineArgument = Join-Path -Path (Split-Path -Path $File -Parent) -ChildPath $lineArgument
             Parse-VmOptions -File $includedFile
         }
-        elseif ($line -match '^-classpath\s+(.+)') {
-            $script:Classpath = $matches[1].Trim()
+        elseif ($lineCommand -eq '-classpath') {
+            $script:Classpath.Clear()
+            $script:Classpath.Add($lineArgument)
         }
-        elseif ($line -match '^-classpath/a\s+(.+)') {
-            $script:Classpath = "$($script:Classpath)$([System.IO.Path]::PathSeparator)$($matches[1].Trim())"
+        elseif ($lineCommand -eq '-classpath/a') {
+            $script:Classpath.Add($lineArgument)
         }
-        elseif ($line -match '^-classpath/p\s+(.+)') {
-            $script:Classpath = "$($matches[1].Trim())$([System.IO.Path]::PathSeparator)$($script:Classpath)"
+        elseif ($lineCommand -eq '-classpath/p') {
+            $script:Classpath.Insert(0, $lineArgument)
         }
-        elseif ($line -match '^-java-cmd\s+(.+)') {
+        elseif ($lineCommand -eq '-java-cmd') {
             # Store the path and the file it was found in. Validation is deferred.
-            $script:VmOptionsJavaCmd = Resolve-CanonicalPath -PathToResolve $matches[1].Trim()
+            $script:VmOptionsJavaCmd = Join-Path $OieHome $lineArgument
             $script:VmOptionsJavaCmdFile = $File
         }
         else {
-            $script:VmOptions.Add($line) | Out-Null
+            $script:VmOptions.Add($line)
         }
     }
 }
@@ -218,22 +142,21 @@ function Parse-VmOptions {
 Parse-VmOptions -File (Join-Path -Path $OieHome -ChildPath "oieserver.vmoptions")
 
 # 2. Ensure the launcher JAR is always in the classpath.
-if ($script:Classpath -notmatch [regex]::Escape($LauncherJar)) {
+if (-not $script:Classpath.Contains($LauncherJar)) {
     Write-Host "Info: Prepending mirth-server-launcher.jar to the classpath." -ForegroundColor Green
-    $script:Classpath = "$($LauncherJar)$([System.IO.Path]::PathSeparator)$($script:Classpath)"
+    $script:Classpath.Insert(0, $LauncherJar)
 }
 
 # 3. Discover the Java executable using the documented priority order.
 
 # Check OIE_JAVA_PATH (fail-fast on invalid).
 if (-not [string]::IsNullOrWhiteSpace($env:OIE_JAVA_PATH)) {
-    $resolvedPath = Resolve-CanonicalPath -PathToResolve $env:OIE_JAVA_PATH
+    $resolvedPath = Join-Path $OieHome [System.Environment]::ExpandEnvironmentVariables($env:OIE_JAVA_PATH)
     if (Test-IsValidJavaVersion -JavaCmd $resolvedPath) {
         Write-Host "Info: Found suitable java version specified by the OIE_JAVA_PATH environment variable" -ForegroundColor Green
         $FinalJavaCmd = $resolvedPath
     } else {
         Write-Error "'$resolvedPath' is specified by the OIE_JAVA_PATH environment variable, which is not a valid Java executable of at least version $MinJavaVersion. Exiting."
-        exit 1
     }
 }
 
@@ -274,20 +197,26 @@ if (-not $FinalJavaCmd) {
 # 4. Final check for a valid Java path before execution.
 if (-not $FinalJavaCmd) {
     Write-Error "Could not find a Java $($MinJavaVersion)+ installation. Please configure -java-cmd in conf/custom.vmoptions, set OIE_JAVA_PATH, set JAVA_HOME, or ensure 'java' in your PATH is version $($MinJavaVersion) or higher."
-    exit 1
 }
 
 # 5. Assemble final arguments and launch the process.
 $javaOpts = [System.Collections.Generic.List[string]]::new()
 $javaOpts.AddRange($script:VmOptions)
 $javaOpts.Add("-cp")
-$javaOpts.Add('"{0}"' -f $script:Classpath)
+$javaOpts.Add($script:Classpath -join [System.IO.Path]::PathSeparator)
 $javaOpts.Add("com.mirth.connect.server.launcher.MirthLauncher")
-$javaOpts.AddRange($AppArgs)
+if ($AppArgs) { $javaOpts.AddRange($AppArgs) }
 
 # Launch Open Integration Engine
 Write-Host "Starting Open Integration Engine..." -ForegroundColor Green
-Write-Host "$FinalJavaCmd $($javaOpts -join ' ')"
+Write-Host ("$FinalJavaCmd " + (($javaOpts | %{ "`"$_`"" }) -join ' '));
 
-& $FinalJavaCmd $javaOpts
-exit $LASTEXITCODE
+# The engine expects it's working directory to be OieHome
+Push-Location -Path $OieHome
+try {
+    & $FinalJavaCmd @javaOpts
+    exit $LASTEXITCODE
+}
+finally {
+    Pop-Location
+}
