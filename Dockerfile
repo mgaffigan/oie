@@ -43,7 +43,6 @@ RUN groupadd engine \
     && chown -R engine:engine /opt/engine
 
 WORKDIR /opt/engine
-COPY --chmod=0755 docker/entrypoint.sh ./
 COPY --chown=engine:engine --from=builder \
     --exclude=cli-lib \
     --exclude=mirth-cli-launcher.jar \
@@ -58,7 +57,7 @@ VOLUME /opt/engine/custom-extensions
 EXPOSE 8443
 
 USER engine
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["./configure-from-env.sh"]
 CMD ["./oieserver"]
 
 ##########################################
@@ -78,7 +77,6 @@ RUN addgroup -S engine \
     && chown -R engine:engine /opt/engine
 
 WORKDIR /opt/engine
-COPY --chmod=0755 docker/entrypoint.sh ./
 COPY --chown=engine:engine --from=builder \
     --exclude=cli-lib \
     --exclude=mirth-cli-launcher.jar \
@@ -94,5 +92,5 @@ VOLUME /opt/engine/custom-extensions
 EXPOSE 8443
 
 USER engine
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["./configure-from-env.sh"]
 CMD ["./oieserver"]

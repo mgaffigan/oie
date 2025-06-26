@@ -1007,6 +1007,9 @@
 			<fileset dir="${basedir_includes}" />
 		</copy>
 
+		<!-- make scripts executable on unix platforms -->
+		<chmod file="${setup}/configure-from-env.sh" perm="755"/>
+
 		<!-- create the server jar -->
 		<jar destfile="${setup.server.lib}/${server.jar}" basedir="${classes}">
 			<include name="com/mirth/connect/server/**" />
