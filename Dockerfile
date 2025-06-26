@@ -28,17 +28,23 @@ WORKDIR /app/server
 RUN source "$HOME/.sdkman/bin/sdkman-init.sh" \
     && ANT_OPTS="-Dfile.encoding=UTF8" ant -f mirth-build.xml -DdisableSigning=true
 
-# Stage 2b: JDK runtime container
+##########################################
+#
+#     Ubuntu JDK Image
+#
+##########################################
+
 FROM eclipse-temurin:21.0.7_6-jdk-noble as jdk-run
 
-RUN groupadd mirth \
-    && usermod -l mirth ubuntu \
-    && adduser mirth mirth \
-    && mkdir -p /opt/connect/appdata \
-    && chown -R mirth:mirth /opt/connect
+RUN groupadd engine \
+    && usermod -l engine ubuntu \
+    && adduser engine engine \
+    && mkdir -p /opt/engine/appdata \
+    && chown -R engine:engine /opt/engine
 
-WORKDIR /opt/connect
-COPY --chown=mirth:mirth --from=builder \
+WORKDIR /opt/engine
+COPY --chmod=0755 docker/entrypoint.sh ./
+COPY --chown=engine:engine --from=builder \
     --exclude=cli-lib \
     --exclude=mirth-cli-launcher.jar \
     --exclude=mccommand \
@@ -47,27 +53,33 @@ COPY --chown=mirth:mirth --from=builder \
     --exclude=mcmanager \
     /app/server/setup ./
 
-VOLUME /opt/connect/appdata
-VOLUME /opt/connect/custom-extensions
+VOLUME /opt/engine/appdata
+VOLUME /opt/engine/custom-extensions
 EXPOSE 8443
 
-USER mirth
-ENTRYPOINT [ "/opt/connect/entrypoint.sh" ]
-CMD ["/opt/connect/mirth-connect.sh"]
+USER engine
+ENTRYPOINT ["./entrypoint.sh"]
+CMD ["./oieserver"]
 
-# Stage 2b: JRE runtime container
+##########################################
+#
+#     Alpine JRE Image
+#
+##########################################
+
 FROM eclipse-temurin:21.0.7_6-jre-alpine as jre-run
 
 # Alpine does not include bash by default, so we install it
 RUN apk add --no-cache bash
 # useradd and groupadd are not available in Alpine
-RUN addgroup -S mirth \
-    && adduser -S -g mirth mirth \
-    && mkdir -p /opt/connect/appdata \
-    && chown -R mirth:mirth /opt/connect
+RUN addgroup -S engine \
+    && adduser -S -g engine engine \
+    && mkdir -p /opt/engine/appdata \
+    && chown -R engine:engine /opt/engine
 
-WORKDIR /opt/connect
-COPY --chown=mirth:mirth --from=builder \
+WORKDIR /opt/engine
+COPY --chmod=0755 docker/entrypoint.sh ./
+COPY --chown=engine:engine --from=builder \
     --exclude=cli-lib \
     --exclude=mirth-cli-launcher.jar \
     --exclude=mccommand \
@@ -76,10 +88,11 @@ COPY --chown=mirth:mirth --from=builder \
     --exclude=mcmanager \
     /app/server/setup ./
 
-VOLUME /opt/connect/appdata
-VOLUME /opt/connect/custom-extensions
+VOLUME /opt/engine/appdata
+VOLUME /opt/engine/custom-extensions
+
 EXPOSE 8443
 
-USER mirth
-ENTRYPOINT [ "/opt/connect/entrypoint.sh" ]
-CMD ["/opt/connect/mirth-connect.sh"]
+USER engine
+ENTRYPOINT ["./entrypoint.sh"]
+CMD ["./oieserver"]
