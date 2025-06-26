@@ -23,8 +23,9 @@ can be installed by [sdkman](https://sdkman.io/) by executing `sdkman env instal
 From the `server/` directory, run `ant -f mirth-build.xml -DdisableSigning=true`.
 
 If you are using Mirth Connect Administrator Launcher, you may need to omit
-`-DdisableSigning=true` to support JWS signatures.  Launchers like 
-[Ballista](https://github.com/kayyagari/ballista) do not require signing, and
+`-DdisableSigning=true` to support JWS signatures and run MCAL passing `-k -d`
+to make it ignore self-signed certificates. Launchers like 
+[Ballista](https://github.com/kayyagari/ballista) do not require signing, and 
 signing adds considerable time to the build process.
 
 ## Run
