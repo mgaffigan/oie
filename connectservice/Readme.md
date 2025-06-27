@@ -1,8 +1,8 @@
 # Connect Service
 
 Connect Service is a sample implementation of a web service which records usage
-of Mirth Server, and provides access to a notifications feed. The service implements
-the operations called by the client in `ConnectServiceUtil.java`.
+of Open Integration Engine, and provides access to a notifications feed. The service
+implements the operations called by the client in `ConnectServiceUtil.java`.
 
 ## Running and testing
 
