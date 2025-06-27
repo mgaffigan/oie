@@ -7,26 +7,27 @@
 #      1b. Build the application
 # 2. Runner Stage: Creates a lightweight image that runs the application using the JRE.
 
-FROM ubuntu:noble-20250415.1 AS builder
+FROM ubuntu:24.04 AS builder
 WORKDIR /app
-# sdkman requires bash
-SHELL ["/bin/bash", "-c"]
 
 # Stage 1a: Install dependencies
-# Install necessary tools
-COPY .sdkmanrc .
-RUN apt-get update\
-    && apt-get install -y zip curl\
-    && curl -s "https://get.sdkman.io?ci=true" | bash \
-    && source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk env install \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt update\
+    # https://github.com/adoptium/containers/blob/main/21/jdk/ubuntu/noble/Dockerfile for packages
+    && apt install -y --no-install-recommends curl wget fontconfig ca-certificates p11-kit binutils tzdata locales \
+    && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen; locale-gen en_US.UTF-8 \
+    && wget --progress=dot:giga -O /tmp/azul_jdk.deb "https://cdn.azul.com/zulu/bin/zulu8.84.0.15-ca-fx-jdk8.0.442-linux_amd64.deb" \
+    && apt install -y --no-install-recommends /tmp/azul_jdk.deb \
+    && wget --progress=dot:giga -O /tmp/apache-ant.tar.gz "https://dlcdn.apache.org/ant/binaries/apache-ant-1.10.15-bin.tar.gz" \
+    && tar -xzf /tmp/apache-ant.tar.gz -C /opt/ \
+    && rm -rf /tmp/azul_jdk.deb /tmp/apache-ant.tar.gz /var/lib/apt/lists/*
+
+ENV PATH="/opt/apache-ant-1.10.15/bin:${PATH}"
 
 # Stage 1b: Build the application
 # Copy the entire source tree (excluding .dockerignore files), and build
 COPY --exclude=docker . .
 WORKDIR /app/server
-RUN source "$HOME/.sdkman/bin/sdkman-init.sh" \
-    && ANT_OPTS="-Dfile.encoding=UTF8" ant -f mirth-build.xml -DdisableSigning=true
+RUN ANT_OPTS="-Dfile.encoding=UTF8" ant -f mirth-build.xml -DdisableSigning=true
 
 ##########################################
 #
