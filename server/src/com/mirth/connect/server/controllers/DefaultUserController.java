@@ -103,7 +103,16 @@ public class DefaultUserController extends UserController {
             User user = new User();
             user.setId(userId);
             user.setUsername(userName);
-            return SqlConfig.getInstance().getReadOnlySqlSessionManager().selectOne("User.getUser", user);
+            List<User> list = SqlConfig.getInstance().getReadOnlySqlSessionManager().selectList("User.getUser", user);
+            // If we have multiple results, we want to prefer the case sensitive match
+            if (userName != null) {
+                for (User u : list) {
+                    if (userName.equals(u.getUsername())) {
+                        return u;
+                    }
+                }
+            }
+            return list.isEmpty() ? null : list.get(0);
         } catch (PersistenceException e) {
             throw new ControllerException(e);
         } finally {
