@@ -1,6 +1,8 @@
 # Lines begining with a # are ignored as comments.
 # Do not add customizations to this file.
 
+-classpath/p mirth-server-launcher.jar
+
 -include-options conf/base_includes.vmoptions
 
 # Comment out the following line if you are running on Java 8

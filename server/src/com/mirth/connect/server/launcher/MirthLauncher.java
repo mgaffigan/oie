@@ -39,8 +39,6 @@ import com.mirth.connect.server.extprops.LoggerWrapper;
 public class MirthLauncher {
     private static final String EXTENSIONS_DIR = "./extensions";
     private static final String SERVER_LAUNCHER_LIB_DIR = "./server-launcher-lib";
-    private static final String MIRTH_PROPERTIES_FILE = "./conf/mirth.properties";
-    private static final String PROPERTY_APP_DATA_DIR = "dir.appdata";
     private static final String PROPERTY_INCLUDE_CUSTOM_LIB = "server.includecustomlib";
     private static final String[] LOG4J_JAR_FILES = { "./server-lib/log4j/log4j-core-2.17.2.jar",
             "./server-lib/log4j/log4j-api-2.17.2.jar",
@@ -74,11 +72,17 @@ public class MirthLauncher {
                 logger.error("Error uninstalling or installing pending extensions.", e);
             }
 
-            Properties mirthProperties = new Properties();
+            Properties mirthProperties;
             String includeCustomLib = null;
 
-            try (FileInputStream inputStream = new FileInputStream(new File(MIRTH_PROPERTIES_FILE))) {
-                mirthProperties.load(inputStream);
+            try {
+                mirthProperties = MirthPropertiesExtensions.getMirthProperties();
+            } catch (IOException e) {
+                logger.error("Error loading Mirth Connect properties.", e);
+                mirthProperties = new Properties();
+            }
+
+            try {
                 includeCustomLib = mirthProperties.getProperty(PROPERTY_INCLUDE_CUSTOM_LIB);
                 createAppdataDir(mirthProperties);
             } catch (Exception e) {
@@ -304,23 +308,15 @@ public class MirthLauncher {
     }
 
     private static void createAppdataDir(Properties mirthProperties) {
-        File appDataDirFile = null;
-
-        if (mirthProperties.getProperty(PROPERTY_APP_DATA_DIR) != null) {
-            appDataDirFile = new File(mirthProperties.getProperty(PROPERTY_APP_DATA_DIR));
-
-            if (!appDataDirFile.exists()) {
-                if (appDataDirFile.mkdir()) {
-                    logger.debug("created app data dir: " + appDataDirFile.getAbsolutePath());
-                } else {
-                    logger.error("error creating app data dir: " + appDataDirFile.getAbsolutePath());
-                }
+        appDataDir = MirthPropertiesExtensions.getAppdataDir(mirthProperties);
+        File appDataDirFile = new File(appDataDir);
+        if (!appDataDirFile.exists()) {
+            if (appDataDirFile.mkdir()) {
+                logger.debug("created app data dir: " + appDataDirFile.getAbsolutePath());
+            } else {
+                logger.error("error creating app data dir: " + appDataDirFile.getAbsolutePath());
             }
-        } else {
-            appDataDirFile = new File(".");
         }
-
-        appDataDir = appDataDirFile.getAbsolutePath();
         logger.debug("set app data dir: " + appDataDir);
     }
 }
