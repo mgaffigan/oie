@@ -32,6 +32,18 @@ jobs:
         working-directory: server
         run: ant -f mirth-build.xml -DdisableSigning=true
 
+      - name: Publish Test Results
+        if: github.ref != 'refs/heads/main'
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: |
+            donkey/junit-reports/**/*.xml
+            server/junit-reports/**/*.xml
+            client/junit-reports/**/*.xml
+            cli/junit-reports/**/*.xml
+          check_name: 'JUnit Test Results'
+          comment_mode: failures
+
       - name: Package distribution
         run: tar czf openintegrationengine.tar.gz -C server/ setup --transform 's|^setup|openintegrationengine/|'
 
