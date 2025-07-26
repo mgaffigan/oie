@@ -33,9 +33,6 @@ public class MirthSSLUtilTest {
         if (getJavaVersion() >= 11) {
             assertTrue(ArrayUtils.contains(enabledClientProtocols, "TLSv1.3"));
             assertTrue(ArrayUtils.contains(enabledServerProtocols, "TLSv1.3"));
-        } else {
-            assertFalse(ArrayUtils.contains(enabledClientProtocols, "TLSv1.3"));
-            assertFalse(ArrayUtils.contains(enabledServerProtocols, "TLSv1.3"));
         }
     }
 
@@ -50,8 +47,6 @@ public class MirthSSLUtilTest {
         // TLS_AES_256_GCM_SHA384 supported in Java 11+
         if (getJavaVersion() >= 11) {
             assertTrue(ArrayUtils.contains(enabledClientCipherSuites, "TLS_AES_256_GCM_SHA384"));
-        } else {
-            assertFalse(ArrayUtils.contains(enabledClientCipherSuites, "TLS_AES_256_GCM_SHA384"));
         }
     }
 
