@@ -950,6 +950,7 @@
 		<!-- create the setup directory -->
 		<mkdir dir="${setup}" />
 		<mkdir dir="${setup.conf}" />
+		<mkdir dir="${setup.appdata}" />
 		<mkdir dir="${setup.extensions}" />
 		<mkdir dir="${setup.public_html}" />
 		<mkdir dir="${setup.public_api_html}" />
@@ -1141,6 +1142,26 @@
 				</if>
 			</else>
 		</if>
+
+		<!-- Cache launch arguments -->
+		<java classpath="${setup}/${mirth-launcher.jar}" classname="com.mirth.connect.server.launcher.ParseVmOptions"
+			fork="true" dir="${setup}" resultproperty="parsevmoptions.result" failonerror="false">
+			<arg value="${setup}/oieserver.vmoptions" />
+			<arg value="${setup}/appdata/launch.args" />
+		</java>
+		<!-- 75 = Updated, 0 = No changes, other = error -->
+		<if>
+			<or>
+				<equals arg1="${parsevmoptions.result}" arg2="75" />
+				<equals arg1="${parsevmoptions.result}" arg2="0" />
+			</or>
+			<then>
+				<echo message="Successfully cached launch arguments. Result: ${parsevmoptions.result}" />
+			</then>
+			<else>
+				<fail message="Failed to cache launch arguments. Result: ${parsevmoptions.result}" />
+			</else>
+		</if>
 	</target>
 
 	<target name="create-extension-zips" depends="create-setup">
@@ -1228,7 +1249,7 @@
 	<target name="dev-launcher" depends="init" description="This runs Mirth using the setup launcher">
 		<java classname="com.mirth.connect.server.launcher.MirthLauncher" fork="true" dir="${setup}" failonerror="true">
 			<classpath>
-				<pathelement location="${setup}/mirth-launcher.jar" />
+				<pathelement location="${setup}/${mirth-launcher.jar}" />
 			</classpath>
 		</java>
 	</target>

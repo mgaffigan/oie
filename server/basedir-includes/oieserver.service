@@ -1,0 +1,34 @@
+# This systemd service unit file defines a service for managing the 
+# Open Integration Engine (oieserver).
+#
+# Installation and Usage:
+# 1. Copy this file to `/etc/systemd/system/` as `oieserver.service`.
+# 2. Reload systemd to recognize the new service:
+#      sudo systemctl daemon-reload
+# 3. Enable the service to start on boot:
+#      sudo systemctl enable oieserver
+# 4. Start the service:
+#      sudo systemctl start oieserver
+# 5. View service logs:
+#      sudo journalctl -u oieserver
+#
+# By default, the service will use:
+# A. A local jre installed or linked to /opt/oieserver/jre
+# B. The jre referred to a defined JAVA_HOME variable
+# C. java from the system path
+
+[Unit]
+Description=Open Integration Engine
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/opt/oieserver/oieserver.sh
+Restart=on-failure
+User=oieserver
+WorkingDirectory=/opt/oieserver
+# Uncomment to specify JAVA_HOME for this service
+#Environment="JAVA_HOME=/foo/bar"
+
+[Install]
+WantedBy=multi-user.target

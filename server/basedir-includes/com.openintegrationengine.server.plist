@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+This is an example launchd plist for the Open Integration Engine server 
+
+Installation and usage:
+1. Save this file as `com.openintegrationengine.server.plist` in `/Library/LaunchDaemons/`.
+2. Load the plist with `sudo launchctl load /Library/LaunchDaemons/com.openintegrationengine.server.plist`.
+3. Start the service with `sudo launchctl start com.openintegrationengine.server`.
+4. Observe log output with `log stream -predicate 'subsystem == "com.openintegrationengine.server"'`.
+   (note: "-predicate" should have two dashes.  Can't put two dashes in an XML comment)
+
+By default, the server will use:
+A. A local JRE if available in the same directory as this script.
+B. The JAVA_HOME environment variable if set.
+C. The system's default `java` command.
+
+You can specify JAVA_HOME by adding the following to the plist:
+<key>EnvironmentVariables</key>
+<dict>
+    <key>JAVA_HOME</key>
+    <string>/path/to/your/java/home</string>
+</dict>
+
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.openintegrationengine.server</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/opt/oieserver/oieserver.sh</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>WorkingDirectory</key>
+    <string>/opt/oieserver</string>
+    <key>UserName</key>
+    <string>oieserver</string>
+    <key>KeepAlive</key>
+    <dict>
+        <key>SuccessfulExit</key>
+        <false/>
+    </dict>
+</dict>
+</plist>
