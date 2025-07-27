@@ -32,7 +32,7 @@ public class ExtensionStatusFile extends ExtensionStatusProvider {
             appData = "appdata";
         }
 
-        File appDataDir = new File(appData);
+        File appDataDir = new File(ExtMirthHome.getMirthHome(), appData);
 
         if (appDataDir.exists()) {
             extensionPropertiesFile = new File(appDataDir, "extension.properties");

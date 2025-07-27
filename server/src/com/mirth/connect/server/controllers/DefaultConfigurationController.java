@@ -118,6 +118,7 @@ import com.mirth.connect.model.converters.DocumentSerializer;
 import com.mirth.connect.model.converters.ObjectXMLSerializer;
 import com.mirth.connect.plugins.directoryresource.DirectoryResourceProperties;
 import com.mirth.connect.server.ExtensionLoader;
+import com.mirth.connect.server.MirthHome;
 import com.mirth.connect.server.mybatis.KeyValuePair;
 import com.mirth.connect.server.tools.ClassPathResource;
 import com.mirth.connect.server.util.DatabaseUtil;
@@ -227,8 +228,18 @@ public class DefaultConfigurationController extends ConfigurationController {
         InputStream versionPropertiesStream = null;
 
         try {
+            URI classpathUri = ClassPathResource.getResourceURI("mirth.properties");
+            File mirthPropertiesFile;
+            if (classpathUri != null) {
+                baseDir = new File(classpathUri).getParentFile().getParent();
+                mirthPropertiesFile = new File(classpathUri);
+            } else {
+                baseDir = MirthHome.getMirthHome();
+                mirthPropertiesFile = new File(baseDir, "conf/mirth.properties");
+            }
+            logger.debug("set base dir: " + baseDir);
             // Delimiter parsing disabled by default so getString() returns the whole property, even if there are commas
-            mirthConfigBuilder = PropertiesConfigurationUtil.createBuilder(new File(ClassPathResource.getResourceURI("mirth.properties")));
+            mirthConfigBuilder = PropertiesConfigurationUtil.createBuilder(mirthPropertiesFile);
             mirthConfig = mirthConfigBuilder.getConfiguration();
 
             MigrationController.getInstance().migrateConfiguration(mirthConfig);
@@ -243,7 +254,7 @@ public class DefaultConfigurationController extends ConfigurationController {
             versionConfig = PropertiesConfigurationUtil.create(versionPropertiesStream);
 
             if (mirthConfig.getString(PROPERTY_TEMP_DIR) != null) {
-                File tempDataDirFile = new File(mirthConfig.getString(PROPERTY_TEMP_DIR));
+                File tempDataDirFile = new File(baseDir, mirthConfig.getString(PROPERTY_TEMP_DIR));
 
                 if (!tempDataDirFile.exists()) {
                     if (tempDataDirFile.mkdirs()) {
@@ -260,7 +271,7 @@ public class DefaultConfigurationController extends ConfigurationController {
             File appDataDirFile = null;
 
             if (mirthConfig.getString(PROPERTY_APP_DATA_DIR) != null) {
-                appDataDirFile = new File(mirthConfig.getString(PROPERTY_APP_DATA_DIR));
+                appDataDirFile = new File(baseDir, mirthConfig.getString(PROPERTY_APP_DATA_DIR));
 
                 if (!appDataDirFile.exists()) {
                     if (appDataDirFile.mkdir()) {
@@ -270,14 +281,11 @@ public class DefaultConfigurationController extends ConfigurationController {
                     }
                 }
             } else {
-                appDataDirFile = new File(".");
+                appDataDirFile = new File(baseDir);
             }
 
             appDataDir = appDataDirFile.getAbsolutePath();
             logger.debug("set app data dir: " + appDataDir);
-
-            baseDir = new File(ClassPathResource.getResourceURI("mirth.properties")).getParentFile().getParent();
-            logger.debug("set base dir: " + baseDir);
 
             if (mirthConfig.getString(CHARSET) != null) {
                 System.setProperty(CHARSET, mirthConfig.getString(CHARSET));
@@ -1220,7 +1228,7 @@ public class DefaultConfigurationController extends ConfigurationController {
              */
             encryptionConfig = new EncryptionSettings(ConfigurationConverter.getProperties(mirthConfig));
 
-            File keyStoreFile = new File(mirthConfig.getString("keystore.path"));
+            File keyStoreFile = new File(baseDir, mirthConfig.getString("keystore.path"));
             char[] keyStorePassword = mirthConfig.getString("keystore.storepass").toCharArray();
             char[] keyPassword = mirthConfig.getString("keystore.keypass").toCharArray();
             Provider provider = (Provider) Class.forName(encryptionConfig.getSecurityProvider()).newInstance();
@@ -1378,7 +1386,7 @@ public class DefaultConfigurationController extends ConfigurationController {
                 // load the keystore path and passwords
                 mirthPropsIs = ResourceUtil.getResourceStream(this.getClass(), "mirth.properties");
                 properties = PropertiesConfigurationUtil.create(mirthPropsIs);
-                File keyStoreFile = new File(properties.getString("keystore.path"));
+                File keyStoreFile = new File(baseDir, properties.getString("keystore.path"));
                 char[] keyStorePassword = properties.getString("keystore.storepass").toCharArray();
                 char[] keyPassword = properties.getString("keystore.keypass").toCharArray();
 
@@ -1616,7 +1624,7 @@ public class DefaultConfigurationController extends ConfigurationController {
                     }
                 }
 
-                PropertiesConfigurationUtil.saveTo(configurationMapProperties, new File(configurationFile));
+                PropertiesConfigurationUtil.saveTo(configurationMapProperties, new File(baseDir, configurationFile));
             } else {
                 // save to database
                 saveProperty(PROPERTIES_CORE, "configuration.properties", ObjectXMLSerializer.getInstance().serialize(map));

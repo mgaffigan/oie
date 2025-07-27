@@ -72,6 +72,7 @@ import com.mirth.connect.plugins.TransmissionModeProvider;
 import com.mirth.connect.server.ExtensionLoader;
 import com.mirth.connect.server.extprops.ExtensionStatuses;
 import com.mirth.connect.server.migration.Migrator;
+import com.mirth.connect.server.MirthHome;
 import com.mirth.connect.server.util.DatabaseUtil;
 import com.mirth.connect.server.util.ResourceUtil;
 import com.mirth.connect.server.util.ServerUUIDGenerator;
@@ -676,10 +677,10 @@ public class DefaultExtensionController extends ExtensionController {
 
     public List<String> getClientLibraries() {
         List<String> clientLibFilenames = new ArrayList<String>();
-        File clientLibDir = new File("client-lib");
+        File clientLibDir = new File(MirthHome.getMirthHome(), "client-lib");
 
         if (!clientLibDir.exists() || !clientLibDir.isDirectory()) {
-            clientLibDir = new File("build/client-lib");
+            clientLibDir = new File(MirthHome.getMirthHome(), "build/client-lib");
         }
 
         if (clientLibDir.exists() && clientLibDir.isDirectory()) {

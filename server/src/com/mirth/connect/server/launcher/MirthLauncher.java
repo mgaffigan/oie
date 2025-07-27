@@ -54,7 +54,7 @@ public class MirthLauncher {
             List<URL> classpathUrls = new ArrayList<>();
             // Always add log4j
             for (String log4jJar : LOG4J_JAR_FILES) {
-                classpathUrls.add(new File(log4jJar).toURI().toURL());
+                classpathUrls.add(new File(MirthPropertiesExtensions.getMirthHome(), log4jJar).toURI().toURL());
             }
             classpathUrls.addAll(addServerLauncherLibJarsToClasspath());
             URLClassLoader mirthLauncherClassLoader = new URLClassLoader(classpathUrls.toArray(new URL[classpathUrls.size()]), Thread.currentThread().getContextClassLoader());
@@ -107,7 +107,7 @@ public class MirthLauncher {
             ManifestEntry[] manifest = manifestList.toArray(new ManifestEntry[manifestList.size()]);
 
             // Get the current server version
-            mirthClientCoreJarFile = new JarFile(mirthClientCoreJar.getName());
+            mirthClientCoreJarFile = new JarFile(new File(MirthPropertiesExtensions.getMirthHome(), mirthClientCoreJar.getName()));
             Properties versionProperties = new Properties();
             versionProperties.load(mirthClientCoreJarFile.getInputStream(mirthClientCoreJarFile.getJarEntry("version.properties")));
             String currentVersion = versionProperties.getProperty("mirth.version");
@@ -134,7 +134,7 @@ public class MirthLauncher {
 
     // if we have an uninstall file, uninstall the listed extensions
     private static void uninstallPendingExtensions() throws Exception {
-        File extensionsDir = new File(EXTENSIONS_DIR);
+        File extensionsDir = new File(MirthPropertiesExtensions.getMirthHome(), EXTENSIONS_DIR);
         File uninstallFile = new File(extensionsDir, "uninstall");
 
         if (uninstallFile.exists()) {
@@ -159,7 +159,7 @@ public class MirthLauncher {
      * dir, in effect "installing" them.
      */
     private static void installPendingExtensions() throws Exception {
-        File extensionsDir = new File(EXTENSIONS_DIR);
+        File extensionsDir = new File(MirthPropertiesExtensions.getMirthHome(), EXTENSIONS_DIR);
         File extensionsTempDir = new File(extensionsDir, "install_temp");
 
         if (extensionsTempDir.exists()) {
@@ -184,7 +184,7 @@ public class MirthLauncher {
     }
 
     private static List<URL> addServerLauncherLibJarsToClasspath() {
-        File serverLauncherLibDir = new File(SERVER_LAUNCHER_LIB_DIR);
+        File serverLauncherLibDir = new File(MirthPropertiesExtensions.getMirthHome(), SERVER_LAUNCHER_LIB_DIR);
         List<URL> classpathUrls = new ArrayList<>();
 
         if (serverLauncherLibDir.exists() && serverLauncherLibDir.isDirectory()) {
@@ -205,7 +205,7 @@ public class MirthLauncher {
 
     private static void addManifestToClasspath(ManifestEntry[] manifestEntries, List<URL> urls) throws Exception {
         for (ManifestEntry manifestEntry : manifestEntries) {
-            File manifestEntryFile = new File(manifestEntry.getName());
+            File manifestEntryFile = new File(MirthPropertiesExtensions.getMirthHome(), manifestEntry.getName());
 
             if (manifestEntryFile.exists()) {
                 if (manifestEntryFile.isDirectory()) {
@@ -238,7 +238,7 @@ public class MirthLauncher {
         FileFilter extensionFileFilter = new NameFileFilter(new String[] { "plugin.xml",
                 "source.xml", "destination.xml" }, IOCase.INSENSITIVE);
         FileFilter directoryFilter = FileFilterUtils.directoryFileFilter();
-        File extensionPath = new File(EXTENSIONS_DIR);
+        File extensionPath = new File(MirthPropertiesExtensions.getMirthHome(), EXTENSIONS_DIR);
 
         ExtensionStatuses extensionStatuses = ExtensionStatuses.getInstance();
 

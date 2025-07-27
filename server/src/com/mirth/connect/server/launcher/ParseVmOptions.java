@@ -11,7 +11,7 @@ import java.util.List;
 import java.nio.file.StandardOpenOption;
 
 public class ParseVmOptions {
-    private static final String INITIAL_VMOPTIONS_PATH = "./oieserver.vmoptions";
+    private static final String INITIAL_VMOPTIONS_PATH = "oieserver.vmoptions";
 
     public static void main(String[] args) {
         // args[0] == source file
@@ -19,7 +19,7 @@ public class ParseVmOptions {
         String sourceFile;
         String destinationFile;
         if (args.length == 0) {
-            sourceFile = INITIAL_VMOPTIONS_PATH;
+            sourceFile = null;
             try {
                 destinationFile = getLaunchArgsPath();
             } catch (IOException e) {
@@ -37,7 +37,7 @@ public class ParseVmOptions {
         }
 
         try {
-            if (update(sourceFile, destinationFile)) {
+            if (update(sourceFile, destinationFile, false)) {
                 System.err.println("VM options file updated.");
                 System.exit(75);
             } else {
@@ -54,19 +54,27 @@ public class ParseVmOptions {
     }
 
     public static boolean update() throws VmOptionsParseException, IOException {
-        return update(INITIAL_VMOPTIONS_PATH, getLaunchArgsPath());
+        return update(INITIAL_VMOPTIONS_PATH, getLaunchArgsPath(), false);
     }
 
-    public static boolean update(String sourceFile, String destinationFile) throws VmOptionsParseException, IOException {
+    public static boolean update(String sourceFile, String destinationFile, boolean useAbsolutePaths) throws VmOptionsParseException, IOException {
+        if (sourceFile == null) {
+            sourceFile = INITIAL_VMOPTIONS_PATH;
+        }
+        Path basePath = Paths.get(MirthPropertiesExtensions.getMirthHome());
+        
         // Calculate
         ParsedVmOptions parsedOptions = new ParsedVmOptions();
+        if (useAbsolutePaths) {
+            sourceFile = new File(basePath.toFile(), sourceFile).getAbsolutePath();
+        }
         parsedOptions.addFile(sourceFile);
         List<String> result = parsedOptions.getResultantArgs();
 
         // Reconcile
         List<String> existing;
         try {
-            existing = Files.readAllLines(Paths.get(destinationFile));
+            existing = Files.readAllLines(basePath.resolve(destinationFile));
         } catch (IOException e) {
             existing = Collections.emptyList();
         }
@@ -75,7 +83,7 @@ public class ParseVmOptions {
         }
 
         // Update
-        Files.write(Paths.get(destinationFile), result, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        Files.write(basePath.resolve(destinationFile), result, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         return true; // File was updated
     }
 

@@ -384,7 +384,7 @@ public class MirthWebServer extends Server {
 
     private ServerConnector createSSLConnector(String name, PropertiesConfiguration mirthProperties) throws Exception {
         KeyStore keyStore = KeyStore.getInstance(mirthProperties.getString("keystore.type", "JCEKS"));
-        FileInputStream is = new FileInputStream(new File(mirthProperties.getString("keystore.path")));
+        FileInputStream is = new FileInputStream(new File(MirthHome.getMirthHome(), mirthProperties.getString("keystore.path")));
         try {
             keyStore.load(is, mirthProperties.getString("keystore.storepass").toCharArray());
         } finally {

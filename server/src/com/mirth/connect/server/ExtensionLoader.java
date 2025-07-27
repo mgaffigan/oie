@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.net.URI;
 
 import com.mirth.connect.client.core.BrandingConstants;
 import org.apache.commons.configuration2.PropertiesConfiguration;
@@ -231,7 +232,12 @@ public class ExtensionLoader {
         if (ClassPathResource.getResourceURI("extensions") != null) {
             return ClassPathResource.getResourceURI("extensions").getPath() + File.separator;
         } else {
-            return new File(ClassPathResource.getResourceURI("mirth.properties")).getParentFile().getParent() + File.separator + "extensions" + File.separator;
+            URI classpathUri = ClassPathResource.getResourceURI("mirth.properties");
+            if (classpathUri != null) {
+                return new File(classpathUri).getParentFile().getAbsolutePath() + File.separator + "extensions" + File.separator;
+            } else {
+                return MirthHome.getMirthHome() + File.separator + "extensions" + File.separator;
+            }
         }
     }
 

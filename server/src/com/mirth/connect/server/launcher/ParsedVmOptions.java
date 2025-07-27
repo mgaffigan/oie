@@ -1,7 +1,11 @@
 package com.mirth.connect.server.launcher;
 
 import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -55,25 +59,24 @@ public class ParsedVmOptions {
         parsedFiles.add(filepath);
 
         // Get the directory of the filepath to resolve relative includes
-        String basePath = Paths.get(filepath).getParent().toString();
+        File file = new File(filepath);
+        Path basePath = Paths.get(file.getParent() == null ? "" : file.getParent());
 
-        List<String> lines;
-        try {
-            lines = Files.readAllLines(Paths.get(filepath));
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                try {
+                    addOption(line, basePath);
+                } catch (Exception e) {
+                    throw new VmOptionsParseException("Error parsing line in " + filepath + ": " + line, e);
+                }
+            }
         } catch (IOException e) {
             throw new VmOptionsParseException("Failed to read file: " + filepath, e);
         }
-
-        for (String line : lines) {
-            try {
-                addOption(line, basePath);
-            } catch (Exception e) {
-                throw new VmOptionsParseException("Error parsing line in " + filepath + ": " + line, e);
-            }
-        }
     }
 
-    private void addOption(String line, String basePath) throws VmOptionsParseException {
+    private void addOption(String line, Path basePath) throws VmOptionsParseException {
         line = line.trim();
         if (line.isEmpty() || line.startsWith("#")) {
             return;
@@ -86,8 +89,7 @@ public class ParsedVmOptions {
 
         switch (first) {
             case "-include-options":
-                rest = Paths.get(basePath, substituteEnvVars(rest)).toString();
-                addFile(rest);
+                addFile(basePath.resolve(Paths.get(substituteEnvVars(rest))).toString());
                 break;
             case "-java-cmd":
                 throw new VmOptionsParseException("-java-cmd is not supported");
@@ -96,19 +98,19 @@ public class ParsedVmOptions {
                     throw new VmOptionsParseException("Missing classpath value");
                 }
                 classpath.clear();
-                classpath.add(substituteEnvVars(rest));
+                classpath.add(basePath.resolve(Paths.get(substituteEnvVars(rest))).toString());
                 break;
             case "-classpath/a":
                 if (rest.isEmpty()) {
                     throw new VmOptionsParseException("Missing classpath value");
                 }
-                classpath.add(substituteEnvVars(rest));
+                classpath.add(basePath.resolve(Paths.get(substituteEnvVars(rest))).toString());
                 break;
             case "-classpath/p":
                 if (rest.isEmpty()) {
                     throw new VmOptionsParseException("Missing classpath value");
                 }
-                classpath.add(0, substituteEnvVars(rest));
+                classpath.add(0, basePath.resolve(Paths.get(substituteEnvVars(rest))).toString());
                 break;
             default:
                 vmOptions.add(substituteEnvVars(line));
