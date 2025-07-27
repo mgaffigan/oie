@@ -59,9 +59,9 @@ public class ParseVmOptions {
 
     public static boolean update(String sourceFile, String destinationFile) throws VmOptionsParseException, IOException {
         // Calculate
-        var parsedOptions = new ParsedVmOptions();
+        ParsedVmOptions parsedOptions = new ParsedVmOptions();
         parsedOptions.addFile(sourceFile);
-        var result = parsedOptions.getResultantArgs();
+        List<String> result = parsedOptions.getResultantArgs();
 
         // Reconcile
         List<String> existing;
@@ -80,9 +80,9 @@ public class ParseVmOptions {
     }
 
     private static String getLaunchArgsPath() throws IOException {
-        var properties = MirthPropertiesExtensions.getMirthProperties();
-        var appDataDir = new File(MirthPropertiesExtensions.getAppdataDir(properties));
-        
+        Properties properties = MirthPropertiesExtensions.getMirthProperties();
+        File appDataDir = new File(MirthPropertiesExtensions.getAppdataDir(properties));
+
         // Create appData directory if it does not exist
         if (!appDataDir.exists()) {
             if (!appDataDir.mkdirs()) {

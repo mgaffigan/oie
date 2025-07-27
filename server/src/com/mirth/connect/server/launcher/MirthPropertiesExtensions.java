@@ -10,8 +10,8 @@ public class MirthPropertiesExtensions {
     private static final String MIRTH_PROPERTIES_FILE = "./conf/mirth.properties";
 
     public static Properties getMirthProperties() throws IOException {
-        var mirthProperties = new Properties();
-        try (var inputStream = new FileInputStream(new File(MIRTH_PROPERTIES_FILE))) {
+        Properties mirthProperties = new Properties();
+        try (FileInputStream inputStream = new FileInputStream(new File(MIRTH_PROPERTIES_FILE))) {
             mirthProperties.load(inputStream);
         }
         return mirthProperties;

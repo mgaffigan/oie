@@ -30,10 +30,14 @@ public class ParsedVmOptions {
             return s;
         }
 
-        return envVariableRegex.matcher(s).replaceAll(matchResult -> {
-            String envValue = System.getenv(matchResult.group(1));
-            return Matcher.quoteReplacement(Objects.requireNonNullElse(envValue, ""));
-        });
+        Matcher matcher = envVariableRegex.matcher(s);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            String envValue = System.getenv(matcher.group(1));
+            matcher.appendReplacement(sb, Matcher.quoteReplacement(envValue == null ? "" : envValue));
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
     }
 
     /**
