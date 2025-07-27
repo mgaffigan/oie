@@ -1146,8 +1146,9 @@
 		<!-- Cache launch arguments -->
 		<java classpath="${setup}/${mirth-launcher.jar}" classname="com.mirth.connect.server.launcher.ParseVmOptions"
 			fork="true" dir="${setup}" resultproperty="parsevmoptions.result" failonerror="false">
-			<arg value="${setup}/oieserver.vmoptions" />
-			<arg value="${setup}/appdata/launch.args" />
+			<!-- These must be relative paths (otherwise the absolute paths will be in launch.args) -->
+			<arg value="oieserver.vmoptions" />
+			<arg value="appdata/launch.args" />
 		</java>
 		<!-- 75 = Updated, 0 = No changes, other = error -->
 		<if>
