@@ -3,6 +3,10 @@
 
 -classpath/p mirth-server-launcher.jar
 
+# Include JNA for NT Service launcher
+-classpath/a server-lib/jna-4.5.2.jar
+-classpath/a server-lib/jna-platform-4.5.2.jar
+
 -include-options conf/base_includes.vmoptions
 
 # Comment out the following line if you are running on Java 8
