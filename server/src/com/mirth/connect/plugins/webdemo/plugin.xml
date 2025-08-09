@@ -1,0 +1,16 @@
+<pluginMetaData path="webdemo">
+	<name>Web Demo</name>
+	<author>OIE</author>
+	<pluginVersion>@mirthversion</pluginVersion>
+	<mirthVersion>4.5.2</mirthVersion>
+	<url>https://openintegrationengine.org</url>
+	<description>Proof-of-concept Web Demo tab and static page.</description>
+	<serverClasses>
+		<string>com.mirth.connect.plugins.webdemo.WebDemoService</string>
+	</serverClasses>
+	<clientClasses>
+		<string>com.mirth.connect.plugins.webdemo.WebDemoClient</string>
+	</clientClasses>
+	<library type="CLIENT" path="webdemo-client.jar" />
+	<library type="SERVER" path="webdemo-server.jar" />
+</pluginMetaData>
