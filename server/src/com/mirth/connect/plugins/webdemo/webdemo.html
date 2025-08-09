@@ -20,26 +20,209 @@
         -webkit-tap-highlight-color: transparent;
         overflow: hidden; /* avoid scrollbars/edges for small content */
       }
-      h1 {
-        margin: 0 0 6px 0;
+      .container { padding: 6px; }
+      .section { margin: 0 0 16px 0; }
+      .section-title { position: relative; margin: 0 0 6px 0; line-height: 1; }
+      .section-title::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; border-top: 1px solid #B5B5B5; }
+  .section-title .section-text { position: relative; z-index: 1; background: white; padding-right: 6px; font-weight: bold; color: #404040; }
+      .form-grid {
+        display: grid;
+        grid-template-columns: 100px 1fr;
+        gap: 6px 8px;
+        align-items: baseline; /* align text baselines across columns */
+      }
+  /* Limit schedule type dropdown width */
+  #sched-type { width: 100px; max-width: 100px; }
+      label { color: #000; text-align: right; }
+      input[type="text"], input[type="number"], select, textarea {
+        font-family: inherit;
         font-size: 11px;
-        font-weight: bold;
-        color: #000;
+        padding: 2px 4px;
+        border: 1px solid #B5B5B5;
+        border-radius: 2px;
+        background: #fff;
+        box-sizing: border-box;
       }
-      .note {
-        margin-top: 6px;
-        color: #666;
+      input[disabled], select[disabled], textarea[disabled] {
+        background: #F5F5F5;
+  color: #AAAAAA;
       }
-      .container {
-        padding: 12px;
+  textarea { width: 100%; min-height: 120px; resize: none; }
+  /* File Pattern shorter and label top-aligned */
+  label[for="file-pattern"] { align-self: start; }
+  #file-pattern { height: 60px; min-height: 60px; }
+      .inline {
+        display: inline-flex;
+        gap: 10px;
+        align-items: baseline; /* line up radio/checkbox label text to baseline */
+      }
+      .inline > label { display: inline-flex; align-items: baseline; gap: 4px; }
+      input[type="radio"], input[type="checkbox"] { margin: 0; }
+      .disabled-block { pointer-events: none; }
+  .dim { color: #AAAAAA; }
+      .status-grid {
+        display: grid;
+        grid-template-columns: 100px 1fr;
+        gap: 4px 8px;
+      }
+  /* Right-align the label column in Status */
+  .status-grid > div:nth-child(odd) { text-align: right; }
+      .status-green { color: #006400; }
+      .varlist {
+        border: 1px solid #B5B5B5;
+        background: #fff;
+        padding: 6px;
+        height: 100%;
+        min-height: 0;
+  box-sizing: border-box;
+        overflow: auto;
+        color: #AAAAAA; /* disabled look */
+      }
+      .muted { color: #666; }
+      .archive-layout { display: grid; grid-template-columns: 1fr 220px; gap: 8px 12px; align-items: stretch; }
+      .archive-layout > div:last-child { align-self: stretch; }
+      input[type=radio] {
+        -webkit-transform: scale(0.8) translate(0, 6px); /* Chrome, Safari, Opera */
+        margin-top: -6px;
       }
     </style>
   </head>
   <body>
     <div class="container" role="presentation" aria-hidden="true">
-      <h1>Hello from the OIE Web Demo</h1>
-      <p>This static page is being served directly by the OIE server from the public_html/webdemo directory.</p>
-      <p class="note">(Proof of Concept)</p>
+      <!-- Status -->
+      <div class="section">
+        <div class="section-title"><span class="section-text">- Status</span></div>
+        <div class="status-grid">
+          <div>Current State:</div>
+          <div class="status-green">Not running</div>
+          <div>Current Process:</div>
+          <div>-</div>
+          <div>Last Process:</div>
+          <div>-</div>
+          <div>Next Process:</div>
+          <div>Not scheduled</div>
+        </div>
+      </div>
+
+      <!-- Schedule -->
+      <div class="section">
+        <div class="section-title"><span class="section-text">- Schedule</span></div>
+        <div class="form-grid">
+          <label for="sched-enable">Enable:</label>
+          <div id="sched-enable" class="inline">
+            <label><input type="radio" name="enable" value="yes"> Yes</label>
+            <label><input type="radio" name="enable" value="no" checked> No</label>
+          </div>
+
+          <label for="sched-type" class="dim">Schedule Type:</label>
+          <select id="sched-type" disabled>
+            <option selected>Interval</option>
+            <option>Cron</option>
+          </select>
+
+          <label for="interval" class="dim">Interval:</label>
+          <div class="inline">
+            <input id="interval" type="number" value="1" min="1" style="width:70px" disabled>
+            <select disabled>
+              <option selected>hours</option>
+              <option>minutes</option>
+              <option>days</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Prune Settings -->
+      <div class="section">
+        <div class="section-title"><span class="section-text">- Prune Settings</span></div>
+        <div class="form-grid">
+          <label for="block-size">Block Size:</label>
+          <input id="block-size" type="number" value="1000" min="1" style="width:90px">
+
+          <label>Prune Events:</label>
+          <div class="inline">
+            <label><input type="radio" name="pruneEvents" value="yes"> Yes</label>
+            <label><input type="radio" name="pruneEvents" value="no" checked> No</label>
+          </div>
+
+          <label for="prune-age" class="dim">Prune Event Age:</label>
+          <div class="inline">
+            <input id="prune-age" type="number" min="0" style="width:90px" disabled>
+            <span class="dim">days</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Archive Settings -->
+      <div class="section">
+        <div class="section-title"><span class="section-text">- Archive Settings</span></div>
+
+        <!-- First row: Enable Archiving (full width) -->
+        <div class="form-grid" style="margin-bottom: 8px;">
+          <label>Enable Archiving:</label>
+          <div class="inline">
+            <label><input type="radio" name="archiving" value="yes"> Yes</label>
+            <label><input type="radio" name="archiving" value="no" checked> No</label>
+          </div>
+        </div>
+
+        <!-- Remaining settings + Variables sidebar -->
+        <div class="archive-layout">
+          <div>
+            <div class="form-grid">
+              <label for="arch-block" class="dim">Archiver Block Size:</label>
+              <input id="arch-block" type="number" value="50" min="1" style="width:90px" disabled>
+
+              <label for="content" class="dim">Content:</label>
+              <div class="inline">
+                <select id="content" disabled>
+                  <option selected>XML serialized message</option>
+                  <option>Raw message</option>
+                </select>
+                <label class="dim"><input type="checkbox" disabled> Encrypt</label>
+                <label class="dim"><input type="checkbox" disabled> Include Attachments</label>
+              </div>
+
+              <label for="compression" class="dim">Compression:</label>
+              <select id="compression" disabled>
+                <option selected>none</option>
+                <option>zip</option>
+              </select>
+
+              <label class="dim">Password Protect:</label>
+              <div class="inline dim disabled-block" aria-disabled="true">
+                <label class="dim"><input type="radio" name="pwprot" value="yes" disabled> Yes</label>
+                <label class="dim"><input type="radio" name="pwprot" value="no" checked disabled> No</label>
+                <select disabled>
+                  <option>AES-256</option>
+                </select>
+              </div>
+
+              <label for="password" class="dim">Password:</label>
+              <input id="password" type="text" disabled style="width:220px">
+
+              <label for="root-path" class="dim">Root Path:</label>
+              <input id="root-path" type="text" disabled style="width:320px">
+
+              <label for="file-pattern" class="dim">File Pattern:</label>
+              <textarea id="file-pattern" disabled></textarea>
+            </div>
+          </div>
+          <div>
+            <div class="varlist disabled-block" aria-hidden="true" aria-disabled="true">
+              Message ID<br>
+              Server ID<br>
+              Channel ID<br>
+              Original File Name<br>
+              Formatted Message Date<br>
+              Formatted Current Date<br>
+              Timestamp<br>
+              Unique ID<br>
+              Count
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </body>
   </html>
