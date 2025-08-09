@@ -4,14 +4,42 @@
     <meta charset="UTF-8" />
     <title>OIE Web Demo</title>
     <style>
-      body { font-family: Arial, sans-serif; margin: 2rem; background:#fafafa; }
-      h1 { color:#444; }
-      .note { margin-top:1rem; color:#666; }
+      html, body {
+        margin: 0;
+        padding: 0;
+        background: white; /* blend with host panel */
+        color: #000; /* match UIConstants.TITLE_TEXT_COLOR */
+        font-family: Tahoma, "Segoe UI", Arial, Helvetica, sans-serif;
+        font-size: 11px; /* match UIConstants TEXTFIELD font size */
+        line-height: 1.4;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none; /* disable text highlighting */
+        -webkit-touch-callout: none;
+        -webkit-tap-highlight-color: transparent;
+        overflow: hidden; /* avoid scrollbars/edges for small content */
+      }
+      h1 {
+        margin: 0 0 6px 0;
+        font-size: 11px;
+        font-weight: bold;
+        color: #000;
+      }
+      .note {
+        margin-top: 6px;
+        color: #666;
+      }
+      .container {
+        padding: 12px;
+      }
     </style>
   </head>
   <body>
-    <h1>Hello from the OIE Web Demo!</h1>
-    <p>This static page is being served directly by the OIE server from the public_html/webdemo directory.</p>
-    <p class="note">(Proof of Concept)</p>
+    <div class="container" role="presentation" aria-hidden="true">
+      <h1>Hello from the OIE Web Demo</h1>
+      <p>This static page is being served directly by the OIE server from the public_html/webdemo directory.</p>
+      <p class="note">(Proof of Concept)</p>
+    </div>
   </body>
-</html>
+  </html>

@@ -2,19 +2,21 @@ package com.mirth.connect.plugins.webdemo;
 
 import com.mirth.connect.client.ui.AbstractSettingsPanel;
 import com.mirth.connect.plugins.SettingsPanelPlugin;
+import com.mirth.connect.plugins.webdemo.net.OieServerURLStreamHandlerFactory;
+
+import java.net.URL;
 
 public class WebDemoClient extends SettingsPanelPlugin {
 
-    private AbstractSettingsPanel panel;
-
     public WebDemoClient(String name) {
         super(name);
-        panel = new WebDemoPanel("Web Demo", this);
+        
+        URL.setURLStreamHandlerFactory(new OieServerURLStreamHandlerFactory());
     }
 
     @Override
     public AbstractSettingsPanel getSettingsPanel() {
-        return panel;
+        return new WebDemoPanel();
     }
 
     @Override

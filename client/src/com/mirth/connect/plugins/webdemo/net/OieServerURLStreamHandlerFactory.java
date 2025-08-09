@@ -15,8 +15,9 @@ import java.util.Arrays;
 
 /**
  * URLStreamHandlerFactory for the custom scheme oieserver:/// which maps to
- * https://localhost:8443/ and configures JSSE per MirthSSLUtil/PlatformUI.
- * For POC, a trust-all manager is used, scoped to these connections only.
+ * the Administrator's configured server URL (PlatformUI.SERVER_URL) and
+ * configures JSSE per MirthSSLUtil/PlatformUI. For POC, a trust-all manager is
+ * used, scoped to these connections only.
  */
 public class OieServerURLStreamHandlerFactory implements URLStreamHandlerFactory {
 
@@ -44,8 +45,19 @@ public class OieServerURLStreamHandlerFactory implements URLStreamHandlerFactory
                 if (ref != null && !ref.isEmpty()) {
                     file.append('#').append(ref);
                 }
-                URL httpsUrl = new URL("https", "localhost", 8443, file.toString());
-                URLConnection conn = httpsUrl.openConnection();
+                // Resolve against the actual server URL captured at login
+                String base = PlatformUI.SERVER_URL;
+                if (base == null || base.isEmpty()) {
+                    throw new IOException("PlatformUI.SERVER_URL is not set; cannot resolve oieserver URL");
+                }
+                URL baseUrl;
+                try {
+                    baseUrl = new URL(base);
+                } catch (MalformedURLException e) {
+                    throw new IOException("Invalid PlatformUI.SERVER_URL: " + base, e);
+                }
+                URL targetUrl = new URL(baseUrl, file.toString());
+                URLConnection conn = targetUrl.openConnection();
                 if (conn instanceof HttpsURLConnection) {
                     HttpsURLConnection https = (HttpsURLConnection) conn;
                     https.setSSLSocketFactory(buildSocketFactory());
