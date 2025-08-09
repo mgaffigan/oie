@@ -1,5 +1,6 @@
 package com.mirth.connect.plugins.webdemo;
 
+import com.mirth.connect.client.core.api.util.OperationUtil;
 import com.mirth.connect.model.ExtensionPermission;
 import com.mirth.connect.plugins.ServicePlugin;
 import org.apache.logging.log4j.LogManager;
@@ -17,7 +18,8 @@ import java.util.Properties;
  */
 public class WebDemoService implements ServicePlugin {
 
-    public static final String PLUGIN_POINT = "Web Demo";
+    public static final String PLUGIN_POINT = WebDemoServletInterface.PLUGIN_POINT;
+    public static final String PERMISSION_USE = WebDemoServletInterface.PERMISSION_USE;
     private final Logger logger = LogManager.getLogger(getClass());
 
     @Override
@@ -57,8 +59,11 @@ public class WebDemoService implements ServicePlugin {
 
     @Override
     public ExtensionPermission[] getExtensionPermissions() {
-        // No permissions (view/save) required; tab is informational only
-        return new ExtensionPermission[0];
+    ExtensionPermission usePermission = new ExtensionPermission(PLUGIN_POINT, PERMISSION_USE,
+        "Allows using the Web Demo API endpoints.",
+        OperationUtil.getOperationNamesForPermission(PERMISSION_USE, WebDemoServletInterface.class),
+        new String[] {});
+    return new ExtensionPermission[] { usePermission };
     }
 
     private void installStaticPage() throws IOException {

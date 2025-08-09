@@ -13,4 +13,6 @@
 	</clientClasses>
 	<library type="CLIENT" path="webdemo-client.jar" />
 	<library type="SERVER" path="webdemo-server.jar" />
+	<apiProvider type="SERVLET_INTERFACE" name="com.mirth.connect.plugins.webdemo.WebDemoServletInterface"/>
+	<apiProvider type="SERVER_CLASS" name="com.mirth.connect.plugins.webdemo.WebDemoServlet"/>
 </pluginMetaData>
