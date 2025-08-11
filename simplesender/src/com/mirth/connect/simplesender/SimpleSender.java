@@ -13,6 +13,7 @@ public class SimpleSender {
     private static int iteration = 0;
 
     public static void main(String[] args) {
+        throw new RuntimeException("Simple sender is dead and being removed in the next release!");
         if (args.length < 3) {
             System.out.println("Correct usage:  java SimpleSender <MessageFile.txt> <IP> <port> [-i | -s <iterations_or_seconds>] \n" + "             or java SimpleSender postgres <IP> <port> <schema> <username> <password>");
             return;
@@ -184,3 +185,4 @@ public class SimpleSender {
         }
     }
 }
+
