@@ -170,7 +170,7 @@ public class Client implements UserServletInterface, ConfigurationServletInterfa
         }
         URI addressURI = new URI(address);
 
-        serverConnection = new ServerConnection(timeout, httpsProtocols, httpsCipherSuites, StringUtils.equalsIgnoreCase(addressURI.getScheme(), "http"));
+        serverConnection = new ServerConnection(timeout, httpsProtocols, httpsCipherSuites, StringUtils.equalsIgnoreCase(addressURI.getScheme(), "http"), addressURI.toString());
 
         ClientConfig config = new ClientConfig().connectorProvider(new ConnectorProvider() {
             @Override

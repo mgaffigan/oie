@@ -11,6 +11,8 @@ import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.concurrent.Worker;
+import netscape.javascript.JSObject;
 
 /**
  * Minimal settings panel that embeds a JavaFX WebView pointing to the static demo page
@@ -34,6 +36,7 @@ public class WebDemoPanel extends AbstractSettingsPanel {
         Platform.runLater(() -> {
             WebView webView = new WebView();
             webEngine = webView.getEngine();
+            webEngine.setJavaScriptEnabled(true);
             jfxPanel.setScene(new Scene(webView));
             webEngine.load("oieserver:///webdemo/index.html");
         });

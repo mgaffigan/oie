@@ -88,6 +88,69 @@
     </style>
   </head>
   <body>
+    <script>
+      (function () {
+        function setValue(val) {
+          // Prefer a text input if present; fall back to #root-path even if disabled so it shows
+          var input = document.querySelector('input[type="text"]#root-path, input[type="text"], textarea');
+          if (input) {
+            input.value = val;
+          } else {
+            // Create a small textbox if none exist
+            var i = document.createElement('input');
+            i.type = 'text';
+            i.value = val;
+            document.body.appendChild(i);
+          }
+        }
+
+        function parseResponse(text) {
+          var val = text;
+          try {
+            var j = JSON.parse(text);
+            if (typeof j === 'string') {
+              val = j;
+            } else if (j && j.status) {
+              val = j.status;
+            } else {
+              val = JSON.stringify(j);
+            }
+          } catch (e) {
+            // not JSON, keep raw text
+          }
+          return val;
+        }
+
+        function requestPing() {
+          var url = 'oieserver:///api/extensions/webdemo/ping';
+          if (window.fetch) {
+            fetch(url, { method: 'GET', headers: { 'Accept': 'application/json' } })
+              .then(function (r) { return r.text(); })
+              .then(function (t) { setValue(parseResponse(t)); })
+              .catch(function (e) { if (window.console) console.error('ping failed', e); });
+          } else {
+            // Fallback to XHR for older WebKit
+            try {
+              var xhr = new XMLHttpRequest();
+              xhr.open('GET', url, true);
+              xhr.setRequestHeader('Accept', 'application/json');
+              xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                  try { setValue(parseResponse(xhr.responseText)); } catch (e) {}
+                }
+              };
+              xhr.send();
+            } catch (e) { if (window.console) console.error('ping exception', e); }
+          }
+        }
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', requestPing);
+        } else {
+          requestPing();
+        }
+      })();
+    </script>
     <div class="container" role="presentation" aria-hidden="true">
       <!-- Status -->
       <div class="section">

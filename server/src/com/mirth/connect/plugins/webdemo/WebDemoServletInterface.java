@@ -40,7 +40,7 @@ public interface WebDemoServletInterface extends BaseServletInterface {
             @Content(mediaType = MediaType.APPLICATION_JSON, examples = {
                     @ExampleObject(name = "pongJson", value = "{\n  \"status\": \"pong\"\n}") }) })
     @MirthOperation(name = "ping", display = "Ping Web Demo", permission = PERMISSION_USE, type = ExecuteType.ASYNC, auditable = false)
-    public Map<String, String> ping() throws ClientException;
+    public String ping() throws ClientException;
 
     @GET
     @Path("/echo")

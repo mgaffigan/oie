@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -23,7 +24,10 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
@@ -102,6 +106,7 @@ public class ServerConnection implements Connector {
     private SocketConfig socketConfig;
     private RequestConfig requestConfig;
     private CloseableHttpClient client;
+    private SSLConnectionSocketFactory sslConnectionSocketFactory;
     private final Operation currentOp = new Operation(null, null, null, false);
     private HttpRequestBase syncRequestBase;
     private HttpRequestBase abortPendingRequestBase;
@@ -110,13 +115,18 @@ public class ServerConnection implements Connector {
     private ExecutorService abortExecutor = Executors.newSingleThreadExecutor();
     private IdleConnectionMonitor idleConnectionMonitor;
     private ConnectionKeepAliveStrategy keepAliveStrategy;
+    private SSLContext sslContext;
 
     public ServerConnection(int timeout, String[] httpsProtocols, String[] httpsCipherSuites) {
-        this(timeout, httpsProtocols, httpsCipherSuites, false);
+        this(timeout, httpsProtocols, httpsCipherSuites, false, null);
     }
 
     public ServerConnection(int timeout, String[] httpsProtocols, String[] httpsCipherSuites, boolean allowHTTP) {
-        SSLContext sslContext = null;
+        this(timeout, httpsProtocols, httpsCipherSuites, allowHTTP, null);
+    }
+
+    public ServerConnection(int timeout, String[] httpsProtocols, String[] httpsCipherSuites, boolean allowHTTP, String baseUrl) {
+        sslContext = null;
         try {
             sslContext = SSLContexts.custom().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build();
         } catch (Exception e) {
@@ -125,7 +135,7 @@ public class ServerConnection implements Connector {
 
         String[] enabledProtocols = MirthSSLUtil.getEnabledHttpsProtocols(httpsProtocols);
         String[] enabledCipherSuites = MirthSSLUtil.getEnabledHttpsCipherSuites(httpsCipherSuites);
-        SSLConnectionSocketFactory sslConnectionSocketFactory = new SSLConnectionSocketFactory(sslContext, enabledProtocols, enabledCipherSuites, NoopHostnameVerifier.INSTANCE);
+        sslConnectionSocketFactory = new SSLConnectionSocketFactory(sslContext, enabledProtocols, enabledCipherSuites, NoopHostnameVerifier.INSTANCE);
         RegistryBuilder<ConnectionSocketFactory> builder = RegistryBuilder.<ConnectionSocketFactory> create().register("https", sslConnectionSocketFactory);
         if (allowHTTP) {
             builder.register("http", PlainConnectionSocketFactory.getSocketFactory());
@@ -138,6 +148,114 @@ public class ServerConnection implements Connector {
         keepAliveStrategy = new CustomKeepAliveStrategy();
 
         createClient();
+
+    java.net.URL.setURLStreamHandlerFactory(new ServerURLStreamHandlerFactory(baseUrl));
+    }
+
+    /** Wrapper that enforces enabled protocols/ciphers like our Apache client does. */
+    private static class TlsConfiguringSSLSocketFactory extends SSLSocketFactory {
+        private final SSLSocketFactory delegate;
+        private final String[] protos;
+        private final String[] ciphers;
+
+        TlsConfiguringSSLSocketFactory(SSLSocketFactory delegate) {
+            this.delegate = delegate;
+            this.protos = MirthSSLUtil.getEnabledHttpsProtocols(null);
+            this.ciphers = MirthSSLUtil.getEnabledHttpsCipherSuites(null);
+        }
+
+        private SSLSocket tune(SSLSocket s) {
+            try {
+                if (protos != null && protos.length > 0) {
+                    String[] supported = s.getSupportedProtocols();
+                    java.util.List<String> supportedList = java.util.Arrays.asList(supported);
+                    java.util.List<String> enabled = new java.util.ArrayList<String>();
+                    for (String p : protos) if (supportedList.contains(p)) enabled.add(p);
+                    if (!enabled.isEmpty()) s.setEnabledProtocols(enabled.toArray(new String[0]));
+                }
+                if (ciphers != null && ciphers.length > 0) {
+                    String[] supported = s.getSupportedCipherSuites();
+                    java.util.List<String> supportedList = java.util.Arrays.asList(supported);
+                    java.util.List<String> enabled = new java.util.ArrayList<String>();
+                    for (String c : ciphers) if (supportedList.contains(c)) enabled.add(c);
+                    if (!enabled.isEmpty()) s.setEnabledCipherSuites(enabled.toArray(new String[0]));
+                }
+            } catch (Exception ignore) {}
+            return s;
+        }
+
+        @Override public String[] getDefaultCipherSuites() { return delegate.getDefaultCipherSuites(); }
+        @Override public String[] getSupportedCipherSuites() { return delegate.getSupportedCipherSuites(); }
+        @Override public java.net.Socket createSocket(java.net.Socket s, String host, int port, boolean autoClose) throws java.io.IOException { java.net.Socket sock = delegate.createSocket(s, host, port, autoClose); return sock instanceof SSLSocket ? tune((SSLSocket) sock) : sock; }
+        @Override public java.net.Socket createSocket(String host, int port) throws java.io.IOException { java.net.Socket sock = delegate.createSocket(host, port); return sock instanceof SSLSocket ? tune((SSLSocket) sock) : sock; }
+        @Override public java.net.Socket createSocket(String host, int port, java.net.InetAddress localHost, int localPort) throws java.io.IOException { java.net.Socket sock = delegate.createSocket(host, port, localHost, localPort); return sock instanceof SSLSocket ? tune((SSLSocket) sock) : sock; }
+        @Override public java.net.Socket createSocket(java.net.InetAddress host, int port) throws java.io.IOException { java.net.Socket sock = delegate.createSocket(host, port); return sock instanceof SSLSocket ? tune((SSLSocket) sock) : sock; }
+        @Override public java.net.Socket createSocket(java.net.InetAddress address, int port, java.net.InetAddress localAddress, int localPort) throws java.io.IOException { java.net.Socket sock = delegate.createSocket(address, port, localAddress, localPort); return sock instanceof SSLSocket ? tune((SSLSocket) sock) : sock; }
+    }
+
+    /**
+     * A URLStreamHandlerFactory that handles the custom scheme oieserver:/// by resolving against
+     * a base server URL and applying the same SSL and cookie configuration as this ServerConnection.
+     */
+    public class ServerURLStreamHandlerFactory implements java.net.URLStreamHandlerFactory {
+        private final String baseUrl;
+
+        public ServerURLStreamHandlerFactory(String baseUrl) {
+            this.baseUrl = baseUrl;
+        }
+
+        @Override
+        public java.net.URLStreamHandler createURLStreamHandler(String protocol) {
+            if ("oieserver".equalsIgnoreCase(protocol)) {
+                return new Handler();
+            }
+            return null;
+        }
+
+        class Handler extends java.net.URLStreamHandler {
+            @Override
+            protected java.net.URLConnection openConnection(java.net.URL u) throws IOException {
+                try {
+                    String path = u.getPath() != null ? u.getPath() : "/";
+                    String query = u.getQuery();
+                    String ref = u.getRef();
+                    StringBuilder file = new StringBuilder(path);
+                    if (query != null && !query.isEmpty()) file.append('?').append(query);
+                    if (ref != null && !ref.isEmpty()) file.append('#').append(ref);
+
+                    if (baseUrl == null || baseUrl.isEmpty()) {
+                        throw new IOException("Base server URL is not set; cannot resolve oieserver URL");
+                    }
+                    java.net.URL base;
+                    try {
+                        base = new java.net.URL(baseUrl);
+                    } catch (java.net.MalformedURLException e) {
+                        throw new IOException("Invalid base server URL: " + baseUrl, e);
+                    }
+                    java.net.URL target = new java.net.URL(base, file.toString());
+                    java.net.URLConnection conn = target.openConnection();
+                    if (conn instanceof HttpsURLConnection) {
+                        HttpsURLConnection https = (HttpsURLConnection) conn;
+                        https.setSSLSocketFactory(new TlsConfiguringSSLSocketFactory(sslContext.getSocketFactory()));
+                        https.setHostnameVerifier(NoopHostnameVerifier.INSTANCE);
+                    }
+                    // Copy cookies from our CookieStore into the request header so the session is maintained
+                    if (cookieStore != null && !cookieStore.getCookies().isEmpty()) {
+                        StringBuilder cookieHeader = new StringBuilder();
+                        for (org.apache.http.cookie.Cookie c : cookieStore.getCookies()) {
+                            if (cookieHeader.length() > 0) cookieHeader.append("; ");
+                            cookieHeader.append(c.getName()).append("=").append(c.getValue());
+                        }
+                        conn.setRequestProperty("Cookie", cookieHeader.toString());
+                    }
+                    conn.setRequestProperty("X-Requested-With", BrandingConstants.CLIENT_CONNECTION_HEADER);
+                    return conn;
+                } catch (Exception e) {
+                    if (e instanceof IOException) throw (IOException) e;
+                    throw new IOException("Failed to open oieserver connection", e);
+                }
+            }
+        }
     }
 
     @Override
