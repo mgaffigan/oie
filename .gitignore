@@ -739,3 +739,6 @@ donkey/donkey-test
 
 # /webadmin/src/com/mirth/connect/webadmin/utils/
 
+
+# Ignore Gradle build output directory
+build
