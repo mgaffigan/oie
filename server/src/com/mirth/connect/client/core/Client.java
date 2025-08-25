@@ -196,7 +196,7 @@ public class Client implements UserServletInterface, ConfigurationServletInterfa
                 try {
                     config.register(Class.forName(apiProviderClass));
                 } catch (Throwable t) {
-                    logger.error("Error registering API provider class: " + apiProviderClass);
+                    logger.error("Error registering API provider class: " + apiProviderClass, t);
                 }
             }
         }
@@ -219,7 +219,7 @@ public class Client implements UserServletInterface, ConfigurationServletInterfa
                         client.register(clazz);
                     }
                 } catch (Throwable t) {
-                    logger.error("Error registering API provider package: " + packageName);
+                    logger.error("Error registering API provider package: " + packageName, t);
                 }
             }
         }
@@ -229,7 +229,7 @@ public class Client implements UserServletInterface, ConfigurationServletInterfa
                 try {
                     client.register(Class.forName(clazz));
                 } catch (Throwable t) {
-                    logger.error("Error registering API provider class: " + clazz);
+                    logger.error("Error registering API provider class: " + clazz, t);
                 }
             }
         }

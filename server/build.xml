@@ -47,6 +47,7 @@
 		<property name="plugins.destinationsetfilter" value="${extensions}/destinationsetfilter" />
 		<property name="plugins.dicomviewer" value="${extensions}/dicomviewer" />
 		<property name="plugins.httpauth" value="${extensions}/httpauth" />
+		<property name="plugins.oidcsupplicant" value="${extensions}/oidcsupplicant" />
 		<property name="plugins.imageviewer" value="${extensions}/imageviewer" />
 		<property name="plugins.javascriptrule" value="${extensions}/javascriptrule" />
 		<property name="plugins.javascriptstep" value="${extensions}/javascriptstep" />
@@ -733,6 +734,24 @@
 		</jar>
 		<jar destfile="${plugins.httpauth}/src/httpauth-userutil-sources.jar" basedir="${src}">
 			<include name="com/mirth/connect/plugins/httpauth/userutil/**" />
+		</jar>
+		
+		<!-- plugins.oidcsupplicant -->
+		<mkdir dir="${plugins.oidcsupplicant}" />
+		<copy todir="${plugins.oidcsupplicant}">
+			<fileset dir="${src}/com/mirth/connect/plugins/oidcsupplicant">
+				<include name="*.xml" />
+			</fileset>
+		</copy>
+		<copy todir="${plugins.oidcsupplicant}/lib" failonerror="false">
+			<fileset dir="${lib.extensions}/oidcsupplicant" />
+		</copy>
+		<jar destfile="${plugins.oidcsupplicant}/oidcsupplicant-shared.jar" basedir="${classes}">
+			<include name="com/mirth/connect/plugins/oidcsupplicant/OidcSupplicantProperties.class" />
+		</jar>
+		<jar destfile="${plugins.oidcsupplicant}/oidcsupplicant-server.jar" basedir="${classes}">
+			<include name="com/mirth/connect/plugins/oidcsupplicant/**" />
+			<exclude name="com/mirth/connect/plugins/oidcsupplicant/OidcSupplicantProperties.class" />
 		</jar>
 
 		<!-- plugins.imageviewer -->

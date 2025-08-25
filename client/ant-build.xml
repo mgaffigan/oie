@@ -47,6 +47,7 @@
 		<property name="plugins.destinationsetfilter" value="${extensions}/destinationsetfilter" />
 		<property name="plugins.dicomviewer" value="${extensions}/dicomviewer" />
 		<property name="plugins.httpauth" value="${extensions}/httpauth" />
+		<property name="plugins.oidcsupplicant" value="${extensions}/oidcsupplicant" />
 		<property name="plugins.imageviewer" value="${extensions}/imageviewer" />
 		<property name="plugins.javascriptrule" value="${extensions}/javascriptrule" />
 		<property name="plugins.javascriptstep" value="${extensions}/javascriptstep" />
@@ -241,6 +242,11 @@
 		<mkdir dir="${plugins.httpauth}" />
 		<jar destfile="${plugins.httpauth}/httpauth-client.jar" basedir="${classes}">
 			<include name="com/mirth/connect/plugins/httpauth/**" />
+		</jar>
+
+		<mkdir dir="${plugins.oidcsupplicant}" />
+		<jar destfile="${plugins.oidcsupplicant}/oidcsupplicant-client.jar" basedir="${classes}">
+			<include name="com/mirth/connect/plugins/oidcsupplicant/**" />
 		</jar>
 
 		<mkdir dir="${plugins.imageviewer}" />

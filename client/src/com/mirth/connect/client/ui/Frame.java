@@ -543,7 +543,7 @@ public class Frame extends JXFrame {
      */
     public void setupFrame(Client mirthClient) throws ClientException {
 
-        LoginPanel login = LoginPanel.getInstance();
+        AbstractLoginPanel login = LoginPanelFactory.getInstance();
 
         // Initialize the send message dialog
         editMessageDialog = new EditMessageDialog();
@@ -1524,7 +1524,7 @@ public class Frame extends JXFrame {
                     }
                     mirthClient.close();
                     this.dispose();
-                    LoginPanel.getInstance().initialize(PlatformUI.SERVER_URL, PlatformUI.CLIENT_VERSION, "", "");
+                    LoginPanelFactory.getInstance().initialize(PlatformUI.SERVER_URL, PlatformUI.CLIENT_VERSION, "", "");
                     return;
                 } else if (t.getCause() != null && t.getCause() instanceof HttpHostConnectException && (StringUtils.contains(t.getCause().getMessage(), "Connection refused") || StringUtils.contains(t.getCause().getMessage(), "Host is down"))) {
                     connectionError = true;
@@ -1542,7 +1542,7 @@ public class Frame extends JXFrame {
                     }
                     mirthClient.close();
                     this.dispose();
-                    LoginPanel.getInstance().initialize(PlatformUI.SERVER_URL, PlatformUI.CLIENT_VERSION, "", "");
+                    LoginPanelFactory.getInstance().initialize(PlatformUI.SERVER_URL, PlatformUI.CLIENT_VERSION, "", "");
                     return;
                 }
             }
@@ -2292,7 +2292,7 @@ public class Frame extends JXFrame {
         this.dispose();
 
         if (!quit) {
-            LoginPanel.getInstance().initialize(PlatformUI.SERVER_URL, PlatformUI.CLIENT_VERSION, "", "");
+            LoginPanelFactory.getInstance().initialize(PlatformUI.SERVER_URL, PlatformUI.CLIENT_VERSION, "", "");
         }
 
         return true;

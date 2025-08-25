@@ -43,4 +43,8 @@ public class LoginStatus implements Serializable {
     public String getUpdatedUsername() {
         return updatedUsername;
     }
+
+    public boolean isSuccess() {
+        return status == Status.SUCCESS || status == Status.SUCCESS_GRACE_PERIOD;
+    }
 }

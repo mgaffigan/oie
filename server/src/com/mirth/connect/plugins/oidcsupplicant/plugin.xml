@@ -1,0 +1,19 @@
+<pluginMetaData path="oidcsupplicant">
+    <name>OIDC Supplicant</name>
+    <author>Open Integration Engine Contributors</author>
+    <pluginVersion>@mirthversion</pluginVersion>
+    <mirthVersion>4.5.2</mirthVersion>
+    <url>https://openintegrationengine.org</url>
+    <description>Provides configuration for OpenID Connect (OIDC) client settings used by an OIDC supplicant.</description>
+    <serverClasses>
+        <string>com.mirth.connect.plugins.oidcsupplicant.OidcSupplicantPlugin</string>
+    </serverClasses>
+    <clientClasses>
+        <string>com.mirth.connect.plugins.oidcsupplicant.OidcSupplicantClient</string>
+    </clientClasses>
+    <library type="CLIENT" path="oidcsupplicant-client.jar" />
+    <library type="SHARED" path="oidcsupplicant-shared.jar" />
+    <library type="SERVER" path="oidcsupplicant-server.jar" />
+    <apiProvider type="SERVLET_INTERFACE" name="com.mirth.connect.plugins.oidcsupplicant.OidcSupplicantServletInterface"/>
+    <apiProvider type="SERVER_CLASS" name="com.mirth.connect.plugins.oidcsupplicant.OidcSupplicantServlet"/>
+</pluginMetaData>

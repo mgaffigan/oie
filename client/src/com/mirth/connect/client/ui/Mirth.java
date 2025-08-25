@@ -9,12 +9,18 @@
 
 package com.mirth.connect.client.ui;
 
+import static com.mirth.connect.client.core.BrandingConstants.CHECK_FOR_NOTIFICATIONS;
+
 import java.awt.Color;
 import java.awt.Toolkit;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.prefs.Preferences;
+import java.util.Map;
+import java.util.Set;
+import java.util.Properties;
+import java.util.HashSet;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -28,6 +34,7 @@ import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.JTextComponent.KeyBinding;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.logging.log4j.Level;
@@ -42,6 +49,12 @@ import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticXPLookAndFeel;
 import com.mirth.connect.client.core.Client;
 import com.mirth.connect.client.core.ClientException;
+import com.mirth.connect.client.core.ConnectServiceUtil;
+import com.mirth.connect.model.LoginStatus;
+import com.mirth.connect.model.PublicServerSettings;
+import com.mirth.connect.model.User;
+import com.mirth.connect.model.converters.ObjectXMLSerializer;
+import com.mirth.connect.util.MirthSSLUtil;
 
 /**
  * The main mirth class. Sets up the login and then authenticates the login information and sets up
@@ -62,7 +75,7 @@ public class Mirth {
         UIManager.put("Tree.closedIcon", UIConstants.CLOSED_ICON);
 
         userPreferences = Preferences.userNodeForPackage(Mirth.class);
-        LoginPanel.getInstance().setStatus("Loading components...");
+        LoginPanelFactory.getInstance().setStatus("Loading components...");
         PlatformUI.MIRTH_FRAME.setupFrame(mirthClient);
 
         boolean maximized;
@@ -122,7 +135,7 @@ public class Mirth {
      * @return quit
      */
     public static boolean quitMac() {
-        return (LoginPanel.getInstance().isVisible() || (PlatformUI.MIRTH_FRAME != null && PlatformUI.MIRTH_FRAME.logout(true)));
+        return PlatformUI.MIRTH_FRAME == null || PlatformUI.MIRTH_FRAME.logout(true);
     }
 
     /**
@@ -259,59 +272,52 @@ public class Mirth {
      *            String[]
      */
     public static void main(String[] args) {
-        String server = "https://localhost:8443";
-        String version = "";
-        String username = "";
-        String password = "";
-        String protocols = "";
-        String cipherSuites = "";
+        CommandLineOptions opts = new CommandLineOptions(args);
 
-        if (args.length > 0) {
-            server = args[0];
+        if (StringUtils.isNotBlank(opts.getProtocols())) {
+            PlatformUI.HTTPS_PROTOCOLS = StringUtils.split(opts.getProtocols(), ',');
         }
-        if (args.length > 1) {
-            version = args[1];
+        if (StringUtils.isNotBlank(opts.getCipherSuites())) {
+            PlatformUI.HTTPS_CIPHER_SUITES = StringUtils.split(opts.getCipherSuites(), ',');
         }
-        if (args.length > 2) {
-            if (StringUtils.equalsIgnoreCase(args[2], "-ssl")) {
-                // <server> <version> -ssl [<protocols> [<ciphersuites> [<username> [<password>]]]]
-                if (args.length > 3) {
-                    protocols = args[3];
-                }
-                if (args.length > 4) {
-                    cipherSuites = args[4];
-                }
-                if (args.length > 5) {
-                    username = args[5];
-                }
-                if (args.length > 6) {
-                    password = args[6];
-                }
-            } else {
-                // <server> <version> <username> [<password> [-ssl [<protocols> [<ciphersuites>]]]]
-                username = args[2];
-                if (args.length > 3) {
-                    password = args[3];
-                }
-                if (args.length > 4 && StringUtils.equalsIgnoreCase(args[4], "-ssl")) {
-                    if (args.length > 5) {
-                        protocols = args[5];
-                    }
-                    if (args.length > 6) {
-                        cipherSuites = args[6];
-                    }
-                }
-            }
-        }
+        PlatformUI.SERVER_URL = opts.getServer();
+        PlatformUI.WEB_LOGIN_URL = opts.getWebLoginUrl();
 
-        if (StringUtils.isNotBlank(protocols)) {
-            PlatformUI.HTTPS_PROTOCOLS = StringUtils.split(protocols, ',');
-        }
-        if (StringUtils.isNotBlank(cipherSuites)) {
-            PlatformUI.HTTPS_CIPHER_SUITES = StringUtils.split(cipherSuites, ',');
-        }
+        setupSsl();
 
-        start(server, version, username, password);
+        start(opts.getServer(), opts.getVersion(), opts.getUsername(), opts.getPassword());
+    }
+
+    private static void setupSsl() {  
+        try {
+            // Create a trust manager that does not validate certificate chains
+            javax.net.ssl.TrustManager[] trustAllCerts = new javax.net.ssl.TrustManager[] { new javax.net.ssl.X509TrustManager() {
+                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                    return new java.security.cert.X509Certificate[0];
+                }
+
+                public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+                }
+
+                public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+                }
+            } };
+
+            // Install the all-trusting trust manager
+            javax.net.ssl.SSLContext sc = javax.net.ssl.SSLContext.getInstance("TLS");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            javax.net.ssl.HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+            // Install a permissive hostname verifier
+            javax.net.ssl.HostnameVerifier allHostsValid = new javax.net.ssl.HostnameVerifier() {
+                public boolean verify(String hostname, javax.net.ssl.SSLSession session) {
+                    return true;
+                }
+            };
+            javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private static void start(final String server, final String version, final String username, final String password) {
@@ -325,8 +331,144 @@ public class Mirth {
             public void run() {
                 initUIManager();
                 PlatformUI.BACKGROUND_IMAGE = new ImageIcon(com.mirth.connect.client.ui.Frame.class.getResource("images/header_nologo.png"));
-                LoginPanel.getInstance().initialize(server, version, username, password);
+                LoginPanelFactory.getInstance().initialize(server, version, username, password);
             }
         });
+    }
+
+    public static boolean handleLoginSuccess(Client client, LoginStatus loginStatus, String userName) throws ClientException {
+        AbstractLoginPanel loginPanel = LoginPanelFactory.getInstance();
+        try {
+            PublicServerSettings publicServerSettings = client.getPublicServerSettings();
+            
+            if (publicServerSettings.getLoginNotificationEnabled() == true) {
+                CustomBannerPanelDialog customBannerPanelDialog = new CustomBannerPanelDialog(loginPanel, "Login Notification", publicServerSettings.getLoginNotificationMessage());
+                boolean isAccepted = customBannerPanelDialog.isAccepted();
+                
+                if (isAccepted == true) {
+                    client.setUserNotificationAcknowledged(client.getCurrentUser().getId());
+                }
+                else {
+                    return false;
+                }
+            }
+            
+            String environmentName = publicServerSettings.getEnvironmentName();
+            if (!StringUtils.isBlank(environmentName)) {
+                PlatformUI.ENVIRONMENT_NAME = environmentName;
+            }
+
+            String serverName = publicServerSettings.getServerName();
+            if (!StringUtils.isBlank(serverName)) {
+                PlatformUI.SERVER_NAME = serverName;
+            } else {
+                PlatformUI.SERVER_NAME = null;
+            }
+
+            Color defaultBackgroundColor = publicServerSettings.getDefaultAdministratorBackgroundColor();
+            if (defaultBackgroundColor != null) {
+                PlatformUI.DEFAULT_BACKGROUND_COLOR = defaultBackgroundColor;
+            }
+        } catch (ClientException e) {
+            PlatformUI.SERVER_NAME = null;
+        }
+
+        try {
+            String database = (String) client.getAbout().get("database");
+            if (!StringUtils.isBlank(database)) {
+                PlatformUI.SERVER_DATABASE = database;
+            } else {
+                PlatformUI.SERVER_DATABASE = null;
+            }
+        } catch (ClientException e) {
+            PlatformUI.SERVER_DATABASE = null;
+        }
+
+        try {
+            Map<String, String[]> map = client.getProtocolsAndCipherSuites();
+            PlatformUI.SERVER_HTTPS_SUPPORTED_PROTOCOLS = map.get(MirthSSLUtil.KEY_SUPPORTED_PROTOCOLS);
+            PlatformUI.SERVER_HTTPS_ENABLED_CLIENT_PROTOCOLS = map.get(MirthSSLUtil.KEY_ENABLED_CLIENT_PROTOCOLS);
+            PlatformUI.SERVER_HTTPS_ENABLED_SERVER_PROTOCOLS = map.get(MirthSSLUtil.KEY_ENABLED_SERVER_PROTOCOLS);
+            PlatformUI.SERVER_HTTPS_SUPPORTED_CIPHER_SUITES = map.get(MirthSSLUtil.KEY_SUPPORTED_CIPHER_SUITES);
+            PlatformUI.SERVER_HTTPS_ENABLED_CIPHER_SUITES = map.get(MirthSSLUtil.KEY_ENABLED_CIPHER_SUITES);
+        } catch (ClientException e) {
+        }
+
+        PlatformUI.USER_NAME = StringUtils.defaultString(loginStatus.getUpdatedUsername(), userName);
+        loginPanel.setStatus("Authenticated...");
+        new Mirth(client);
+        loginPanel.setVisible(false);
+
+        User currentUser = PlatformUI.MIRTH_FRAME.getCurrentUser(PlatformUI.MIRTH_FRAME);
+        Properties userPreferences = new Properties();
+        Set<String> preferenceNames = new HashSet<String>();
+        preferenceNames.add("firstlogin");
+        preferenceNames.add("checkForNotifications");
+        preferenceNames.add("showNotificationPopup");
+        preferenceNames.add("archivedNotifications");
+        try {
+            userPreferences = client.getUserPreferences(currentUser.getId(), preferenceNames);
+
+            // Display registration dialog if it's the user's first time logging in
+            String firstlogin = userPreferences.getProperty("firstlogin");
+            if (firstlogin == null || BooleanUtils.toBoolean(firstlogin)) {
+                if (Integer.valueOf(currentUser.getId()) == 1) {
+                    // if current user is user 1:
+                    // 	1. check system preferences for user information
+                    // 	2. if system preferences exist, populate screen using currentUser
+                    Preferences preferences = Preferences.userNodeForPackage(Mirth.class);
+                    String systemUserInfo = preferences.get("userLoginInfo", null);
+                    if (systemUserInfo != null) {
+                        String info[] = systemUserInfo.split(",", 0);
+                        currentUser.setUsername(info[0]); 
+                        currentUser.setFirstName(info[1]);
+                        currentUser.setLastName(info[2]);
+                        currentUser.setEmail(info[3]);
+                        currentUser.setCountry(info[4]);
+                        currentUser.setStateTerritory(info[5]);
+                        currentUser.setPhoneNumber(info[6]);
+                        currentUser.setOrganization(info[7]);
+                        currentUser.setRole(info[8]);
+                        currentUser.setIndustry(info[9]);
+                        currentUser.setDescription(info[10]);
+                    }
+                }
+                FirstLoginDialog firstLoginDialog = new FirstLoginDialog(currentUser);
+                // if leaving the first login dialog without saving
+                if (!firstLoginDialog.getResult()) {
+                    return false;
+                }
+            } else if (loginStatus.getStatus() == LoginStatus.Status.SUCCESS_GRACE_PERIOD) {
+                new ChangePasswordDialog(currentUser, loginStatus.getMessage());
+            }
+
+            // Check for new notifications from update server if enabled
+            String checkForNotifications = userPreferences.getProperty("checkForNotifications");
+            if (CHECK_FOR_NOTIFICATIONS 
+                && (checkForNotifications == null || BooleanUtils.toBoolean(checkForNotifications))) {
+                Set<Integer> archivedNotifications = new HashSet<Integer>();
+                String archivedNotificationString = userPreferences.getProperty("archivedNotifications");
+                if (archivedNotificationString != null) {
+                    archivedNotifications = ObjectXMLSerializer.getInstance().deserialize(archivedNotificationString, Set.class);
+                }
+                // Update the Other Tasks pane with the unarchived notification count
+                int unarchivedNotifications = ConnectServiceUtil.getNotificationCount(PlatformUI.SERVER_ID, PlatformUI.SERVER_VERSION, LoadedExtensions.getInstance().getExtensionVersions(), archivedNotifications, PlatformUI.HTTPS_PROTOCOLS, PlatformUI.HTTPS_CIPHER_SUITES);
+                PlatformUI.MIRTH_FRAME.updateNotificationTaskName(unarchivedNotifications);
+
+                // Display notification dialog if enabled and if there are new notifications
+                String showNotificationPopup = userPreferences.getProperty("showNotificationPopup");
+                if (showNotificationPopup == null || BooleanUtils.toBoolean(showNotificationPopup)) {
+                    if (unarchivedNotifications > 0) {
+                        new NotificationDialog();
+                    }
+                }
+            }
+        } catch (ClientException e) {
+            PlatformUI.MIRTH_FRAME.alertThrowable(PlatformUI.MIRTH_FRAME, e);
+        }
+
+        PlatformUI.MIRTH_FRAME.sendUsageStatistics();
+        
+        return true;
     }
 }

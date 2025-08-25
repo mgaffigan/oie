@@ -27,6 +27,7 @@ public class PlatformUI {
     public static String ENVIRONMENT_NAME;
     public static String SERVER_NAME;
     public static String SERVER_URL;
+    public static String WEB_LOGIN_URL;
     public static String SERVER_ID;
     public static String SERVER_TIMEZONE;
     public static Calendar SERVER_TIME;
