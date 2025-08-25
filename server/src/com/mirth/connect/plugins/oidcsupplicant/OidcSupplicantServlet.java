@@ -119,7 +119,7 @@ public class OidcSupplicantServlet extends MirthServlet implements OidcSupplican
         String html = getResourceAsString("resources/complete.html");
         logger.info("Generated HTML for OIDC login result");
         try {
-            html = html.replace("{LOGIN_RESULT}", new ObjectMapper().writeValueAsString(loginResult));
+            html = html.replace("__LOGIN_RESULT__", new ObjectMapper().writeValueAsString(loginResult));
         } catch (Exception e) {
             logger.error("Error generating login result", e);
             throw new MirthApiException("Error generating login result");

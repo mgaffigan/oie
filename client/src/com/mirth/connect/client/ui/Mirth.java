@@ -282,6 +282,7 @@ public class Mirth {
         }
         PlatformUI.SERVER_URL = opts.getServer();
         PlatformUI.WEB_LOGIN_URL = opts.getWebLoginUrl();
+        PlatformUI.CLIENT_VERSION = opts.getVersion();
 
         setupSsl();
 

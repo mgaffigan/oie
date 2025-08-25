@@ -15,6 +15,8 @@ import javafx.scene.Scene;
 import javafx.concurrent.Worker;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.ContextMenu;
 import netscape.javascript.JSObject;
 
 import com.mirth.connect.client.core.Client;
@@ -31,8 +33,6 @@ import com.mirth.connect.model.LoginStatus;
  * There is no additional UI chrome inside the window — only the OS window frame is shown.
  */
 public class WebLoginPanel extends AbstractLoginPanel {
-
-    private static final String ERROR_MESSAGE = "There was an error connecting to the server at the specified address. Please verify that the server is up and running.";
 
     private boolean reinitialize = false;
     private final String url;
@@ -71,12 +71,27 @@ public class WebLoginPanel extends AbstractLoginPanel {
     }
 
     private void reinitializeWebview() {
+        WebLoginPanel webLoginPanel = this;
         // Create the JavaFX scene and WebView
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
                 webView = new WebView();
                 webView.setContextMenuEnabled(false);
+                ContextMenu ctxMenu = new ContextMenu();
+
+                // Add a right-click context menu with a "Use Legacy Authentication" option
+                MenuItem legacyItem = new MenuItem("Use Legacy Authentication");
+                legacyItem.setOnAction(evt -> showLegacyLoginPanel(null));
+                ctxMenu.getItems().add(legacyItem);
+
+                // Show a custom context menu on right-click
+                webView.setContextMenuEnabled(false);
+                webView.setOnMousePressed(event -> {
+                    if (event.isSecondaryButtonDown()) {
+                        ctxMenu.show(webView, event.getScreenX(), event.getScreenY());
+                    }
+                });
 
                 engine = webView.getEngine();
 
@@ -90,6 +105,17 @@ public class WebLoginPanel extends AbstractLoginPanel {
                     }
                 });
 
+                // Listen for load worker failures for the main document (not subresources).
+                // Worker.State.FAILED or a non-null exception indicates the document failed to load
+                // (for example, 404/500 responses). Resource (image) failures don't cause the
+                // main document's load worker to fail, so they won't be reported here.
+                engine.getLoadWorker().exceptionProperty().addListener((obs, oldEx, newEx) -> {
+                    if (newEx != null && webLoginPanel == LoginPanelFactory.getInstance()) {
+                        newEx.printStackTrace();
+                        showLegacyLoginPanel("There was an error authenticating to the server at the specified address. Please verify that the server is up and running.");
+                    }
+                });
+
                 // Navigate to the pilot URL
                 try {
                     engine.load(url);
@@ -99,6 +125,26 @@ public class WebLoginPanel extends AbstractLoginPanel {
 
                 Scene scene = new Scene(webView);
                 jfxPanel.setScene(scene);
+            }
+        });
+    }
+
+    private void showLegacyLoginPanel(String errorMessage) {
+        SwingUtilities.invokeLater(() -> {
+            try {
+                setVisible(false);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            // Create legacy LoginPanel and register it with the factory
+            LoginPanel legacy = new LoginPanel();
+            LoginPanelFactory.setProvider(legacy);
+
+            // Initialize the legacy panel with stored args (may be null)
+            legacy.initialize(PlatformUI.SERVER_URL, PlatformUI.CLIENT_VERSION, "", "");
+            if (errorMessage != null) {
+                legacy.setError(errorMessage);
             }
         });
     }

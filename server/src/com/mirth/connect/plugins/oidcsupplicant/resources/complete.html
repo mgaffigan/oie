@@ -1,24 +1,104 @@
 <html>
+
 <head>
-    <meta charset=\"utf-8\">
+    <meta charset="utf-8">
     <title>OIDC Complete</title>
+    <style>
+        :root {
+            --accent: #007acc;
+            --fg: #222
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0
+        }
+
+        body {
+            display: grid;
+            place-items: center;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            color: var(--fg)
+        }
+
+        .container {
+            display: grid;
+            place-items: center;
+            gap: 0.75rem;
+            padding: 1rem
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 0, 0, 0.08);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        .status {
+            font-size: 0.9rem;
+            color: rgba(0, 0, 0, 0.6)
+        }
+    </style>
 </head>
+
 <body>
-<h1 id="title">Login complete</h1>
-<script>
-window.handleError = function(message) { 
-    title.innerText = message; 
-}
-window.handleStatus = window.handleError; 
-setTimeout(function() { 
-    try { 
-        var params = new URLSearchParams(window.location.search);
-        var loginResult = {LOGIN_RESULT};
-        window.mirthlogin.completeLogin('oidc', JSON.stringify(loginResult));
-    } catch (err) {
-        title.innerText = err.message;
-    }
-}, 3000);
-</script>
+    <div class="container" role="status" aria-live="polite">
+        <h1 id="title">Logging in...</h1>
+        <div class="spinner" id="spinner" aria-hidden="true"></div>
+        <div class="status" id="message"></div>
+    </div>
+
+    <script>
+        (() => {
+            window.handleError = function (msg) {
+                document.getElementById('title').textContent = "⚠️ Login Failed";
+                document.getElementById('spinner').style.display = 'none';
+                document.getElementById('message').textContent = msg;
+            };
+
+            window.handleStatus = function (msg) {
+                document.getElementById('message').textContent = msg;
+            };
+
+            let attempts = 10;
+            function tryCompleteLogin() {
+                // Wait until window.mirthlogin is available
+                if (attempts-- < 0) {
+                    window.handleError("Could not complete login: timeout");
+                    return;
+                }
+                if (!window.mirthlogin) {
+                    setTimeout(tryCompleteLogin, 250);
+                    return;
+                }
+
+                try {
+                    var params = new URLSearchParams(window.location.search);
+                    var loginResult = __LOGIN_RESULT__;
+                    window.mirthlogin.completeLogin('oidc', JSON.stringify(loginResult));
+                } catch (err) {
+                    window.handleError(err && err.message ? err.message : "Could not complete login");
+                }
+            }
+            tryCompleteLogin();
+        })();
+    </script>
 </body>
+
 </html>

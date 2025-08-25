@@ -81,8 +81,6 @@ public class LoginPanel extends AbstractLoginPanel {
                 return;
             }
 
-            PlatformUI.CLIENT_VERSION = version;
-
             setTitle(String.format("%s %s - Login", BrandingConstants.PRODUCT_NAME, version));
             setIconImage(BrandingConstants.FAVICON.getImage());
 
@@ -462,23 +460,14 @@ public class LoginPanel extends AbstractLoginPanel {
 
                     if (errorOccurred) {
                         if (loginStatus != null) {
-                            errorTextArea.setText(loginStatus.getMessage());
+                            setError(loginStatus.getMessage());
                         } else {
-                            errorTextArea.setText(ERROR_MESSAGE);
+                            setError(ERROR_MESSAGE);
                         }
                     }
                 } catch (Throwable t) {
-                    errorOccurred = true;
-                    errorTextArea.setText(ERROR_MESSAGE);
+                    setError(ERROR_MESSAGE);
                     t.printStackTrace();
-                }
-
-                if (errorOccurred) {
-                    errorPane.setVisible(true);
-                    loggingIn.setVisible(false);
-                    loginMain.setVisible(true);
-                    loginProgress.setIndeterminate(false);
-                    password.grabFocus();
                 }
 
                 return null;
@@ -506,6 +495,15 @@ public class LoginPanel extends AbstractLoginPanel {
     @Override
     public void setStatus(String status) {
         this.status.setText("Please wait: " + status);
+    }
+
+    public void setError(String status) {
+        errorTextArea.setText(status);
+        errorPane.setVisible(true);
+        loggingIn.setVisible(false);
+        loginMain.setVisible(true);
+        loginProgress.setIndeterminate(false);
+        password.grabFocus();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

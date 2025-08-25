@@ -13,4 +13,11 @@ public class LoginPanelFactory {
         }
         return provider;
     }
+
+    /**
+     * Replace the current provider. This is used to switch between login implementations at runtime.
+     */
+    public static synchronized void setProvider(AbstractLoginPanel newProvider) {
+        provider = newProvider;
+    }
 }

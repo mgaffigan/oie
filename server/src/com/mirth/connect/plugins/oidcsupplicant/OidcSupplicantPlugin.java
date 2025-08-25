@@ -62,7 +62,14 @@ public class OidcSupplicantPlugin implements ServicePlugin, WebAuthorizationPlug
     }
 
     public LoginStatus authorizeUser(String username, String plainPassword) throws ControllerException {
-        if (!username.equals("oidc")) return null;
+        if (!username.equals("oidc")) {
+            if (properties.getProperty(OidcSupplicantProperties.OIDC_ALLOW_FALLBACK, "true").equals("false")) {
+                return new LoginStatus(LoginStatus.Status.FAIL, "OIDC authentication required");
+            }
+            
+            return null;
+        }
+
         if (!isConfigured()) {
             return new LoginStatus(LoginStatus.Status.FAIL, "OIDC authentication not configured");
         }
