@@ -738,9 +738,9 @@
 		
 		<!-- plugins.oidcsupplicant -->
 		<mkdir dir="${plugins.oidcsupplicant}" />
-		<copy todir="${plugins.oidcsupplicant}">
+		<copy todir="${classes}/com/mirth/connect/plugins/oidcsupplicant">
 			<fileset dir="${src}/com/mirth/connect/plugins/oidcsupplicant">
-				<include name="*.xml" />
+				<include name="resources/**" />
 			</fileset>
 		</copy>
 		<copy todir="${plugins.oidcsupplicant}/lib" failonerror="false">
@@ -748,10 +748,12 @@
 		</copy>
 		<jar destfile="${plugins.oidcsupplicant}/oidcsupplicant-shared.jar" basedir="${classes}">
 			<include name="com/mirth/connect/plugins/oidcsupplicant/OidcSupplicantProperties.class" />
+			<include name="com/mirth/connect/plugins/oidcsupplicant/OidcSupplicantServletInterface.class" />
 		</jar>
 		<jar destfile="${plugins.oidcsupplicant}/oidcsupplicant-server.jar" basedir="${classes}">
 			<include name="com/mirth/connect/plugins/oidcsupplicant/**" />
 			<exclude name="com/mirth/connect/plugins/oidcsupplicant/OidcSupplicantProperties.class" />
+			<exclude name="com/mirth/connect/plugins/oidcsupplicant/OidcSupplicantServletInterface.class" />
 		</jar>
 
 		<!-- plugins.imageviewer -->

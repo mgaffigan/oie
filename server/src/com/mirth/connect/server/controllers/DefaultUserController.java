@@ -39,6 +39,8 @@ import com.mirth.connect.server.util.PasswordRequirementsChecker;
 import com.mirth.connect.server.util.Pre22PasswordChecker;
 import com.mirth.connect.server.util.SqlConfig;
 import com.mirth.connect.server.util.StatementLock;
+import com.mirth.connect.plugins.ServerPlugin;
+import com.mirth.connect.plugins.WebAuthorizationPlugin;
 
 public class DefaultUserController extends UserController {
     public static final String VACUUM_LOCK_PERSON_STATEMENT_ID = "User.vacuumPersonTable";
@@ -284,6 +286,18 @@ public class DefaultUserController extends UserController {
                  * otherwise delegating control back to the UserController to perform
                  * authentication.
                  */
+                if (loginStatus != null) {
+                    return handleSecondaryAuthentication(StringUtils.defaultString(loginStatus.getUpdatedUsername(), username), loginStatus, null, serverURL);
+                }
+            }
+
+            for (ServerPlugin plugin : extensionController.getServerPlugins()) {
+                if (!(plugin instanceof WebAuthorizationPlugin)) continue;
+
+                WebAuthorizationPlugin wap = (WebAuthorizationPlugin) plugin;
+                if (!wap.isConfigured()) continue;
+
+                LoginStatus loginStatus = wap.authorizeUser(username, plainPassword);
                 if (loginStatus != null) {
                     return handleSecondaryAuthentication(StringUtils.defaultString(loginStatus.getUpdatedUsername(), username), loginStatus, null, serverURL);
                 }

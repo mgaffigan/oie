@@ -1,0 +1,24 @@
+<html>
+<head>
+    <meta charset=\"utf-8\">
+    <title>OIDC Complete</title>
+</head>
+<body>
+<h1 id="title">Login complete</h1>
+<script>
+window.handleError = function(message) { 
+    title.innerText = message; 
+}
+window.handleStatus = window.handleError; 
+setTimeout(function() { 
+    try { 
+        var params = new URLSearchParams(window.location.search);
+        var loginResult = {LOGIN_RESULT};
+        window.mirthlogin.completeLogin('oidc', JSON.stringify(loginResult));
+    } catch (err) {
+        title.innerText = err.message;
+    }
+}, 3000);
+</script>
+</body>
+</html>

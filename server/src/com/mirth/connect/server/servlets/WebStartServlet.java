@@ -52,6 +52,8 @@ import com.mirth.connect.server.controllers.ControllerFactory;
 import com.mirth.connect.server.controllers.ExtensionController;
 import com.mirth.connect.server.tools.ClassPathResource;
 import com.mirth.connect.server.util.ResourceUtil;
+import com.mirth.connect.plugins.ServerPlugin;
+import com.mirth.connect.plugins.WebAuthorizationPlugin;
 import com.mirth.connect.util.MirthSSLUtil;
 
 public class WebStartServlet extends HttpServlet {
@@ -276,6 +278,22 @@ public class WebStartServlet extends HttpServlet {
         Element versionArgumentElement = document.createElement("argument");
         versionArgumentElement.setTextContent(version);
         applicationDescElement.appendChild(versionArgumentElement);
+
+        for (ServerPlugin plugin : ControllerFactory.getFactory().createExtensionController().getServerPlugins()) {
+            if (!(plugin instanceof WebAuthorizationPlugin)) continue;
+
+            WebAuthorizationPlugin webAuthPlugin = (WebAuthorizationPlugin) plugin;
+            if (!webAuthPlugin.isConfigured()) continue;
+
+            String[] extraLaunchArgs = webAuthPlugin.getExtraLaunchArgs(server);
+            if (extraLaunchArgs == null) continue;
+
+            for (String arg : extraLaunchArgs) {
+                Element argumentElement = document.createElement("argument");
+                argumentElement.setTextContent(arg);
+                applicationDescElement.appendChild(argumentElement);
+            }
+        }
 
         String[] protocols = configurationController.getHttpsClientProtocols();
         String[] cipherSuites = configurationController.getHttpsCipherSuites();

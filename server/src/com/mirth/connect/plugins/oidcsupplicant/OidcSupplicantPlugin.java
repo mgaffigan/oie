@@ -1,22 +1,27 @@
 package com.mirth.connect.plugins.oidcsupplicant;
 
 import java.util.Properties;
-import com.mirth.connect.model.ExtensionPermission;
-import com.mirth.connect.plugins.ServicePlugin;
 
-/**
- * Minimal server-side plugin implementing ServicePlugin for the OIDC supplicant.
- */
-public class OidcSupplicantPlugin implements ServicePlugin {
+import org.apache.commons.lang3.StringUtils;
+
+import com.mirth.connect.client.core.ControllerException;
+import com.mirth.connect.model.ExtensionPermission;
+import com.mirth.connect.model.LoginStatus;
+import com.mirth.connect.plugins.ServicePlugin;
+import com.mirth.connect.plugins.WebAuthorizationPlugin;
+
+public class OidcSupplicantPlugin implements ServicePlugin, WebAuthorizationPlugin {
+
+    private Properties properties;
 
     @Override
     public void init(Properties properties) {
-        // placeholder - initialize plugin with persisted properties
+        this.properties = properties;
     }
 
     @Override
     public void update(Properties properties) {
-        // placeholder - handle properties updates
+        this.properties = properties;
     }
 
     @Override
@@ -49,5 +54,24 @@ public class OidcSupplicantPlugin implements ServicePlugin {
     @Override
     public void stop() {
         // no-op for now
+    }
+
+    public boolean isConfigured() {
+        return properties != null
+            && StringUtils.isNotBlank(properties.getProperty(OidcSupplicantProperties.OIDC_CLIENT_ID));
+    }
+
+    public LoginStatus authorizeUser(String username, String plainPassword) throws ControllerException {
+        if (!username.equals("oidc")) return null;
+        if (!isConfigured()) {
+            return new LoginStatus(LoginStatus.Status.FAIL, "OIDC authentication not configured");
+        }
+
+        return new OidcLoginAttempt(properties).login(plainPassword);
+    }
+
+    public String[] getExtraLaunchArgs(String baseUrl) {
+        if (!isConfigured()) return null;
+        return new String[] { "weblogin", baseUrl + "/api/extensions/oidcsupplicant/start-oidc" };
     }
 }
