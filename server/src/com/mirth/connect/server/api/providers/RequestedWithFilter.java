@@ -1,64 +1,63 @@
-/*
- * Copyright (c) Mirth Corporation. All rights reserved.
- * 
- * http://www.mirthcorp.com
- * 
- * The software in this package is published under the terms of the MPL license a copy of which has
- * been included with this distribution in the LICENSE.txt file.
- */
-
 package com.mirth.connect.server.api.providers;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.List;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.annotation.Priority;
+import javax.ws.rs.Priorities;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.ResourceInfo;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.lang3.StringUtils;
 
+import com.mirth.connect.server.api.DontRequireRequestedWith;
+
 @Provider
-public class RequestedWithFilter implements Filter {
+@Priority(Priorities.AUTHENTICATION + 100)
+public class RequestedWithFilter implements ContainerRequestFilter {
 
-    private boolean isRequestedWithHeaderRequired = true; 
+    @Context
+    private ResourceInfo resourceInfo;
 
+    private static boolean isRequestedWithHeaderRequired = true;
 
-    public RequestedWithFilter(PropertiesConfiguration mirthProperties) {
-        
+    // Jax requires a no-arg constructor to instantiate providers via classpath scanning.
+    public RequestedWithFilter() {
+    }
+
+    public static void configure(PropertiesConfiguration mirthProperties) {
         isRequestedWithHeaderRequired = mirthProperties.getBoolean("server.api.require-requested-with", true);
     }
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {}
+    public void filter(ContainerRequestContext requestContext) throws IOException {
+        if (!isRequestedWithHeaderRequired) {
+            return;
+        }
 
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        HttpServletResponse res = (HttpServletResponse) response;
+        // If the resource method or class is annotated with DontRequireRequestedWith, skip the check
+        if (resourceInfo != null) {
+            Method method = resourceInfo.getResourceMethod();
+            if (method != null && method.getAnnotation(DontRequireRequestedWith.class) != null) {
+                return;
+            }
+            Class<?> resourceClass = resourceInfo.getResourceClass();
+            if (resourceClass != null && resourceClass.getAnnotation(DontRequireRequestedWith.class) != null) {
+                return;
+            }
+        }
         
-        HttpServletRequest servletRequest = (HttpServletRequest)request;
-        String requestedWithHeader = (String) servletRequest.getHeader("X-Requested-With");
+        List<String> header = requestContext.getHeaders().get("X-Requested-With");
         
         //if header is required and not present, send an error
-        if(isRequestedWithHeaderRequired && StringUtils.isBlank(requestedWithHeader)) {
-            res.sendError(400, "All requests must have 'X-Requested-With' header");
+        if (header == null || header.isEmpty() || StringUtils.isBlank(header.get(0))) {
+            requestContext.abortWith(Response.status(400).entity("All requests must have 'X-Requested-With' header").build());
         }
-        else {
-            chain.doFilter(request, response);
-        }
-        
     }
-    
-    public boolean isRequestedWithHeaderRequired() {
-        return isRequestedWithHeaderRequired;
-    }
-
-    @Override
-    public void destroy() {}
 }

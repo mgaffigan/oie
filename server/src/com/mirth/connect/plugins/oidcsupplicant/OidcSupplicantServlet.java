@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mirth.connect.client.core.api.MirthApiException;
 import com.mirth.connect.server.api.MirthServlet;
 import com.mirth.connect.server.api.DontCheckAuthorized;
+import com.mirth.connect.server.api.DontRequireRequestedWith;
 import com.mirth.connect.server.controllers.ExtensionController;
 
 public class OidcSupplicantServlet extends MirthServlet implements OidcSupplicantServletInterface {
@@ -36,6 +37,7 @@ public class OidcSupplicantServlet extends MirthServlet implements OidcSupplican
 
     @Override
     @DontCheckAuthorized
+    @DontRequireRequestedWith
     public javax.ws.rs.core.Response startOidc() {
         try {
             Properties props = ExtensionController.getInstance().getPluginProperties("OIDC Supplicant");
@@ -95,6 +97,7 @@ public class OidcSupplicantServlet extends MirthServlet implements OidcSupplican
 
     @Override
     @DontCheckAuthorized
+    @DontRequireRequestedWith
     public String completeOidc() {
         logger.info("Completing OIDC flow");
 
