@@ -112,7 +112,7 @@ public class OidcSupplicantServlet extends MirthServlet implements OidcSupplican
         String state = (String) request.getSession().getAttribute("oidc_csrf_state");
         logger.info("Received OIDC CSRF state: {}", state);
         request.getSession().removeAttribute("oidc_csrf_state");
-        if (!state.equals(request.getParameter("state"))) {
+        if (state == null || !state.equals(request.getParameter("state"))) {
             logger.error("Invalid CSRF state");
             throw new MirthApiException("Invalid CSRF state");
         }
