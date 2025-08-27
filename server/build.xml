@@ -738,6 +738,11 @@
 		
 		<!-- plugins.oidcsupplicant -->
 		<mkdir dir="${plugins.oidcsupplicant}" />
+		<copy todir="${plugins.oidcsupplicant}">
+			<fileset dir="${src}/com/mirth/connect/plugins/oidcsupplicant">
+				<include name="*.xml" />
+			</fileset>
+		</copy>
 		<copy todir="${classes}/com/mirth/connect/plugins/oidcsupplicant">
 			<fileset dir="${src}/com/mirth/connect/plugins/oidcsupplicant">
 				<include name="resources/**" />
