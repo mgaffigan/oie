@@ -30,6 +30,7 @@ import com.mirth.connect.server.controllers.ControllerFactory;
 import com.mirth.connect.server.controllers.UserController;
 import com.mirth.connect.model.LoginStatus;
 import com.mirth.connect.model.User;
+import com.google.common.hash.Hashing;
 
 public class OidcLoginAttempt {
     private Properties properties;
@@ -128,6 +129,8 @@ public class OidcLoginAttempt {
             UserController uc = ControllerFactory.getFactory().createUserController();
 
             String username = getRequiredMappedProperty(idToken, "sub");
+            username = normalizeUsername(username);
+
             User user = uc.getUser(null, username);
             if (user == null) {
                 logger.info("Creating new user for OIDC login: {}", username);
@@ -143,6 +146,16 @@ public class OidcLoginAttempt {
             logger.error("Error creating or retrieving user", e);
             return null;
         }
+    }
+
+    private String normalizeUsername(String username) {
+        // sub attribute may contain any data up to 256 chars
+        // username field is limited to 40 chars
+        if (username.length() > 40) {
+            // Take sha256 hash, truncate to 40 chars
+            username = Hashing.sha256().hashString(username, StandardCharsets.UTF_8).toString().substring(0, 40);
+        }
+        return username;
     }
 
     private String getMappedProperty(JsonNode idToken, String property) {
