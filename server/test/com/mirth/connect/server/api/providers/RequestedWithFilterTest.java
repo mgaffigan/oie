@@ -1,14 +1,19 @@
+// SPDX-License-Identifier: MPL-2.0
+// SPDX-FileCopyrightText: Mirth Corporation
+// SPDX-FileCopyrightText: 2025 Mitch Gaffigan <mitch.gaffigan@comcast.net>
 package com.mirth.connect.server.api.providers;
 
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import javax.servlet.FilterChain;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import com.mirth.connect.client.core.PropertiesConfigurationUtil;
@@ -22,10 +27,13 @@ public class RequestedWithFilterTest extends TestCase {
     @Test
     //assert that if property is set to false, isRequestedWithHeaderRequired = false
     public void testConstructor() {
-       
+        mirthProperties.clearProperty("server.api.require-requested-with");
+        RequestedWithFilter.configure(mirthProperties);
+        assertEquals(true, RequestedWithFilter.isRequestedWithHeaderRequired());
+
         mirthProperties.setProperty("server.api.require-requested-with", "false");
-        RequestedWithFilter requestedWithFilter = new RequestedWithFilter(mirthProperties);
-        assertEquals(requestedWithFilter.isRequestedWithHeaderRequired(), false);
+        RequestedWithFilter.configure(mirthProperties);
+        assertEquals(false, RequestedWithFilter.isRequestedWithHeaderRequired());
     }
     
     @Test
@@ -33,15 +41,20 @@ public class RequestedWithFilterTest extends TestCase {
     public void testDoFilterRequestedWithTrue() {
         
         mirthProperties.setProperty("server.api.require-requested-with", "true");
-        RequestedWithFilter testFilter = new RequestedWithFilter(mirthProperties);
-        
-        HttpServletRequest mockReq = Mockito.mock(HttpServletRequest.class);
-        HttpServletResponse mockResp = Mockito.mock(HttpServletResponse.class);
-        FilterChain mockFilterChain = Mockito.mock(FilterChain.class);
-        
+        RequestedWithFilter.configure(mirthProperties);
+
+        ContainerRequestContext mockCtx = Mockito.mock(ContainerRequestContext.class);
+        when(mockCtx.getHeaders()).thenReturn(new javax.ws.rs.core.MultivaluedHashMap<String, String>());
+
         try {
-            testFilter.doFilter(mockReq, mockResp, mockFilterChain);
-            verify(mockResp).sendError(HttpServletResponse.SC_BAD_REQUEST, "All requests must have 'X-Requested-With' header");
+            RequestedWithFilter filter = new RequestedWithFilter();
+            filter.filter(mockCtx);
+            ArgumentCaptor<Response> responseCaptor = 
+                ArgumentCaptor.forClass(Response.class);
+            verify(mockCtx).abortWith(responseCaptor.capture());
+            Response response = responseCaptor.getValue();
+            assertEquals(400, response.getStatus());
+            assertEquals("All requests must have 'X-Requested-With' header", response.getEntity());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -52,15 +65,15 @@ public class RequestedWithFilterTest extends TestCase {
     public void testDoFilterRequestedWithFalse() {
         
         mirthProperties.setProperty("server.api.require-requested-with", "false");
-        RequestedWithFilter testFilter = new RequestedWithFilter(mirthProperties);
-        
-        HttpServletRequest mockReq = Mockito.mock(HttpServletRequest.class);
-        HttpServletResponse mockResp = Mockito.mock(HttpServletResponse.class);
-        FilterChain mockFilterChain = Mockito.mock(FilterChain.class);
-        
+        RequestedWithFilter.configure(mirthProperties);
+
+        ContainerRequestContext mockCtx = Mockito.mock(ContainerRequestContext.class);
+        when(mockCtx.getHeaders()).thenReturn(new javax.ws.rs.core.MultivaluedHashMap<String, String>());
+
         try {
-            testFilter.doFilter(mockReq, mockResp, mockFilterChain);
-            verify(mockResp, never()).sendError(HttpServletResponse.SC_BAD_REQUEST, "All requests must have 'X-Requested-With' header");
+            RequestedWithFilter filter = new RequestedWithFilter();
+            filter.filter(mockCtx);
+            verify(mockCtx, never()).abortWith(ArgumentMatchers.any(javax.ws.rs.core.Response.class));
         } catch (Exception e) {
             e.printStackTrace();
         }

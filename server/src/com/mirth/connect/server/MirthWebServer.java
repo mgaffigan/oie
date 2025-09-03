@@ -454,7 +454,7 @@ public class MirthWebServer extends Server {
         apiServletContextHandler.setContextPath(contextPath + baseAPI + apiPath);
         apiServletContextHandler.addFilter(new FilterHolder(new ApiOriginFilter(mirthProperties)), "/*", EnumSet.of(DispatcherType.REQUEST));
         apiServletContextHandler.addFilter(new FilterHolder(new ClickjackingFilter(mirthProperties)), "/*", EnumSet.of(DispatcherType.REQUEST));
-        apiServletContextHandler.addFilter(new FilterHolder(new RequestedWithFilter(mirthProperties)), "/*", EnumSet.of(DispatcherType.REQUEST));
+        RequestedWithFilter.configure(mirthProperties);
         apiServletContextHandler.addFilter(new FilterHolder(new MethodFilter()), "/*", EnumSet.of(DispatcherType.REQUEST));
         apiServletContextHandler.addFilter(new FilterHolder(new StrictTransportSecurityFilter(mirthProperties)), "/*", EnumSet.of(DispatcherType.REQUEST));
         setConnectorNames(apiServletContextHandler, apiAllowHTTP);
@@ -608,6 +608,7 @@ public class MirthWebServer extends Server {
         providerClasses.addAll(serverProviderClasses);
         providerClasses.add(OpenApiResource.class);
         providerClasses.add(AcceptHeaderOpenApiResource.class);
+        providerClasses.add(RequestedWithFilter.class);
 
         return new ApiProviders(servletInterfacePackages, servletInterfaces, providerPackages, providerClasses);
     }
