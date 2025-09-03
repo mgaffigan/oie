@@ -210,6 +210,9 @@ public abstract class MirthServlet {
     }
 
     public void setOperation(Operation operation) {
+        if (operation == null) {
+            throw new MirthApiException("Method operation cannot be null.");
+        }
         if (extensionName != null) {
             operation = new ExtensionOperation(extensionName, operation);
         }
