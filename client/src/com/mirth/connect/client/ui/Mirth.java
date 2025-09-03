@@ -69,7 +69,7 @@ public class Mirth {
         UIManager.put("Tree.closedIcon", UIConstants.CLOSED_ICON);
 
         userPreferences = Preferences.userNodeForPackage(Mirth.class);
-        DefaultLoginPanel.getInstance().setStatus("Loading components...");
+        LoginPanelFactory.getInstance().setStatus("Loading components...");
         PlatformUI.MIRTH_FRAME.setupFrame(mirthClient);
 
         boolean maximized;
@@ -129,7 +129,7 @@ public class Mirth {
      * @return quit
      */
     public static boolean quitMac() {
-        return (DefaultLoginPanel.getInstance().isVisible() || (PlatformUI.MIRTH_FRAME != null && PlatformUI.MIRTH_FRAME.logout(true)));
+        return (LoginPanelFactory.getInstance().isVisible() || (PlatformUI.MIRTH_FRAME != null && PlatformUI.MIRTH_FRAME.logout(true)));
     }
 
     /**
@@ -291,7 +291,7 @@ public class Mirth {
             public void run() {
                 initUIManager();
                 PlatformUI.BACKGROUND_IMAGE = new ImageIcon(com.mirth.connect.client.ui.Frame.class.getResource("images/header_nologo.png"));
-                DefaultLoginPanel.getInstance().initialize(server, version, username, password);
+                LoginPanelFactory.getInstance().initialize(server, version, username, password);
             }
         });
     }

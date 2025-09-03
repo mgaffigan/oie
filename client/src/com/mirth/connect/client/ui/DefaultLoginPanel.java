@@ -26,12 +26,11 @@ import com.mirth.connect.model.ExtendedLoginStatus;
 import com.mirth.connect.model.LoginStatus;
 import com.mirth.connect.plugins.MultiFactorAuthenticationClientPlugin;
 
-public class DefaultLoginPanel extends javax.swing.JFrame {
+public class DefaultLoginPanel extends AbstractLoginPanel {
 
     private static final String ERROR_MESSAGE = "There was an error connecting to the server at the specified address. Please verify that the server is up and running.";
-    private static DefaultLoginPanel instance = null;
 
-    private DefaultLoginPanel() {
+    public DefaultLoginPanel() {
         initComponents();
         DisplayUtil.setResizable(this, false);
         jLabel2.setForeground(UIConstants.HEADER_TITLE_TEXT_COLOR);
@@ -69,15 +68,7 @@ public class DefaultLoginPanel extends javax.swing.JFrame {
         errorTextArea.setDisabledTextColor(Color.RED);
     }
 
-    public static DefaultLoginPanel getInstance() {
-        synchronized (DefaultLoginPanel.class) {
-            if (instance == null) {
-                instance = new DefaultLoginPanel();
-            }
-            return instance;
-        }
-    }
-
+    @Override
     public void initialize(String mirthServer, String version, String user, String pass) {
         synchronized (this) {
             // Do not initialize another login window if one is already visible
@@ -496,6 +487,7 @@ public class DefaultLoginPanel extends javax.swing.JFrame {
         System.exit(0);
     }// GEN-LAST:event_closeButtonActionPerformed
 
+    @Override
     public void setStatus(String status) {
         this.status.setText("Please wait: " + status);
     }
