@@ -28,7 +28,6 @@ import com.mirth.connect.plugins.MultiFactorAuthenticationClientPlugin;
 
 public class DefaultLoginPanel extends javax.swing.JFrame {
 
-    private Client client;
     private static final String ERROR_MESSAGE = "There was an error connecting to the server at the specified address. Please verify that the server is up and running.";
     private static DefaultLoginPanel instance = null;
 
@@ -402,6 +401,7 @@ public class DefaultLoginPanel extends javax.swing.JFrame {
     private void loginButtonActionPerformed(java.awt.event.ActionEvent evt)// GEN-FIRST:event_loginButtonActionPerformed
     {// GEN-HEADEREND:event_loginButtonActionPerformed
         errorPane.setVisible(false);
+        LoginPanel loginPanel = this;
 
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 
@@ -410,7 +410,7 @@ public class DefaultLoginPanel extends javax.swing.JFrame {
 
                 try {
                     String server = serverName.getText();
-                    client = new Client(server, PlatformUI.HTTPS_PROTOCOLS, PlatformUI.HTTPS_CIPHER_SUITES);
+                    Client client = new Client(server, PlatformUI.HTTPS_PROTOCOLS, PlatformUI.HTTPS_CIPHER_SUITES);
                     PlatformUI.SERVER_URL = server;
 
                     // Attempt to login
@@ -435,8 +435,8 @@ public class DefaultLoginPanel extends javax.swing.JFrame {
                     // If SUCCESS or SUCCESS_GRACE_PERIOD
                     if (loginStatus != null && loginStatus.isSuccess()) {
                         if (!Mirth.handleLoginSuccess(client, loginStatus, username.getText())) {
-                            DefaultLoginPanel.getInstance().setVisible(false);
-                            DefaultLoginPanel.getInstance().initialize(PlatformUI.SERVER_URL, PlatformUI.CLIENT_VERSION, "", "");
+                            loginPanel.setVisible(false);
+                            loginPanel.initialize(PlatformUI.SERVER_URL, PlatformUI.CLIENT_VERSION, "", "");
                         }
                     } else {
                         // Assume failure unless overridden by a plugin
@@ -454,8 +454,8 @@ public class DefaultLoginPanel extends javax.swing.JFrame {
                                 if (loginStatus != null && loginStatus.isSuccess()) {
                                     errorOccurred = false;
                                     if (!Mirth.handleLoginSuccess(client, loginStatus, username.getText())) {
-                                        DefaultLoginPanel.getInstance().setVisible(false);
-                                        DefaultLoginPanel.getInstance().initialize(PlatformUI.SERVER_URL, PlatformUI.CLIENT_VERSION, "", "");
+                                        loginPanel.setVisible(false);
+                                        loginPanel.initialize(PlatformUI.SERVER_URL, PlatformUI.CLIENT_VERSION, "", "");
                                     }
                                 }
                             }
@@ -464,23 +464,14 @@ public class DefaultLoginPanel extends javax.swing.JFrame {
 
                     if (errorOccurred) {
                         if (loginStatus != null) {
-                            errorTextArea.setText(loginStatus.getMessage());
+                            setError(loginStatus.getMessage());
                         } else {
-                            errorTextArea.setText(ERROR_MESSAGE);
+                            setError(ERROR_MESSAGE);
                         }
                     }
                 } catch (Throwable t) {
-                    errorOccurred = true;
-                    errorTextArea.setText(ERROR_MESSAGE);
+                    setError(ERROR_MESSAGE);
                     t.printStackTrace();
-                }
-
-                if (errorOccurred) {
-                    errorPane.setVisible(true);
-                    loggingIn.setVisible(false);
-                    loginMain.setVisible(true);
-                    loginProgress.setIndeterminate(false);
-                    password.grabFocus();
                 }
 
                 return null;
@@ -507,6 +498,15 @@ public class DefaultLoginPanel extends javax.swing.JFrame {
 
     public void setStatus(String status) {
         this.status.setText("Please wait: " + status);
+    }
+
+    public void setError(String status) {
+        errorTextArea.setText(status);
+        errorPane.setVisible(true);
+        loggingIn.setVisible(false);
+        loginMain.setVisible(true);
+        loginProgress.setIndeterminate(false);
+        password.grabFocus();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
