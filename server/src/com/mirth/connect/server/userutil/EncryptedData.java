@@ -25,15 +25,19 @@ public class EncryptedData {
     /**
      * Returns the meta-information about the encrypted data. Includes the algorithm and
      * initialization vector used.
+     *
+     * @return the header containing meta-information about the encrypted data
      */
     public String getHeader() {
         return header;
-    }
-
     /**
      * Returns the encrypted data as a byte array.
+     *
+     * @return the encrypted data as a byte array
      */
     public byte[] getEncryptedData() {
+        return encryptedData;
+    }
         return encryptedData;
     }
 }
