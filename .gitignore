@@ -109,6 +109,9 @@ donkey/donkey-test
 .sonar
 **/junit-reports
 **/code-coverage-reports
+/exports/
+/MapUtilTestDB/
+/testconf/
 
 # /client/
 /client/logs
