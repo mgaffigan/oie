@@ -29,9 +29,9 @@ public class LogoutActionBean extends BaseActionBean {
             getContext().logout();
             client.logout();
 
-            return new RedirectResolution(Constants.INDEX_PAGE);
+            return new RedirectResolution(Constants.INDEX_PAGE).addParameter("showAlert", "You have been logged out successfully.");
         } catch (Exception e) {
-            return new RedirectResolution(Constants.INDEX_PAGE).addParameter("showAlert", true);
+            return new RedirectResolution(Constants.INDEX_PAGE).addParameter("showAlert", "An error occurred during logout");
         }
     }
 }

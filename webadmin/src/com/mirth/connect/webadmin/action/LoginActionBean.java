@@ -86,15 +86,15 @@ public class LoginActionBean extends BaseActionBean {
                 // this prevents the session from timing out
                 request.getSession().setMaxInactiveInterval(-1);
 
-                // Redirect to Dashboard Statistics
-                return new RedirectResolution(Constants.DASHBOARD_STATS);
+                // Redirect to Home Page
+                return new RedirectResolution(Constants.HOME_PAGE);
 
             } catch (Exception e) {
                 e.printStackTrace();
-                return new RedirectResolution(Constants.INDEX_PAGE).addParameter("showAlert", true);
+                return new RedirectResolution(Constants.INDEX_PAGE).addParameter("showAlert", "An error occurred during login");
             }
         } else {
-            return new RedirectResolution(Constants.INDEX_PAGE).addParameter("showAlert", true);
+            return new RedirectResolution(Constants.INDEX_PAGE).addParameter("showAlert", "Invalid username or password");
         }
     }
 }

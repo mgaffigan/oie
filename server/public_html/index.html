@@ -113,9 +113,14 @@ SPDX-License-Identifier: MPL-2.0
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             const jnlpElement = document.getElementById('jnlp-text');
             jnlpElement.textContent = `${window.location.origin}/webstart.jnlp`;
+
+            // Check if the webadmin is available and redirect if it is
+            if ((await fetch('webadmin/Index.action', { method: 'HEAD' })).ok) {
+                window.location.href = 'webadmin/Index.action';
+            }
         });
     </script>
 
