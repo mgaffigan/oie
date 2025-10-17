@@ -71,7 +71,7 @@ public class IndexActionBean extends BaseActionBean {
         context.setNonce(UUID.randomUUID().toString());
         
         // Check if http or https
-        secureHttps = request.isSecure();
+        secureHttps = request.isSecure() || "127.0.0.1".equals(request.getRemoteAddr());
 
         return new ForwardResolution(Constants.INDEX_JSP);
     }
