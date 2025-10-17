@@ -1,7 +1,7 @@
 import { DataTable } from '@/components/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import type { ColumnDef } from '@tanstack/react-table';
 import React from 'react';
@@ -35,9 +35,7 @@ async function fetchChannels(): Promise<MirthChannel[]> {
     const r = await fetch('/api/channels', {
         headers: {
             accept: 'application/json',
-            'X-Requested-With': 'OIEUI',
         },
-        credentials: 'include',
     });
     if (!r.ok) throw new Error(`Failed to load channels: ${r.status}`);
     const json = (await r.json()) as ChannelsResponse;
@@ -76,7 +74,6 @@ function StateBadge({ c }: { c: MirthChannel }) {
 }
 
 function DashboardPage() {
-    const queryClient = useQueryClient();
     const {
         data = [],
         isLoading,

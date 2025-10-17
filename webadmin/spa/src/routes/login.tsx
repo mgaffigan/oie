@@ -40,7 +40,7 @@ export default function LoginPage() {
 
         setPending(true);
         try {
-            await loginWithBasic(username, password);
+            await loginWithBasic({ username, password });
             navigate({ to: '/dashboard' });
         } catch (err: any) {
             setError(err?.message || 'Login failed');

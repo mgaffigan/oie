@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router';
 
 import { useState } from 'react';
-import { ClipboardType, Home, Menu, Table, X } from 'lucide-react';
+import { Home, Menu, X } from 'lucide-react';
 
 export default function Header() {
     const [isOpen, setIsOpen] = useState(false);
@@ -56,49 +56,6 @@ export default function Header() {
                         <Home size={20} />
                         <span className="font-medium">Home</span>
                     </Link>
-
-                    {/* Demo Links Start */}
-
-                    <Link
-                        to="/demo/table"
-                        onClick={() => setIsOpen(false)}
-                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors mb-2"
-                        activeProps={{
-                            className:
-                                'flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2',
-                        }}
-                    >
-                        <Table size={20} />
-                        <span className="font-medium">TanStack Table</span>
-                    </Link>
-
-                    <Link
-                        to="/demo/form/simple"
-                        onClick={() => setIsOpen(false)}
-                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors mb-2"
-                        activeProps={{
-                            className:
-                                'flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2',
-                        }}
-                    >
-                        <ClipboardType size={20} />
-                        <span className="font-medium">Simple Form</span>
-                    </Link>
-
-                    <Link
-                        to="/demo/form/address"
-                        onClick={() => setIsOpen(false)}
-                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors mb-2"
-                        activeProps={{
-                            className:
-                                'flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2',
-                        }}
-                    >
-                        <ClipboardType size={20} />
-                        <span className="font-medium">Address Form</span>
-                    </Link>
-
-                    {/* Demo Links End */}
                 </nav>
             </aside>
         </>

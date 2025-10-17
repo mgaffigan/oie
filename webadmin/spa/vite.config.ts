@@ -1,6 +1,6 @@
 import tailwindcss from '@tailwindcss/vite';
 import viteReact from '@vitejs/plugin-react';
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
 import { resolve } from 'node:path';
@@ -21,13 +21,15 @@ export default defineConfig({
             '@': resolve(__dirname, './src'),
         },
     },
+    base: '/webadmin/',
     server: {
+        port: 8081,
         proxy: {
-            '/api': {
-                target: 'https://localhost:8443',
+            '^/(?!webadmin/).*': {
+                target: 'http://localhost:8080',
                 changeOrigin: true,
                 secure: false,
-            },
-        },
+            }
+        }
     },
 });
