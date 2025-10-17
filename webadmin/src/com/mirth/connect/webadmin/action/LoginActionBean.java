@@ -53,7 +53,7 @@ public class LoginActionBean extends BaseActionBean {
         
         String nonce = request.getParameter("nonce");
         if (nonce == null || nonce.isEmpty() || !nonce.equals(getContext().getNonce())) {
-            return new ErrorResolution(403, "Invalid request");
+            return new RedirectResolution(Constants.INDEX_PAGE).addParameter("showAlert", "Please try again");
         }
         
         String username = request.getParameter("username");

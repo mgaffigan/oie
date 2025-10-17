@@ -15,6 +15,10 @@
 	<property name="build.classes" value="${build}/classes" />
 	<property name="webadmin" value="../webadmin" />
 
+	<condition property="npmExecutable" value="npm.cmd" else="npm">
+        <os family="windows"/>
+    </condition>
+
 	<path id="compile.jspc">
 		<fileset dir="${javax.home}" includes="javax.servlet-api-*.jar" />
 		<fileset dir="${jetty.home}" includes="jetty-schemas-*.jar" />
@@ -63,6 +67,19 @@
 		<javac destdir="${build.classes}" debug="true" srcdir="${build.src}">
 			<classpath refid="compile.classpath" />
 		</javac>
+
+		<!-- Run npm build on spa -->
+		<exec dir="${webadmin}/spa" executable="${npmExecutable}">
+			<arg value="install" />
+		</exec>
+		<exec dir="${webadmin}/spa" executable="${npmExecutable}">
+			<arg value="run" />
+			<arg value="build" />
+		</exec>
+		<mkdir dir="${build.web}/home" />
+		<copy todir="${build.web}/home">
+			<fileset dir="${webadmin}/spa/dist" includes="**" />
+		</copy>
 	</target>
 
 	<target name="dist" depends="compile">
@@ -75,5 +92,6 @@
 	<target name="clean">
 		<delete dir="${dist}" />
 		<delete dir="${build}" />
+		<delete dir="${webadmin}/spa/dist" />
 	</target>
 </project>
