@@ -1,11 +1,11 @@
 import { useState, useMemo } from 'react';
-import { login } from './Services';
-import css from './Login.css';
-import logo from './assets/login_logo.svg';
+import { login } from '../../services/Services';
+import css from './LoginPage.module.css';
+import logo from '../../assets/login_logo.svg';
 import { useMutation } from '@tanstack/react-query';
 
 export function LoginPage(params: { onLoginSuccess: () => void }) {
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState<string | undefined>();
     const { mutate, isPending } = useMutation({
         mutationFn: login,
         onSuccess: (status) => {
@@ -21,7 +21,7 @@ export function LoginPage(params: { onLoginSuccess: () => void }) {
     const handleLogin = useMemo(() => {
         return (e: React.FormEvent<HTMLFormElement>) => {
             e.preventDefault();
-            setError(null);
+            setError(undefined);
 
             const formData = new FormData(e.currentTarget);
             mutate({
@@ -32,10 +32,10 @@ export function LoginPage(params: { onLoginSuccess: () => void }) {
     }, [mutate]);
 
     return (<div className={css.loginPage}>
-        <div id="loginCard">
+        <div id={css.loginCard}>
             <img src={logo} alt="Open Integration Engine Logo" id="logo" />
 
-            {error && <div id="alertBlock">{error}</div>}
+            {error && <div id={css.alertBlock}>{error}</div>}
 
             <form onSubmit={handleLogin}>
                 <label htmlFor="username">Username</label>
