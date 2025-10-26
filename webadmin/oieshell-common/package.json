@@ -1,0 +1,23 @@
+{
+  "name": "oieshell-common",
+  "version": "1.0.0",
+  "description": "Common types and utility classes for building plugins to the OIE WebAdmin Shell",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OpenIntegrationEngine/engine.git"
+  },
+  "author": "OIE Contributors",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/OpenIntegrationEngine/engine/issues"
+  },
+  "homepage": "https://github.com/OpenIntegrationEngine/engine#readme",
+  "dependencies": {
+    "oieapi-types": "file:../oieapi-types",
+    "openapi-fetch": "^0.15.0"
+  }
+}

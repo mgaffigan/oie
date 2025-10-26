@@ -1,16 +1,17 @@
 import { createContext, useContext } from "react";
-import type { components } from "oieapi-types";
-import { Client } from "./Services";
+import { Client, baseUrl } from "./Services";
+import { PluginRegistry } from "./PluginRegistry.ts";
+import type { SessionContextType } from "oieshell-common/session.ts";
+import type { OiePluginContext } from "oieshell-common";
+import { basePlugins } from "../basePlugins/index.ts";
 
-export type SessionContextType = {
-    user: components["schemas"]["User"];
-    serverSettings: components["schemas"]["PublicServerSettings"];
-    prefs: Record<string, string>;
-};
+export interface AppContext extends SessionContextType {
+    plugins: PluginRegistry;
+}
 
-export const SessionContext = createContext<SessionContextType | null>(null);
+export const SessionContext = createContext<AppContext | null>(null);
 
-export function useSession(): SessionContextType {
+export function useSession(): AppContext {
     const context = useContext(SessionContext);
     if (!context) {
         throw new Error("useSession must be used within a SessionProvider");
@@ -18,7 +19,7 @@ export function useSession(): SessionContextType {
     return context;
 }
 
-export async function createSession(): Promise<SessionContextType> {
+export async function createSession(): Promise<AppContext> {
     const { data: user } = await Client.GET('/users/current');
     if (!user) {
         throw new Error('Not authenticated');
@@ -34,9 +35,19 @@ export async function createSession(): Promise<SessionContextType> {
         throw new Error('Failed to fetch user preferences');
     }
 
+    const pluginContext: OiePluginContext = {
+        baseUrl: baseUrl,
+        client: Client,
+    };
+    const pluginRegistry = new PluginRegistry(pluginContext);
+    for (const basePlugin of basePlugins) {
+        pluginRegistry.addBasePlugin(basePlugin);
+    }
+
     return {
         user, serverSettings,
-        prefs: prefs as Record<string, string>
+        prefs: prefs as Record<string, string>,
+        plugins: pluginRegistry
     };
 }
 

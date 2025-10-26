@@ -1,7 +1,7 @@
 import createClient from 'openapi-fetch';
 import type { paths as EngineApi } from 'oieapi-types/index.d.ts';
 
-const baseUrl = window.location.origin + '/api/';
+export const baseUrl = window.location.origin + '/api/';
 
 export const Client = createClient<EngineApi, 'application/mirthapi+json'>({
     baseUrl: baseUrl,

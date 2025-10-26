@@ -14,6 +14,7 @@
     "@tanstack/react-query": "^5.90.5",
     "bootstrap": "^5.3.8",
     "oieapi-types": "file:../oieapi-types",
+    "oieshell-common": "file:../oieshell-common",
     "openapi-fetch": "^0.15.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
