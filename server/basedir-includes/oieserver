@@ -99,7 +99,7 @@ expand_line_variables() {
         # Get the variable name and its value.
         local var_name="${BASH_REMATCH[2]}"
         # Use indirect expansion to get the variable's value. Do not replace if not set.
-        if [[ -v "$var_name" ]]; then
+        if [[ -n "${!var_name+x}" ]]; then
             local var_value="${!var_name}"
             result_line+="$var_value"
         else
