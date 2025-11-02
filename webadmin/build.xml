@@ -14,6 +14,9 @@
 
 	<target name="compile">
 		<!-- Run npm build on spa -->
+		<exec dir="${webadmin}/oieshell-common" executable="${npmExecutable}">
+			<arg value="install" />
+		</exec>
 		<exec dir="${webadmin}/spa" executable="${npmExecutable}">
 			<arg value="install" />
 		</exec>

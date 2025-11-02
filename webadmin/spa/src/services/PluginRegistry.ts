@@ -1,8 +1,10 @@
 import { getLocalizedString } from "oieshell-common/localization.ts";
+import { type DependencyList, type RefObject } from "react";
 import type { BasePlugin } from "../basePlugins/index";
-import type { OieShellPlugin, OieShellManifest, OiePluginFactory, OieShellHook, OiePluginContext, OiePageHook, OieDynamicMenuItem, OieMountContext, OieMountEvents } from "oieshell-common/shell.ts";
+import type { OieShellPlugin, OieShellManifest, OiePluginFactory, OieShellHook, OiePluginContext, OiePageHook, OieDynamicMenuItem, OieMountContext, OieMountEvents, OiePageMountContext, OieLowerThirdHook, OieShellHookBase } from "oieshell-common/shell.ts";
+import { useAsyncEffect } from "./ReactUtilities";
 
-interface HookWithSource extends OieShellHook {
+interface HookWithSource extends OieShellHookBase {
     pluginId: string;
 }
 
@@ -35,7 +37,7 @@ export class PageHookRegistration {
                 throw new Error(`Plugin ${this.hook.hookId} does not implement mountMainPage`);
             }
 
-            const mountContext: OieMountContext = {
+            const mountContext: OiePageMountContext = {
                 target,
                 pluginContext: this.registry.pluginContext,
                 setMenuItems
@@ -45,6 +47,43 @@ export class PageHookRegistration {
     }
 }
 
+export class LowerThirdHookRegistration {
+    private hook: HookWithSource & OieLowerThirdHook;
+    private registry: PluginRegistry;
+
+    constructor(hook: HookWithSource & OieLowerThirdHook, registry: PluginRegistry) {
+        this.hook = hook;
+        this.registry = registry;
+    }
+
+    get hookId() {
+        return this.hook.hookId;
+    }
+
+    get header() {
+        return getLocalizedString(this.hook.header);
+    }
+
+    get order() {
+        return this.hook.order;
+    }
+
+    async loadAsync(): Promise<(target: HTMLDivElement) => OieMountEvents> {
+        const plugin = await this.registry.getPluginAsync(this.hook.pluginId);
+
+        return (target: HTMLDivElement): OieMountEvents => {
+            if (!plugin.mountDashboardLowerThird) {
+                throw new Error(`Plugin ${this.hook.hookId} does not implement mountDashboardLowerThird`);
+            }
+
+            const mountContext: OieMountContext = {
+                target,
+                pluginContext: this.registry.pluginContext
+            };
+            return plugin.mountDashboardLowerThird(this.hook.hookId, mountContext) || {};
+        };
+    }
+}
 
 export class PluginRegistry {
     private context: OiePluginContext;
@@ -74,7 +113,7 @@ export class PluginRegistry {
         this.addManifest(plugin.manifest);
         this.initializedPlugins.set(plugin.manifest.pluginId, plugin);
     }
-    
+
     async getPluginAsync(pluginId: string): Promise<OieShellPlugin> {
         // Check if the plugin is already loaded
         const existing = this.initializedPlugins.get(pluginId);
@@ -100,10 +139,31 @@ export class PluginRegistry {
     }
 
     getPageHooks(type: OiePageHook['type']): PageHookRegistration[] {
-        let results: PageHookRegistration[] = [];
-        for (const hook of this.getHooksOfType<OiePageHook>(type)) {
-            results.push(new PageHookRegistration(hook, this));
-        }
-        return results;
+        return this.getHooksOfType<OiePageHook>(type)
+            .map(hook => new PageHookRegistration(hook, this));
     }
+
+    getLowerThirdHooks(): LowerThirdHookRegistration[] {
+        return this.getHooksOfType<OieLowerThirdHook>('DashboardLowerThird')
+            .map(hook => new LowerThirdHookRegistration(hook, this))
+            .sort((a, b) => a.order - b.order);
+    }
+}
+
+export function usePluginMount(
+    mountRef: RefObject<HTMLDivElement | null>,
+    mount: (target: HTMLDivElement) => Promise<OieMountEvents>,
+    deps: DependencyList
+): void {
+    useAsyncEffect(async () => {
+        if (!mountRef.current) return;
+
+        // create a non-react owned div to mount into
+        const targetDiv = document.createElement('div');
+        mountRef.current.replaceChildren(targetDiv);
+
+        // mount
+        const events = await mount(targetDiv);
+        return () => setTimeout(() => events.onUnmount?.(), 0);
+    }, deps);
 }

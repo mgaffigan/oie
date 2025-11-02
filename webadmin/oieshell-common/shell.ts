@@ -1,6 +1,10 @@
 import type { ClientApi } from './client.ts';
 import type { LocalizedString } from './localization.ts';
 
+export type OieShellHook 
+    = OiePageHook
+    | OieLowerThirdHook;
+
 export interface OieShellManifest {
     /** Unique identifier for the shell plugin */
     pluginId: string;
@@ -23,7 +27,8 @@ export interface OieShellManifest {
 
 export type OieShellHookType 
     = 'MainPage' 
-    | 'SettingsTab';
+    | 'SettingsTab'
+    | 'DashboardLowerThird';
     // | 'ChannelEditAction' 
     // | 'ChannelEditTab'
     // | 'FilterType'
@@ -39,15 +44,21 @@ export type OieShellHookType
     // | 'DestinationConnectorType'
     // | 'FormatterType';
 
-export interface OieShellHook {
+export interface OieShellHookBase {
     type: OieShellHookType;
     hookId: string;
 }
 
-export interface OiePageHook extends OieShellHook {
+export interface OiePageHook extends OieShellHookBase {
     type: 'MainPage' | 'SettingsTab';
     header: LocalizedString;
     iconPath?: string;
+}
+
+export interface OieLowerThirdHook extends OieShellHookBase {
+    type: 'DashboardLowerThird';
+    header: LocalizedString;
+    order: number;
 }
 
 export interface OiePluginContext {
@@ -69,6 +80,9 @@ export interface OieDynamicMenuItem {
 export interface OieMountContext {
     target: HTMLDivElement;
     pluginContext: OiePluginContext;
+}
+
+export interface OiePageMountContext extends OieMountContext {
     setMenuItems: (items: Array<OieDynamicMenuItem>) => void;
 }
 
@@ -81,6 +95,7 @@ export interface OieMountEvents {
 }
 
 export interface OieShellPlugin {
-    mountMainPage?: (hookId: string, context: OieMountContext) => OieMountEvents | undefined;
-    invokeSettingsTab?: (hookId: string, context: OieMountContext) => OieMountEvents | undefined;
+    mountMainPage?: (hookId: string, context: OiePageMountContext) => OieMountEvents | undefined;
+    invokeSettingsTab?: (hookId: string, context: OiePageMountContext) => OieMountEvents | undefined;
+    mountDashboardLowerThird?: (hookId: string, context: OieMountContext) => OieMountEvents | undefined;
 }
