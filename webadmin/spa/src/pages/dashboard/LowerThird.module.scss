@@ -1,0 +1,64 @@
+
+
+.lowerThird {
+    display: grid;
+    grid-template-rows: auto 1fr;
+
+    /* row of tab headers */
+    .tabStrip {
+        display: flex;
+        margin-bottom: -1px;
+        z-index: 1;
+        border: 1px solid rgba(0, 0, 0, 0.176);
+        border-bottom: none;
+        background-color: rgb(239, 239, 239);
+        border-top-left-radius: 0.25rem;
+        border-top-right-radius: 0.25rem;
+    }
+
+    /* individual tab header */
+    .tabItem {
+        padding: 0.25rem 0.5rem;
+        margin: -1px 0 0 -1px;
+        border: 1px solid rgba(0, 0, 0, 0.176);
+        border-bottom: none;
+        background-color: rgb(239, 239, 239);
+        border-top-left-radius: 0.25rem;
+        border-top-right-radius: 0.25rem;
+
+        &.active {
+            background-color: white;
+        }
+
+        &:hover {
+            cursor: pointer;
+            text-decoration: underline;
+        }
+    }
+
+    .popOutDiv {
+        padding: 0.25rem 0.5rem;
+        margin: -1px 0 0 -1px;
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+
+        &>a {
+            text-decoration: none;
+            color: black;
+        }
+    }
+
+    /* body of the selected tab */
+    .tabPanel {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        min-height: 0;
+    }
+}
+
+/* mount point for the plugin */
+.mountPoint,
+.mountPoint>div {
+    height: 100%;
+}

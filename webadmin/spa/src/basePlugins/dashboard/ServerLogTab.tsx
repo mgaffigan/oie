@@ -52,7 +52,7 @@ export function ServerLogTab(props: { context: OiePluginContext }) {
                 <img src={xIcon} aria-hidden="true" />
             </button>
 
-            <form style={{ marginLeft: 'auto' }} className="d-flex flex-row align-items-center">
+            <form style={{ marginLeft: 'auto' }} className="d-flex flex-row align-items-center" onSubmit={e => e.preventDefault()}>
                 <label htmlFor="server-log-max-lines-input" className="text-nowrap me-2">
                     Log Size:
                 </label>

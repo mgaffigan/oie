@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router";
-import { LowerThirdPopoutPage } from "./LowerThirdPopoutPage";
+import { LowerThirdPopoutPage } from "./LowerThird";
 
 export function DashboardRoutes() {
     return <Routes>

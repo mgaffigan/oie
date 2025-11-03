@@ -1,0 +1,25 @@
+.dashboardListCard {
+    height: 100%;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+}
+
+.dashboardList {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 0;
+}
+
+.toolbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.separator {
+    width: 1px;
+    height: 1.5rem;
+    background-color: rgba(0, 0, 0, 0.176);
+    margin: 0 0.5rem;
+}
