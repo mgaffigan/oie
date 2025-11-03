@@ -1,0 +1,19 @@
+.serverLogTab {
+    height: 100%;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+}
+
+.logContent {
+    overflow-y: auto;
+    overflow-x: hidden;
+    font-size: smaller;
+    padding-left: 30px;
+    text-indent: -30px;
+    font-family: monospace;
+}
+
+.toolbar {
+    display: flex;
+    justify-content: flex-end;
+}

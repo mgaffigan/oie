@@ -46,11 +46,11 @@ export default {
     },
     mountDashboardLowerThird(hookId, context): OieMountEvents {
         if (hookId === "dashboard-server-log") {
-            return mount(<ServerLogTab />, context.target);
+            return mount(<ServerLogTab context={context.pluginContext} />, context.target);
         } else if (hookId === "dashboard-connection-log") {
-            return mount(<ConnectionLogTab />, context.target);
+            return mount(<ConnectionLogTab context={context.pluginContext} />, context.target);
         } else if (hookId === "dashboard-global-map") {
-            return mount(<GlobalMapTab />, context.target);
+            return mount(<GlobalMapTab  context={context.pluginContext} />, context.target);
         } else {
             throw new Error(`Unknown hook ID: ${hookId}`);
         }

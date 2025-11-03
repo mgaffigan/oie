@@ -87,19 +87,22 @@ public interface GlobalMapServletInterface extends BaseServletInterface {
             @Content(mediaType = MediaType.APPLICATION_XML, examples = {
                     @ExampleObject(name = "globalMap", ref = "../apiexamples/generic_map_xml") }),
             @Content(mediaType = MediaType.TEXT_PLAIN, examples = {
-                    @ExampleObject(name = "genericMap", ref = "../apiexamples/generic_map_xml") }) })
+                    @ExampleObject(name = "genericMap", ref = "../apiexamples/generic_map_xml") }),
+            @Content(mediaType = ApiContentTypes.APPLICATION_MIRTHAPI_JSON), })
     @MirthOperation(name = "getGlobalMap", display = "Get global map", permission = PERMISSION_VIEW, type = ExecuteType.ASYNC, auditable = false)
-    @Produces({ MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN })
+    @Produces({ MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN, ApiContentTypes.APPLICATION_MIRTHAPI_JSON })
     public Map<String, String> getGlobalMap() throws ClientException;
 
     @GET
     @Path("/maps/{channelId}")
     @Operation(summary = "Retrieves global channel map information for a single channel.")
-    @ApiResponse(content = { @Content(mediaType = MediaType.APPLICATION_XML, examples = {
-            @ExampleObject(name = "genericMapString", ref = "../apiexamples/generic_map_xml") }),
+    @ApiResponse(content = { 
+            @Content(mediaType = MediaType.APPLICATION_XML, examples = {
+                    @ExampleObject(name = "genericMapString", ref = "../apiexamples/generic_map_xml") }),
             @Content(mediaType = MediaType.TEXT_PLAIN, examples = {
-                    @ExampleObject(name = "genericMapString", ref = "../apiexamples/generic_map_xml") }) })
+                    @ExampleObject(name = "genericMapString", ref = "../apiexamples/generic_map_xml") }),
+            @Content(mediaType = ApiContentTypes.APPLICATION_MIRTHAPI_JSON), })
     @MirthOperation(name = "getGlobalChannelMap", display = "Get global channel map", permission = PERMISSION_VIEW, type = ExecuteType.ASYNC, auditable = false)
-    @Produces({ MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN })
+    @Produces({ MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN, ApiContentTypes.APPLICATION_MIRTHAPI_JSON })
     public Map<String, String> getGlobalChannelMap(@Param("channelId") @Parameter(description = "The ID of the channel to retrieve global channel map information for.") @PathParam("channelId") String channelId) throws ClientException;
 }

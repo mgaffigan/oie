@@ -89,6 +89,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/connectors/jms/templates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieves JMS connector settings templates. */
+        get: operations["getTemplates"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/connectors/jms/templates/{templateName}": {
         parameters: {
             query?: never;
@@ -103,23 +120,6 @@ export interface paths {
         post?: never;
         /** Creates or updates a JMS connector settings template. */
         delete: operations["deleteTemplate"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/connectors/jms/templates": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Retrieves JMS connector settings templates. */
-        get: operations["getTemplates"];
-        put?: never;
-        post?: never;
-        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -153,40 +153,6 @@ export interface paths {
         put?: never;
         /** Tests whether a connection can be successfully established to the destination endpoint. */
         post: operations["testConnection_1"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/connectors/ws/_getDefinition": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Retrieves the definition service map corresponding to the specified WSDL. */
-        post: operations["getDefinition"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/connectors/ws/_testConnection": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Tests whether a connection can be successfully established to the destination endpoint. */
-        post: operations["testConnection_2"];
         delete?: never;
         options?: never;
         head?: never;
@@ -227,23 +193,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/connectors/ws/_getSoapAction": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Retrieves the default SOAP Action (URI string) for a given WSDL operation. */
-        post: operations["getSoapAction"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/connectors/ws/_generateEnvelope": {
         parameters: {
             query?: never;
@@ -261,17 +210,51 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/extensions/dashboardstatus/connectionLogs/{channelId}": {
+    "/connectors/ws/_getSoapAction": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Retrieves connection logs for a specific channel. */
-        get: operations["getChannelLog"];
+        get?: never;
         put?: never;
-        post?: never;
+        /** Retrieves the default SOAP Action (URI string) for a given WSDL operation. */
+        post: operations["getSoapAction"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/connectors/ws/_testConnection": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Tests whether a connection can be successfully established to the destination endpoint. */
+        post: operations["testConnection_2"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/connectors/ws/_getDefinition": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Retrieves the definition service map corresponding to the specified WSDL. */
+        post: operations["getDefinition"];
         delete?: never;
         options?: never;
         head?: never;
@@ -295,15 +278,15 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/extensions/dashboardstatus/channelStates/{channelId}": {
+    "/extensions/dashboardstatus/connectionLogs/{channelId}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Retrieves a single dashboard channel state. */
-        get: operations["getChannelState"];
+        /** Retrieves connection logs for a specific channel. */
+        get: operations["getChannelLog"];
         put?: never;
         post?: never;
         delete?: never;
@@ -329,6 +312,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/extensions/dashboardstatus/channelStates/{channelId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieves a single dashboard channel state. */
+        get: operations["getChannelState"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/extensions/dashboardstatus/connectionLogs": {
         parameters: {
             query?: never;
@@ -338,6 +338,23 @@ export interface paths {
         };
         /** Retrieves connection logs for all channels. */
         get: operations["getAllChannelLogs"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/extensions/datapruner/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieves the current data pruner status. */
+        get: operations["getStatusMap"];
         put?: never;
         post?: never;
         delete?: never;
@@ -380,23 +397,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/extensions/datapruner/status": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Retrieves the current data pruner status. */
-        get: operations["getStatusMap"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/extensions/directoryresource/resources/{resourceId}/libraries": {
         parameters: {
             query?: never;
@@ -406,23 +406,6 @@ export interface paths {
         };
         /** Retrieves all library URLs for the given directory resource. */
         get: operations["getLibraries"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/extensions/globalmapviewer/maps/{channelId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Retrieves global channel map information for a single channel. */
-        get: operations["getGlobalChannelMap"];
         put?: never;
         post?: never;
         delete?: never;
@@ -482,6 +465,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/extensions/globalmapviewer/maps/{channelId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieves global channel map information for a single channel. */
+        get: operations["getGlobalChannelMap"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/extensions/serverlog": {
         parameters: {
             query?: never;
@@ -499,86 +499,17 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/alerts/options": {
+    "/alerts/statuses": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Returns all alert protocol options. */
-        get: operations["getAlertProtocolOptions"];
+        /** Returns all alert dashboard statuses. */
+        get: operations["getAlertStatusList"];
         put?: never;
         post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/alerts": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Retrieves multiple alerts by ID, or all alerts if not specified. */
-        get: operations["getAlerts"];
-        put?: never;
-        /** Creates a new alert. */
-        post: operations["createAlert"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/alerts/_getAlerts": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Retrieves multiple alerts by ID, or all alerts if not specified. This is a POST request alternative to GET /alerts that may be used when there are too many alert IDs to include in the query parameters. */
-        post: operations["getAlertsPost"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/alerts/_getInfo": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Returns an AlertInfo object containing alert protocol options and any updated channel summaries. */
-        post: operations["getAlertInfo"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/alerts/{alertId}/_getInfo": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Returns an AlertInfo object containing the alert model, alert protocol options, and any updated channel summaries. */
-        post: operations["getAlertInfo_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -621,23 +552,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/alerts/statuses": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Returns all alert dashboard statuses. */
-        get: operations["getAlertStatusList"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/alerts/{alertId}/_disable": {
         parameters: {
             query?: never;
@@ -649,6 +563,109 @@ export interface paths {
         put?: never;
         /** Disables the specified alert. */
         post: operations["disableAlert"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/alerts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieves multiple alerts by ID, or all alerts if not specified. */
+        get: operations["getAlerts"];
+        put?: never;
+        /** Creates a new alert. */
+        post: operations["createAlert"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/alerts/_getAlerts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Retrieves multiple alerts by ID, or all alerts if not specified. This is a POST request alternative to GET /alerts that may be used when there are too many alert IDs to include in the query parameters. */
+        post: operations["getAlertsPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/alerts/{alertId}/_getInfo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Returns an AlertInfo object containing the alert model, alert protocol options, and any updated channel summaries. */
+        post: operations["getAlertInfo"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/alerts/_getInfo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Returns an AlertInfo object containing alert protocol options and any updated channel summaries. */
+        post: operations["getAlertInfo_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/alerts/options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns all alert protocol options. */
+        get: operations["getAlertProtocolOptions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channelgroups/_bulkUpdate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Updates all channel groups in one request. ("Try it out" doesn't work for this endpoint, but the descriptions are valid. Please use another tool for testing.) */
+        post: operations["updateChannelGroups"];
         delete?: never;
         options?: never;
         head?: never;
@@ -689,42 +706,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/channelgroups/_bulkUpdate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Updates all channel groups in one request. ("Try it out" doesn't work for this endpoint, but the descriptions are valid. Please use another tool for testing.) */
-        post: operations["updateChannelGroups"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/{channelId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Retrieve a single channel by ID. */
-        get: operations["getChannel"];
-        /** Updates the specified channel. */
-        put: operations["updateChannel"];
-        post?: never;
-        /** Removes the channel with the specified ID. */
-        delete: operations["removeChannel"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/channels": {
         parameters: {
             query?: never;
@@ -744,24 +725,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/channels/{channelId}/metaDataColumns": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Returns all metadata columns for a channel. */
-        get: operations["getMetaDataColumns"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/_getChannels": {
+    "/channels/_getSummary": {
         parameters: {
             query?: never;
             header?: never;
@@ -770,42 +734,8 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Retrieve a list of all channels, or multiple channels by ID. This is a POST request alternative to GET /channels that may be used when there are too many channel IDs to include in the query parameters. */
-        post: operations["getChannelsPost"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/_removeChannels": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Removes the channels with the specified IDs. This is a POST request alternative to DELETE /channels that may be used when there are too many channel IDs to include in the query parameters. */
-        post: operations["removeChannelsPost"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/{channelId}/connectorNames": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Returns all connector names for a channel. */
-        get: operations["getConnectorNames"];
-        put?: never;
-        post?: never;
+        /** Returns a list of channel summaries, indicating to a client which channels have changed (been updated, deleted, undeployed, etc.). If a channel was modified, the entire Channel object will be returned. */
+        post: operations["getChannelSummary"];
         delete?: never;
         options?: never;
         head?: never;
@@ -846,6 +776,93 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/channels/{channelId}/initialState/{initialState}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sets the initial state for a single channel. */
+        post: operations["setChannelInitialState"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/_setInitialState": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sets the initial state for the specified channels. ("Try it Out" only works when submitting an array containing one element for this endpoint, but the descriptions are valid. If you want to modify multiple items at once, please use another tool for testing.) */
+        post: operations["setChannelInitialState_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/{channelId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve a single channel by ID. */
+        get: operations["getChannel"];
+        /** Updates the specified channel. */
+        put: operations["updateChannel"];
+        post?: never;
+        /** Removes the channel with the specified ID. */
+        delete: operations["removeChannel"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/{channelId}/connectorNames": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns all connector names for a channel. */
+        get: operations["getConnectorNames"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/_getChannels": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Retrieve a list of all channels, or multiple channels by ID. This is a POST request alternative to GET /channels that may be used when there are too many channel IDs to include in the query parameters. */
+        post: operations["getChannelsPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/channels/idsAndNames": {
         parameters: {
             query?: never;
@@ -863,57 +880,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/channels/_setInitialState": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Sets the initial state for the specified channels. ("Try it Out" only works when submitting an array containing one element for this endpoint, but the descriptions are valid. If you want to modify multiple items at once, please use another tool for testing.) */
-        post: operations["setChannelInitialState"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/{channelId}/initialState/{initialState}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Sets the initial state for a single channel. */
-        post: operations["setChannelInitialState_1"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/_getSummary": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Returns a list of channel summaries, indicating to a client which channels have changed (been updated, deleted, undeployed, etc.). If a channel was modified, the entire Channel object will be returned. */
-        post: operations["getChannelSummary"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/channels/portsInUse": {
         parameters: {
             query?: never;
@@ -925,6 +891,74 @@ export interface paths {
         get: operations["getChannelPortsInUse"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/_removeChannels": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Removes the channels with the specified IDs. This is a POST request alternative to DELETE /channels that may be used when there are too many channel IDs to include in the query parameters. */
+        post: operations["removeChannelsPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/{channelId}/metaDataColumns": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns all metadata columns for a channel. */
+        get: operations["getMetaDataColumns"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/statistics/_getStatistics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Returns the Statistics for all channels. This is a POST request alternative to GET /statistics that may be used when there are too many channel IDs to include in the query parameters. */
+        post: operations["getStatisticsPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/_clearAllStatistics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Clears all statistics (including lifetime) for all channels/connectors. */
+        post: operations["clearAllStatistics"];
         delete?: never;
         options?: never;
         head?: never;
@@ -982,40 +1016,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/channels/statistics/_getStatistics": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Returns the Statistics for all channels. This is a POST request alternative to GET /statistics that may be used when there are too many channel IDs to include in the query parameters. */
-        post: operations["getStatisticsPost"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/_clearAllStatistics": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Clears all statistics (including lifetime) for all channels/connectors. */
-        post: operations["clearAllStatistics"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/channels/statuses/_getChannelStatusList": {
         parameters: {
             query?: never;
@@ -1044,159 +1044,6 @@ export interface paths {
         get: operations["getDashboardChannelInfo"];
         put?: never;
         post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/statuses": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Returns all channel dashboard statuses, or multiple statuses by channel ID. */
-        get: operations["getChannelStatusList"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/_halt": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Halts the channels with the specified IDs. ("Try it Out" only works when submitting an array containing one element for this endpoint, but the descriptions are valid. If you want to modify multiple items at once, please use another tool for testing.) */
-        post: operations["haltChannels"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/{channelId}/connector/{metaDataId}/_start": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Starts the connector with the specified channel and metadata ID. */
-        post: operations["startConnector"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/_resume": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Resume the channels with the specified IDs. ("Try it Out" only works when submitting an array containing one element for this endpoint, but the descriptions are valid. If you want to modify multiple items at once, please use another tool for testing.) */
-        post: operations["resumeChannels"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/_start": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Starts the channels with the specified IDs. ("Try it Out" only works when submitting an array containing one element for this endpoint, but the descriptions are valid. If you want to modify multiple items at once, please use another tool for testing.) */
-        post: operations["startChannels"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/{channelId}/connector/{metaDataId}/_stop": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Stops the connector with the specified channel and metadata ID. */
-        post: operations["stopConnector"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/{channelId}/status": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Returns the dashboard status for a single channel ID. */
-        get: operations["getChannelStatus"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/_pause": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Pauses the channels with the specified IDs. ("Try it Out" only works when submitting an array containing one element for this endpoint, but the descriptions are valid. If you want to modify multiple items at once, please use another tool for testing.) */
-        post: operations["pauseChannels"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/_stop": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Stops the channels with the specified IDs. ("Try it Out" only works when submitting an array containing one element for this endpoint, but the descriptions are valid. If you want to modify multiple items at once, please use another tool for testing.) */
-        post: operations["stopChannels"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1237,40 +1084,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/channels/_stopConnectors": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Stops the connectors with the specified channel and metadata IDs. */
-        post: operations["stopConnectors"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/{channelId}/_resume": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Resumes the channel with the specified ID. */
-        post: operations["resumeChannel"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/channels/{channelId}/_halt": {
         parameters: {
             query?: never;
@@ -1305,6 +1118,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/channels/{channelId}/_resume": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Resumes the channel with the specified ID. */
+        post: operations["resumeChannel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/channels/_startConnectors": {
         parameters: {
             query?: never;
@@ -1322,7 +1152,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/codeTemplateLibraries/_getCodeTemplateLibraries": {
+    "/channels/_stopConnectors": {
         parameters: {
             query?: never;
             header?: never;
@@ -1331,32 +1161,15 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Retrieves multiple code template libraries by ID, or all libraries if not specified. This is a POST request alternative to GET /codeTemplateLibraries that may be used when there are too many library IDs to include in the query parameters. */
-        post: operations["getCodeTemplateLibrariesPost"];
+        /** Stops the connectors with the specified channel and metadata IDs. */
+        post: operations["stopConnectors"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/codeTemplateLibraries/{libraryId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Retrieves a single code template library. */
-        get: operations["getCodeTemplateLibrary"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/codeTemplates/_getCodeTemplates": {
+    "/channels/_start": {
         parameters: {
             query?: never;
             header?: never;
@@ -1365,43 +1178,161 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Retrieves multiple code templates by ID, or all templates if not specified. This is a POST request alternative to GET /codeTemplates that may be used when there are too many code template IDs to include in the query parameters. */
-        post: operations["getCodeTemplatesPost"];
+        /** Starts the channels with the specified IDs. ("Try it Out" only works when submitting an array containing one element for this endpoint, but the descriptions are valid. If you want to modify multiple items at once, please use another tool for testing.) */
+        post: operations["startChannels"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/codeTemplateLibraries": {
+    "/channels/_stop": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Retrieves multiple code template libraries by ID, or all libraries if not specified. */
-        get: operations["getCodeTemplateLibraries"];
-        /** Replaces all code template libraries. */
-        put: operations["updateCodeTemplateLibraries"];
-        post?: never;
+        get?: never;
+        put?: never;
+        /** Stops the channels with the specified IDs. ("Try it Out" only works when submitting an array containing one element for this endpoint, but the descriptions are valid. If you want to modify multiple items at once, please use another tool for testing.) */
+        post: operations["stopChannels"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/codeTemplates": {
+    "/channels/_pause": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Retrieves multiple code templates by ID, or all templates if not specified. */
-        get: operations["getCodeTemplates"];
+        get?: never;
+        put?: never;
+        /** Pauses the channels with the specified IDs. ("Try it Out" only works when submitting an array containing one element for this endpoint, but the descriptions are valid. If you want to modify multiple items at once, please use another tool for testing.) */
+        post: operations["pauseChannels"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/_resume": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Resume the channels with the specified IDs. ("Try it Out" only works when submitting an array containing one element for this endpoint, but the descriptions are valid. If you want to modify multiple items at once, please use another tool for testing.) */
+        post: operations["resumeChannels"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/{channelId}/connector/{metaDataId}/_start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Starts the connector with the specified channel and metadata ID. */
+        post: operations["startConnector"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/{channelId}/connector/{metaDataId}/_stop": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Stops the connector with the specified channel and metadata ID. */
+        post: operations["stopConnector"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/_halt": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Halts the channels with the specified IDs. ("Try it Out" only works when submitting an array containing one element for this endpoint, but the descriptions are valid. If you want to modify multiple items at once, please use another tool for testing.) */
+        post: operations["haltChannels"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/{channelId}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns the dashboard status for a single channel ID. */
+        get: operations["getChannelStatus"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/statuses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns all channel dashboard statuses, or multiple statuses by channel ID. */
+        get: operations["getChannelStatusList"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/codeTemplates/_getSummary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Returns a list of code template summaries, indicating to a client which code templates have changed. If a code template was modified, the entire CodeTemplate object will be returned. */
+        post: operations["getCodeTemplateSummary"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1444,7 +1375,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/codeTemplates/_getSummary": {
+    "/codeTemplateLibraries/_getCodeTemplateLibraries": {
         parameters: {
             query?: never;
             header?: never;
@@ -1453,23 +1384,23 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Returns a list of code template summaries, indicating to a client which code templates have changed. If a code template was modified, the entire CodeTemplate object will be returned. */
-        post: operations["getCodeTemplateSummary"];
+        /** Retrieves multiple code template libraries by ID, or all libraries if not specified. This is a POST request alternative to GET /codeTemplateLibraries that may be used when there are too many library IDs to include in the query parameters. */
+        post: operations["getCodeTemplateLibrariesPost"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/server/property": {
+    "/codeTemplateLibraries/{libraryId}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Returns a property from the configuration table. */
-        get: operations["getProperty"];
+        /** Retrieves a single code template library. */
+        get: operations["getCodeTemplateLibrary"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1478,17 +1409,17 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/server/resources": {
+    "/codeTemplateLibraries": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Returns all resources for the server. */
-        get: operations["getResources"];
-        /** Updates all resources for the server. */
-        put: operations["setResources"];
+        /** Retrieves multiple code template libraries by ID, or all libraries if not specified. */
+        get: operations["getCodeTemplateLibraries"];
+        /** Replaces all code template libraries. */
+        put: operations["updateCodeTemplateLibraries"];
         post?: never;
         delete?: never;
         options?: never;
@@ -1496,270 +1427,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/server/version": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Returns the version of the server. */
-        get: operations["getVersion"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/server/protocolsAndCipherSuites": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Returns a map containing all supported and enabled TLS protocols and cipher suites. */
-        get: operations["getProtocolsAndCipherSuites"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/server/status": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Returns the status of the server. */
-        get: operations["getStatus"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/server/id": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Returns the server id. */
-        get: operations["getServerId"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/server/settings": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Returns a ServerSettings object with all server settings. */
-        get: operations["getServerSettings"];
-        /** Updates the server configuration settings. */
-        put: operations["setServerSettings"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/server/channelTags": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Returns a set containing all channel tags for the server. */
-        get: operations["getChannelTags"];
-        /** Updates all channel tags. */
-        put: operations["setChannelTags"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/server/updateSettings": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Returns an UpdateSettings object with all update settings. */
-        get: operations["getUpdateSettings"];
-        /** Updates the update settings. */
-        put: operations["setUpdateSettings"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/server/globalScripts": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Returns a map containing all of the global scripts. */
-        get: operations["getGlobalScripts"];
-        /** Updates all of the global scripts. */
-        put: operations["setGlobalScripts"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/server/configurationMap": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Returns all entries in the configuration map. */
-        get: operations["getConfigurationMap"];
-        /** Updates all entries in the configuration map. */
-        put: operations["setConfigurationMap"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/server/channelDependencies": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Returns all channel dependencies for the server. */
-        get: operations["getChannelDependencies"];
-        /** Updates all channel dependencies for the server. */
-        put: operations["setChannelDependencies"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/server/timezone": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Returns the time zone of the server. */
-        get: operations["getServerTimezone"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/server/time": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Returns the time of the server. */
-        get: operations["getServerTime"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/server/databaseDrivers": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Returns the database driver list. */
-        get: operations["getDatabaseDrivers"];
-        /** Updates the list of database drivers. */
-        put: operations["setDatabaseDrivers"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/server/buildDate": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Returns the build date of the server. */
-        get: operations["getBuildDate"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/server/channelMetadata": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Returns all channel metadata for the server. */
-        get: operations["getChannelMetadata"];
-        /** Updates all channel metadata for the server. */
-        put: operations["setChannelMetadata"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/server/_testEmail": {
+    "/codeTemplates/_getCodeTemplates": {
         parameters: {
             query?: never;
             header?: never;
@@ -1768,23 +1436,23 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Sends a test e-mail. */
-        post: operations["sendTestEmail_1"];
+        /** Retrieves multiple code templates by ID, or all templates if not specified. This is a POST request alternative to GET /codeTemplates that may be used when there are too many code template IDs to include in the query parameters. */
+        post: operations["getCodeTemplatesPost"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/server/charsets": {
+    "/codeTemplates": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Returns a List of all of the charset encodings supported by the server. */
-        get: operations["getAvailableCharsetEncodings"];
+        /** Retrieves multiple code templates by ID, or all templates if not specified. */
+        get: operations["getCodeTemplates"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1793,86 +1461,17 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/server/encryption": {
+    "/server/resources/{resourceId}/_reload": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Returns an EncryptionSettings object with all encryption settings. */
-        get: operations["getEncryptionSettings"];
+        get?: never;
         put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/server/configuration": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Returns a ServerConfiguration object which contains all of the channels, alerts, configuration map, and properties stored on the server. */
-        get: operations["getServerConfiguration"];
-        /** Updates all of the channels, alerts and properties stored on the server. */
-        put: operations["setServerConfiguration"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/server/rhinoLanguageVersion": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Returns the language version that the Rhino engine should use. */
-        get: operations["getRhinoLanguageVersion"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/server/publicSettings": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Returns a PublicServerSettings object containing server settings available to all users. */
-        get: operations["getPublicServerSettings"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/server/passwordRequirements": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Returns all password requirements for the server. */
-        get: operations["getPasswordRequirements"];
-        put?: never;
-        post?: never;
+        /** Reloads a resource and all libraries associated with it. */
+        post: operations["reloadResource"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1947,7 +1546,357 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/server/resources/{resourceId}/_reload": {
+    "/server/protocolsAndCipherSuites": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns a map containing all supported and enabled TLS protocols and cipher suites. */
+        get: operations["getProtocolsAndCipherSuites"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/server/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns a ServerSettings object with all server settings. */
+        get: operations["getServerSettings"];
+        /** Updates the server configuration settings. */
+        put: operations["setServerSettings"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/server/channelMetadata": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns all channel metadata for the server. */
+        get: operations["getChannelMetadata"];
+        /** Updates all channel metadata for the server. */
+        put: operations["setChannelMetadata"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/server/configurationMap": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns all entries in the configuration map. */
+        get: operations["getConfigurationMap"];
+        /** Updates all entries in the configuration map. */
+        put: operations["setConfigurationMap"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/server/channelTags": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns a set containing all channel tags for the server. */
+        get: operations["getChannelTags"];
+        /** Updates all channel tags. */
+        put: operations["setChannelTags"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/server/updateSettings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns an UpdateSettings object with all update settings. */
+        get: operations["getUpdateSettings"];
+        /** Updates the update settings. */
+        put: operations["setUpdateSettings"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/server/globalScripts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns a map containing all of the global scripts. */
+        get: operations["getGlobalScripts"];
+        /** Updates all of the global scripts. */
+        put: operations["setGlobalScripts"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/server/channelDependencies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns all channel dependencies for the server. */
+        get: operations["getChannelDependencies"];
+        /** Updates all channel dependencies for the server. */
+        put: operations["setChannelDependencies"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/server/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns the status of the server. */
+        get: operations["getStatus"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/server/rhinoLanguageVersion": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns the language version that the Rhino engine should use. */
+        get: operations["getRhinoLanguageVersion"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/server/timezone": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns the time zone of the server. */
+        get: operations["getServerTimezone"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/server/time": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns the time of the server. */
+        get: operations["getServerTime"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/server/charsets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns a List of all of the charset encodings supported by the server. */
+        get: operations["getAvailableCharsetEncodings"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/server/publicSettings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns a PublicServerSettings object containing server settings available to all users. */
+        get: operations["getPublicServerSettings"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/server/encryption": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns an EncryptionSettings object with all encryption settings. */
+        get: operations["getEncryptionSettings"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/server/databaseDrivers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns the database driver list. */
+        get: operations["getDatabaseDrivers"];
+        /** Updates the list of database drivers. */
+        put: operations["setDatabaseDrivers"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/server/buildDate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns the build date of the server. */
+        get: operations["getBuildDate"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/server/configuration": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns a ServerConfiguration object which contains all of the channels, alerts, configuration map, and properties stored on the server. */
+        get: operations["getServerConfiguration"];
+        /** Updates all of the channels, alerts and properties stored on the server. */
+        put: operations["setServerConfiguration"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/server/passwordRequirements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns all password requirements for the server. */
+        get: operations["getPasswordRequirements"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/server/resources": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns all resources for the server. */
+        get: operations["getResources"];
+        /** Updates all resources for the server. */
+        put: operations["setResources"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/server/_testEmail": {
         parameters: {
             query?: never;
             header?: never;
@@ -1956,8 +1905,59 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Reloads a resource and all libraries associated with it. */
-        post: operations["reloadResource"];
+        /** Sends a test e-mail. */
+        post: operations["sendTestEmail_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/server/id": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns the server id. */
+        get: operations["getServerId"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/server/property": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns a property from the configuration table. */
+        get: operations["getProperty"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/server/version": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns the version of the server. */
+        get: operations["getVersion"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -2032,7 +2032,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/channels/_redeployAll": {
+    "/channels/{channelId}/_deploy": {
         parameters: {
             query?: never;
             header?: never;
@@ -2041,8 +2041,25 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Redeploys all channels. */
-        post: operations["redeployAllChannels"];
+        /** Deploys (or redeploys) a single channel. */
+        post: operations["deployChannel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/{channelId}/_undeploy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Undeploys a single channel. */
+        post: operations["undeployChannel"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2083,7 +2100,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/channels/{channelId}/_deploy": {
+    "/channels/_redeployAll": {
         parameters: {
             query?: never;
             header?: never;
@@ -2092,15 +2109,15 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Deploys (or redeploys) a single channel. */
-        post: operations["deployChannel"];
+        /** Redeploys all channels. */
+        post: operations["redeployAllChannels"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/channels/{channelId}/_undeploy": {
+    "/events/_search": {
         parameters: {
             query?: never;
             header?: never;
@@ -2109,40 +2126,23 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Undeploys a single channel. */
-        post: operations["undeployChannel"];
+        /** Search for events by specific filter criteria. */
+        post: operations["getEvents"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/events/maxEventId": {
+    "/events": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Returns the maximum event ID currently in the database. */
-        get: operations["getMaxEventId"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/events/{eventId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Retrieves an event by ID. */
-        get: operations["getEvent"];
+        /** Search for events by specific filter criteria. */
+        get: operations["getEvents_1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2185,40 +2185,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/events/_search": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Search for events by specific filter criteria. */
-        post: operations["getEvents"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/events": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Search for events by specific filter criteria. */
-        get: operations["getEvents_1"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/events/_export": {
         parameters: {
             query?: never;
@@ -2236,6 +2202,108 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/events/{eventId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieves an event by ID. */
+        get: operations["getEvent"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events/maxEventId": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns the maximum event ID currently in the database. */
+        get: operations["getMaxEventId"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/extensions/{extensionName}/_setEnabled": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Enables or disables an extension. */
+        post: operations["setExtensionEnabled"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/extensions/{extensionName}/enabled": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns the enabled status of an extension. */
+        get: operations["isExtensionEnabled"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/extensions/_install": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Installs an extension. */
+        post: operations["installExtension"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/extensions/_uninstall": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Uninstalls an extension. */
+        post: operations["uninstallExtension"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/extensions/{extensionName}": {
         parameters: {
             query?: never;
@@ -2246,24 +2314,6 @@ export interface paths {
         /** Returns extension metadata by name. */
         get: operations["getExtensionMetaData"];
         put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/extensions/{extensionName}/properties": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Returns filtered properties for a specified extension. */
-        get: operations["getPluginProperties"];
-        /** Sets properties for a specified extension. */
-        put: operations["setPluginProperties"];
         post?: never;
         delete?: never;
         options?: never;
@@ -2305,68 +2355,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/extensions/_uninstall": {
+    "/extensions/{extensionName}/properties": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
-        put?: never;
-        /** Uninstalls an extension. */
-        post: operations["uninstallExtension"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/extensions/_install": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Installs an extension. */
-        post: operations["installExtension"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/extensions/{extensionName}/_setEnabled": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Enables or disables an extension. */
-        post: operations["setExtensionEnabled"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/extensions/{extensionName}/enabled": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Returns the enabled status of an extension. */
-        get: operations["isExtensionEnabled"];
-        put?: never;
+        /** Returns filtered properties for a specified extension. */
+        get: operations["getPluginProperties"];
+        /** Sets properties for a specified extension. */
+        put: operations["setPluginProperties"];
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/{channelId}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search for messages by specific filter criteria. */
+        get: operations["getMessages_1"];
+        put?: never;
+        /** Processes a new message through a channel. */
+        post: operations["processMessage"];
+        /** Remove messages by specific filter criteria. */
+        delete: operations["removeMessages"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/{channelId}/messagesWithObj": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Processes a new message through a channel, using the RawMessage object. */
+        post: operations["processMessage_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2390,298 +2426,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/channels/_auditQueriedPHIMessage": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Audit that the user has queried the channel messages panel that contains PHI. */
-        post: operations["auditQueriedPHIMessage"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/{channelId}/messages/_exportUsingFilter": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Exports messages into a specific directory path accessible by the server. ("Try it out" doesn't work for this endpoint, but the descriptions are valid. Please use another tool for testing.) */
-        post: operations["exportMessagesServer"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/{channelId}/messages/_export": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Exports messages into a specific directory path accessible by the server. */
-        post: operations["exportMessagesServer_1"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/_auditAccessedPHIMessage": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Audit that the user has accessed a channel message that contains PHI. */
-        post: operations["auditAccessedPHIMessage"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/_auditExportMessages": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Audit that the user has exported channel messages. */
-        post: operations["auditExportMessages"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/{channelId}/messages/_importFromPath": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Imports messages into a channel from a path accessible by the server. The messages will not actually be processed through the channel, only imported. */
-        post: operations["importMessagesServer"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/{channelId}/messages/{messageId}/attachments/{attachmentId}/_export": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Exports a message attachment into a specific file path accessible by the server. */
-        post: operations["exportAttachmentServer"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/_auditExportMessagesSuccess": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Audit that the user has successfully exported channel messages. */
-        post: operations["auditExportMessagesSuccess"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/_removeAllMessagesPost": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Removes all messages for multiple specified channels. This is a POST request alternative to DELETE /_removeAllMessages that may be used when there are too many channel IDs to include in the query parameters. */
-        post: operations["removeAllMessagesPost"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/{channelId}/messages/_remove": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Remove messages by specific filter criteria. */
-        post: operations["removeMessages"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/{channelId}/messages": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Search for messages by specific filter criteria. */
-        get: operations["getMessages"];
-        put?: never;
-        /** Processes a new message through a channel. */
-        post: operations["processMessage_1"];
-        /** Remove messages by specific filter criteria. */
-        delete: operations["removeMessages_1"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/{channelId}/messages/_removeAll": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /** Removes all messages for the specified channel. */
-        delete: operations["removeAllMessages"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/_removeAllMessages": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /** Removes all messages for multiple specified channels. */
-        delete: operations["removeAllMessages_1"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/{channelId}/messages/{messageId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Retrieve a message by ID. */
-        get: operations["getMessageContent"];
-        put?: never;
-        post?: never;
-        /** Remove a single message by ID. */
-        delete: operations["removeMessage"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/{channelId}/messages/maxMessageId": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Returns the maximum message ID for the given channel. */
-        get: operations["getMaxMessageId"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/{channelId}/messages/{messageId}/attachments/{attachmentId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Retrieve a message attachment by ID. */
-        get: operations["getAttachment"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/{channelId}/messagesWithObj": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Processes a new message through a channel, using the RawMessage object. */
-        post: operations["processMessage"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/channels/{channelId}/messages/{messageId}/_getDICOMMessage": {
         parameters: {
             query?: never;
@@ -2693,40 +2437,6 @@ export interface paths {
         put?: never;
         /** Given a ConnectorMessage object, reattaches any DICOM attachment data and returns the raw Base64 encoded message data. */
         post: operations["getDICOMMessage"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/{channelId}/messages/_reprocessWithFilter": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Reprocesses messages through a channel filtering with a MessageFilter. */
-        post: operations["reprocessMessages"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/channels/{channelId}/messages/_reprocess": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Reprocesses messages through a channel by specific filter criteria. */
-        post: operations["reprocessMessages_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2767,7 +2477,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/channels/{channelId}/messages/_import": {
+    "/channels/{channelId}/messages/_reprocessWithFilter": {
         parameters: {
             query?: never;
             header?: never;
@@ -2776,8 +2486,25 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Imports a Message object into a channel. The message will not actually be processed through the channel, only imported. */
-        post: operations["importMessage"];
+        /** Reprocesses messages through a channel filtering with a MessageFilter. */
+        post: operations["reprocessMessages"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/{channelId}/messages/_reprocess": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reprocesses messages through a channel by specific filter criteria. */
+        post: operations["reprocessMessages_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2801,6 +2528,279 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/channels/{channelId}/messages/{messageId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve a message by ID. */
+        get: operations["getMessageContent"];
+        put?: never;
+        post?: never;
+        /** Remove a single message by ID. */
+        delete: operations["removeMessage"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/_removeAllMessagesPost": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Removes all messages for multiple specified channels. This is a POST request alternative to DELETE /_removeAllMessages that may be used when there are too many channel IDs to include in the query parameters. */
+        post: operations["removeAllMessagesPost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/{channelId}/messages/_import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Imports a Message object into a channel. The message will not actually be processed through the channel, only imported. */
+        post: operations["importMessage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/{channelId}/messages/_importFromPath": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Imports messages into a channel from a path accessible by the server. The messages will not actually be processed through the channel, only imported. */
+        post: operations["importMessagesServer"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/{channelId}/messages/_export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Exports messages into a specific directory path accessible by the server. */
+        post: operations["exportMessagesServer"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/{channelId}/messages/_exportUsingFilter": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Exports messages into a specific directory path accessible by the server. ("Try it out" doesn't work for this endpoint, but the descriptions are valid. Please use another tool for testing.) */
+        post: operations["exportMessagesServer_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/{channelId}/messages/{messageId}/attachments/{attachmentId}/_export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Exports a message attachment into a specific file path accessible by the server. */
+        post: operations["exportAttachmentServer"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/_auditAccessedPHIMessage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Audit that the user has accessed a channel message that contains PHI. */
+        post: operations["auditAccessedPHIMessage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/_auditQueriedPHIMessage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Audit that the user has queried the channel messages panel that contains PHI. */
+        post: operations["auditQueriedPHIMessage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/_auditExportMessages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Audit that the user has exported channel messages. */
+        post: operations["auditExportMessages"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/_auditExportMessagesSuccess": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Audit that the user has successfully exported channel messages. */
+        post: operations["auditExportMessagesSuccess"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/{channelId}/messages/_remove": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Remove messages by specific filter criteria. */
+        post: operations["removeMessages_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/_removeAllMessages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Removes all messages for multiple specified channels. */
+        delete: operations["removeAllMessages"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/{channelId}/messages/_removeAll": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Removes all messages for the specified channel. */
+        delete: operations["removeAllMessages_1"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/{channelId}/messages/maxMessageId": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns the maximum message ID for the given channel. */
+        get: operations["getMaxMessageId"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/channels/{channelId}/messages/{messageId}/attachments/{attachmentId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Retrieve a message attachment by ID. */
+        get: operations["getAttachment"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/channels/{channelId}/messages/_search": {
         parameters: {
             query?: never;
@@ -2811,24 +2811,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Search for messages by specific filter criteria. */
-        post: operations["getMessages_1"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/system/info": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Returns information about the underlying system. */
-        get: operations["getInfo"];
-        put?: never;
-        post?: never;
+        post: operations["getMessages"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2844,6 +2827,23 @@ export interface paths {
         };
         /** Returns statistics for the underlying system. */
         get: operations["getStats"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/system/info": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns information about the underlying system. */
+        get: operations["getInfo"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2869,68 +2869,17 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/users/{userId}/notificationAcknowledged": {
+    "/users/{userId}/loggedIn": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
-        put?: never;
-        /** User notification has been acknowledged. */
-        post: operations["setUserNotificationAcknowledged"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/users/current": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Returns the current logged in user. */
-        get: operations["getCurrentUser"];
+        /** Returns a true if the specified user is logged in to the server. */
+        get: operations["isUserLoggedIn"];
         put?: never;
         post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/users/_login": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Logs in to the server using the specified name and password. */
-        post: operations["login"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/users/_logout": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Logs out of the server. */
-        post: operations["logout"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2949,57 +2898,6 @@ export interface paths {
         put?: never;
         /** Creates a new user. */
         post: operations["createUser"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/users/_checkPassword": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Checks the password against the configured password policies. */
-        post: operations["checkUserPassword"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/users/_inactivityLogout": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** User has been inactive and automatically logged out. */
-        post: operations["inactivityLogout"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/users/{userId}/password": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Updates a user's password. */
-        put: operations["updateUserPassword"];
-        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -3059,23 +2957,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/users/{userId}/loggedIn": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Returns a true if the specified user is logged in to the server. */
-        get: operations["isUserLoggedIn"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/users/{userId}/preferences/{name}": {
         parameters: {
             query?: never;
@@ -3088,6 +2969,125 @@ export interface paths {
         /** Updates a user preference. */
         put: operations["setUserPreference"];
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/current": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns the current logged in user. */
+        get: operations["getCurrentUser"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/_inactivityLogout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** User has been inactive and automatically logged out. */
+        post: operations["inactivityLogout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/_checkPassword": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Checks the password against the configured password policies. */
+        post: operations["checkUserPassword"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/{userId}/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Updates a user's password. */
+        put: operations["updateUserPassword"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/{userId}/notificationAcknowledged": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** User notification has been acknowledged. */
+        post: operations["setUserNotificationAcknowledged"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/_login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Logs in to the server using the specified name and password. */
+        post: operations["login"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/_logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Logs out of the server. */
+        post: operations["logout"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3151,11 +3151,11 @@ export interface components {
             sortBy?: string;
             binary?: boolean;
             charsetEncoding?: string;
-            name?: string;
-            protocol?: string;
             purgedProperties?: {
                 [key: string]: Record<string, never>;
             };
+            name?: string;
+            protocol?: string;
         };
         PollConnectorProperties: {
             /** @enum {string} */
@@ -3187,10 +3187,10 @@ export interface components {
             endingHour?: number;
             /** Format: int32 */
             endingMinute?: number;
+            activeDays?: boolean[];
             purgedProperties?: {
                 [key: string]: Record<string, never>;
             };
-            activeDays?: boolean[];
         };
         SchemeProperties: {
             fileSchemeProperties?: components["schemas"]["SchemeProperties"];
@@ -3263,11 +3263,11 @@ export interface components {
             binary?: boolean;
             charsetEncoding?: string;
             template?: string;
-            name?: string;
-            protocol?: string;
             purgedProperties?: {
                 [key: string]: Record<string, never>;
             };
+            name?: string;
+            protocol?: string;
         };
         HttpDispatcherProperties: {
             pluginProperties?: components["schemas"]["ConnectorPluginProperties"][];
@@ -3297,17 +3297,17 @@ export interface components {
             dataTypeBinary?: boolean;
             charset?: string;
             socketTimeout?: string;
-            name?: string;
-            protocol?: string;
-            purgedProperties?: {
-                [key: string]: Record<string, never>;
+            headersMap?: {
+                [key: string]: string[];
             };
             parametersMap?: {
                 [key: string]: string[];
             };
-            headersMap?: {
-                [key: string]: string[];
+            purgedProperties?: {
+                [key: string]: Record<string, never>;
             };
+            name?: string;
+            protocol?: string;
         };
         Column: {
             name?: string;
@@ -3334,19 +3334,19 @@ export interface components {
             destinationName?: string;
             topic?: boolean;
             clientId?: string;
-            name?: string;
-            protocol?: string;
             purgedProperties?: {
                 [key: string]: Record<string, never>;
             };
+            name?: string;
+            protocol?: string;
         };
         Attachment: {
             id?: string;
             content?: string[];
             type?: string;
             encryptionHeader?: string;
-            encrypted?: boolean;
             attachmentId?: string;
+            encrypted?: boolean;
         };
         SmtpDispatcherProperties: {
             pluginProperties?: components["schemas"]["ConnectorPluginProperties"][];
@@ -3372,17 +3372,17 @@ export interface components {
             html?: boolean;
             body?: string;
             attachmentsVariable?: string;
-            name?: string;
-            protocol?: string;
-            purgedProperties?: {
-                [key: string]: Record<string, never>;
-            };
-            attachmentsList?: components["schemas"]["Attachment"][];
-            useAttachmentsVariable?: boolean;
             useHeadersVariable?: boolean;
+            useAttachmentsVariable?: boolean;
             headersMap?: {
                 [key: string]: string;
             };
+            attachmentsList?: components["schemas"]["Attachment"][];
+            purgedProperties?: {
+                [key: string]: Record<string, never>;
+            };
+            name?: string;
+            protocol?: string;
         };
         TcpDispatcherProperties: {
             pluginProperties?: components["schemas"]["ConnectorPluginProperties"][];
@@ -3405,11 +3405,11 @@ export interface components {
             dataTypeBinary?: boolean;
             charsetEncoding?: string;
             template?: string;
-            name?: string;
-            protocol?: string;
             purgedProperties?: {
                 [key: string]: Record<string, never>;
             };
+            name?: string;
+            protocol?: string;
         };
         TransmissionModeProperties: {
             pluginPointName?: string;
@@ -3454,16 +3454,16 @@ export interface components {
             attachmentsVariable?: string;
             soapAction?: string;
             wsdlDefinitionMap?: components["schemas"]["DefinitionServiceMap"];
-            name?: string;
-            protocol?: string;
-            purgedProperties?: {
-                [key: string]: Record<string, never>;
-            };
-            useAttachmentsVariable?: boolean;
             useHeadersVariable?: boolean;
+            useAttachmentsVariable?: boolean;
             headersMap?: {
                 [key: string]: string[];
             };
+            purgedProperties?: {
+                [key: string]: Record<string, never>;
+            };
+            name?: string;
+            protocol?: string;
         };
         ConnectionLogItem: {
             /** Format: int64 */
@@ -3490,6 +3490,13 @@ export interface components {
             lineNumber?: string;
             message?: string;
             throwableInformation?: string;
+        };
+        AlertStatus: {
+            id?: string;
+            name?: string;
+            enabled?: boolean;
+            /** Format: int32 */
+            alertedCount?: number;
         };
         AlertAction: {
             protocol?: string;
@@ -3543,11 +3550,11 @@ export interface components {
         };
         BatchProperties: {
             batchScript?: string;
-            properties?: {
-                [key: string]: Record<string, never>;
-            };
             propertyDescriptors?: {
                 [key: string]: components["schemas"]["DataTypePropertyDescriptor"];
+            };
+            properties?: {
+                [key: string]: Record<string, never>;
             };
             purgedProperties?: {
                 [key: string]: Record<string, never>;
@@ -3569,10 +3576,10 @@ export interface components {
             undeployScript?: string;
             properties?: components["schemas"]["ChannelProperties"];
             exportData?: components["schemas"]["ChannelExportData"];
-            enabledDestinationConnectors?: components["schemas"]["Connector"][];
             purgedProperties?: {
                 [key: string]: Record<string, never>;
             };
+            enabledDestinationConnectors?: components["schemas"]["Connector"][];
         };
         ChannelExportData: {
             metadata?: components["schemas"]["ChannelMetadata"];
@@ -3612,10 +3619,10 @@ export interface components {
             resourceIds?: {
                 [key: string]: string;
             };
+            encryptMessageContent?: boolean;
             purgedProperties?: {
                 [key: string]: Record<string, never>;
             };
-            encryptMessageContent?: boolean;
         };
         ChannelPruningSettings: {
             /** Format: int32 */
@@ -3682,15 +3689,15 @@ export interface components {
             lastModified?: string;
             contextSet?: ("Global Deploy" | "Global Undeploy" | "Global Preprocessor" | "Global Postprocessor" | "Channel Deploy" | "Channel Undeploy" | "Channel Preprocessor" | "Channel Postprocessor" | "Channel Attachment" | "Channel Batch" | "Source Receiver" | "Source Filter Transformer" | "Destination Filter Transformer" | "Destination Dispatcher" | "Destination Response Transformer")[];
             properties?: components["schemas"]["CodeTemplateProperties"];
-            /** @enum {string} */
-            type?: "Function" | "Drag-and-Drop Code Block" | "Compiled Code Block";
             description?: string;
             code?: string;
             purgedProperties?: {
                 [key: string]: Record<string, never>;
             };
-            functionDefinition?: components["schemas"]["CodeTemplateFunctionDefinition"];
             addToScripts?: boolean;
+            functionDefinition?: components["schemas"]["CodeTemplateFunctionDefinition"];
+            /** @enum {string} */
+            type?: "Function" | "Drag-and-Drop Code Block" | "Compiled Code Block";
         };
         CodeTemplateContextSet: ("Global Deploy" | "Global Undeploy" | "Global Preprocessor" | "Global Postprocessor" | "Channel Deploy" | "Channel Undeploy" | "Channel Preprocessor" | "Channel Postprocessor" | "Channel Attachment" | "Channel Batch" | "Source Receiver" | "Source Filter Transformer" | "Destination Filter Transformer" | "Destination Dispatcher" | "Destination Response Transformer")[];
         CodeTemplateFunctionDefinition: {
@@ -3721,8 +3728,8 @@ export interface components {
             type?: "Function" | "Drag-and-Drop Code Block" | "Compiled Code Block";
             description?: string;
             functionDefinition?: components["schemas"]["CodeTemplateFunctionDefinition"];
-            code?: string;
             pluginPointName?: string;
+            code?: string;
             purgedProperties?: {
                 [key: string]: Record<string, never>;
             };
@@ -3746,11 +3753,11 @@ export interface components {
         };
         ConnectorProperties: {
             pluginProperties?: components["schemas"]["ConnectorPluginProperties"][];
-            name?: string;
-            protocol?: string;
             purgedProperties?: {
                 [key: string]: Record<string, never>;
             };
+            name?: string;
+            protocol?: string;
         };
         DataTypeProperties: {
             serializationProperties?: components["schemas"]["SerializationProperties"];
@@ -3774,11 +3781,11 @@ export interface components {
         DeserializationProperties: {
             /** @enum {string} */
             serializationType?: "RAW" | "XML" | "JSON";
-            properties?: {
-                [key: string]: Record<string, never>;
-            };
             propertyDescriptors?: {
                 [key: string]: components["schemas"]["DataTypePropertyDescriptor"];
+            };
+            properties?: {
+                [key: string]: Record<string, never>;
             };
             purgedProperties?: {
                 [key: string]: Record<string, never>;
@@ -3786,10 +3793,10 @@ export interface components {
         };
         Filter: {
             elements?: components["schemas"]["Rule"][];
+            enabledElements?: components["schemas"]["Rule"][];
             purgedProperties?: {
                 [key: string]: Record<string, never>;
             };
-            enabledElements?: components["schemas"]["Rule"][];
         };
         MetaDataColumn: {
             name?: string;
@@ -3806,22 +3813,22 @@ export interface components {
             description?: string;
         };
         ResponseGenerationProperties: {
-            properties?: {
-                [key: string]: Record<string, never>;
-            };
             propertyDescriptors?: {
                 [key: string]: components["schemas"]["DataTypePropertyDescriptor"];
+            };
+            properties?: {
+                [key: string]: Record<string, never>;
             };
             purgedProperties?: {
                 [key: string]: Record<string, never>;
             };
         };
         ResponseValidationProperties: {
-            properties?: {
-                [key: string]: Record<string, never>;
-            };
             propertyDescriptors?: {
                 [key: string]: components["schemas"]["DataTypePropertyDescriptor"];
+            };
+            properties?: {
+                [key: string]: Record<string, never>;
             };
             purgedProperties?: {
                 [key: string]: Record<string, never>;
@@ -3836,17 +3843,17 @@ export interface components {
             purgedProperties?: {
                 [key: string]: Record<string, never>;
             };
-            type?: string;
             responseVariables?: string[];
+            type?: string;
         };
         SerializationProperties: {
             /** @enum {string} */
             serializationType?: "RAW" | "XML" | "JSON";
-            properties?: {
-                [key: string]: Record<string, never>;
-            };
             propertyDescriptors?: {
                 [key: string]: components["schemas"]["DataTypePropertyDescriptor"];
+            };
+            properties?: {
+                [key: string]: Record<string, never>;
             };
             purgedProperties?: {
                 [key: string]: Record<string, never>;
@@ -3861,11 +3868,11 @@ export interface components {
             name?: string;
             sequenceNumber?: string;
             enabled?: boolean;
-            type?: string;
+            responseVariables?: string[];
             purgedProperties?: {
                 [key: string]: Record<string, never>;
             };
-            responseVariables?: string[];
+            type?: string;
         };
         Transformer: {
             elements?: components["schemas"]["Step"][];
@@ -3886,13 +3893,6 @@ export interface components {
             /** Format: date-time */
             deployedDate?: string;
             codeTemplatesChanged?: boolean;
-        };
-        AlertStatus: {
-            id?: string;
-            name?: string;
-            enabled?: boolean;
-            /** Format: int32 */
-            alertedCount?: number;
         };
         ChannelGroup: {
             id?: string;
@@ -3960,6 +3960,11 @@ export interface components {
             deployedChannelCount?: number;
             /** Format: int32 */
             deployedChannelNames?: number;
+        };
+        CodeTemplateSummary: {
+            codeTemplateId?: string;
+            deleted?: boolean;
+            codeTemplate?: components["schemas"]["CodeTemplate"];
         };
         CodeTemplateLibrarySaveResult: {
             overrideNeeded?: boolean;
@@ -4044,24 +4049,96 @@ export interface components {
             /** Format: date-time */
             newLastModified?: string;
         };
-        CodeTemplateSummary: {
-            codeTemplateId?: string;
-            deleted?: boolean;
-            codeTemplate?: components["schemas"]["CodeTemplate"];
+        LicenseInfo: {
+            activated?: boolean;
+            online?: boolean;
+            /** Format: int64 */
+            expirationDate?: number;
+            /** Format: int64 */
+            warningPeriod?: number;
+            /** Format: int64 */
+            gracePeriod?: number;
+            error?: boolean;
+            errorReason?: string;
+            warning?: boolean;
+            warningReason?: string;
+            padlockWarning?: boolean;
+            padlock?: boolean;
+            expired?: boolean;
+            keyNotFound?: boolean;
+            unauthorized?: boolean;
+            extensions?: string[];
+            unpermittedExtensions?: string[];
+            downloadedExtensions?: string[];
         };
-        ResourceProperties: {
-            pluginPointName?: string;
-            type?: string;
-            id?: string;
-            name?: string;
-            description?: string;
-            includeWithGlobalScripts?: boolean;
-            loadParentFirst?: boolean;
+        ServerSettings: {
+            environmentName?: string;
+            serverName?: string;
+            clearGlobalMap?: boolean;
+            /** Format: int32 */
+            queueBufferSize?: number;
+            defaultMetaDataColumns?: components["schemas"]["MetaDataColumn"][];
+            defaultAdministratorBackgroundColor?: {
+                /** Format: int32 */
+                red?: number;
+                /** Format: int32 */
+                green?: number;
+                /** Format: int32 */
+                blue?: number;
+                /** Format: int32 */
+                alpha?: number;
+                /** Format: int32 */
+                rgb?: number;
+                colorSpace?: {
+                    /** Format: int32 */
+                    type?: number;
+                    /** Format: int32 */
+                    numComponents?: number;
+                    cs_sRGB?: boolean;
+                };
+                /** Format: int32 */
+                transparency?: number;
+            };
+            smtpHost?: string;
+            smtpPort?: string;
+            smtpTimeout?: string;
+            smtpFrom?: string;
+            smtpSecure?: string;
+            smtpAuth?: boolean;
+            smtpUsername?: string;
+            smtpPassword?: string;
+            loginNotificationEnabled?: boolean;
+            loginNotificationMessage?: string;
+            administratorAutoLogoutIntervalEnabled?: boolean;
+            /** Format: int32 */
+            administratorAutoLogoutIntervalField?: number;
             purgedProperties?: {
                 [key: string]: Record<string, never>;
             };
+            properties?: {
+                [key: string]: string;
+            };
         };
-        ServerSettings: {
+        ConfigurationProperty: {
+            value?: string;
+            comment?: string;
+        };
+        UpdateSettings: {
+            statsEnabled?: boolean;
+            /** Format: int64 */
+            lastStatsTime?: number;
+            purgedProperties?: {
+                [key: string]: Record<string, never>;
+            };
+            properties?: {
+                [key: string]: string;
+            };
+        };
+        ChannelDependency: {
+            dependentId?: string;
+            dependencyId?: string;
+        };
+        PublicServerSettings: {
             environmentName?: string;
             serverName?: string;
             clearGlobalMap?: boolean;
@@ -4109,32 +4186,6 @@ export interface components {
                 [key: string]: Record<string, never>;
             };
         };
-        UpdateSettings: {
-            statsEnabled?: boolean;
-            /** Format: int64 */
-            lastStatsTime?: number;
-            properties?: {
-                [key: string]: string;
-            };
-            purgedProperties?: {
-                [key: string]: Record<string, never>;
-            };
-        };
-        ConfigurationProperty: {
-            value?: string;
-            comment?: string;
-        };
-        ChannelDependency: {
-            dependentId?: string;
-            dependencyId?: string;
-        };
-        DriverInfo: {
-            className?: string;
-            name?: string;
-            template?: string;
-            selectLimit?: string;
-            alternativeClassNames?: string[];
-        };
         EncryptionSettings: {
             encryptExport?: boolean;
             encryptProperties?: boolean;
@@ -4162,10 +4213,29 @@ export interface components {
             digestFallbackKeySize?: number;
             securityProvider?: string;
             secretKey?: string[];
+            encryptionBaseAlgorithm?: string;
             properties?: {
                 [key: string]: string;
             };
-            encryptionBaseAlgorithm?: string;
+        };
+        DriverInfo: {
+            className?: string;
+            name?: string;
+            template?: string;
+            selectLimit?: string;
+            alternativeClassNames?: string[];
+        };
+        ResourceProperties: {
+            pluginPointName?: string;
+            type?: string;
+            id?: string;
+            name?: string;
+            description?: string;
+            includeWithGlobalScripts?: boolean;
+            loadParentFirst?: boolean;
+            purgedProperties?: {
+                [key: string]: Record<string, never>;
+            };
         };
         ResourcePropertiesList: {
             list?: components["schemas"]["ResourceProperties"][];
@@ -4218,54 +4288,6 @@ export interface components {
             role?: string;
             userConsent?: boolean;
         };
-        PublicServerSettings: {
-            environmentName?: string;
-            serverName?: string;
-            clearGlobalMap?: boolean;
-            /** Format: int32 */
-            queueBufferSize?: number;
-            defaultMetaDataColumns?: components["schemas"]["MetaDataColumn"][];
-            defaultAdministratorBackgroundColor?: {
-                /** Format: int32 */
-                red?: number;
-                /** Format: int32 */
-                green?: number;
-                /** Format: int32 */
-                blue?: number;
-                /** Format: int32 */
-                alpha?: number;
-                /** Format: int32 */
-                rgb?: number;
-                colorSpace?: {
-                    /** Format: int32 */
-                    type?: number;
-                    /** Format: int32 */
-                    numComponents?: number;
-                    cs_sRGB?: boolean;
-                };
-                /** Format: int32 */
-                transparency?: number;
-            };
-            smtpHost?: string;
-            smtpPort?: string;
-            smtpTimeout?: string;
-            smtpFrom?: string;
-            smtpSecure?: string;
-            smtpAuth?: boolean;
-            smtpUsername?: string;
-            smtpPassword?: string;
-            loginNotificationEnabled?: boolean;
-            loginNotificationMessage?: string;
-            administratorAutoLogoutIntervalEnabled?: boolean;
-            /** Format: int32 */
-            administratorAutoLogoutIntervalField?: number;
-            properties?: {
-                [key: string]: string;
-            };
-            purgedProperties?: {
-                [key: string]: Record<string, never>;
-            };
-        };
         PasswordRequirements: {
             /** Format: int32 */
             minLength?: number;
@@ -4289,28 +4311,6 @@ export interface components {
             reusePeriod?: number;
             /** Format: int32 */
             reuseLimit?: number;
-        };
-        LicenseInfo: {
-            activated?: boolean;
-            online?: boolean;
-            /** Format: int64 */
-            expirationDate?: number;
-            /** Format: int64 */
-            warningPeriod?: number;
-            /** Format: int64 */
-            gracePeriod?: number;
-            error?: boolean;
-            errorReason?: string;
-            warning?: boolean;
-            warningReason?: string;
-            padlockWarning?: boolean;
-            padlock?: boolean;
-            expired?: boolean;
-            keyNotFound?: boolean;
-            unauthorized?: boolean;
-            extensions?: string[];
-            unpermittedExtensions?: string[];
-            downloadedExtensions?: string[];
         };
         DatabaseTask: {
             id?: string;
@@ -4454,78 +4454,19 @@ export interface components {
                 [key: string]: Record<string, never>;
             };
         };
-        ContentSearchElement: {
-            /** Format: int32 */
-            contentCode?: number;
-            searches?: string[];
-        };
-        MessageFilter: {
+        RawMessage: {
+            overwrite?: boolean;
+            imported?: boolean;
             /** Format: int64 */
-            maxMessageId?: number;
-            /** Format: int64 */
-            minMessageId?: number;
-            /** Format: int64 */
-            originalIdUpper?: number;
-            /** Format: int64 */
-            originalIdLower?: number;
-            /** Format: int64 */
-            importIdUpper?: number;
-            /** Format: int64 */
-            importIdLower?: number;
-            /** Format: date-time */
-            startDate?: string;
-            /** Format: date-time */
-            endDate?: string;
-            textSearch?: string;
-            textSearchRegex?: boolean;
-            statuses?: ("RECEIVED" | "FILTERED" | "TRANSFORMED" | "SENT" | "QUEUED" | "ERROR" | "PENDING")[];
-            includedMetaDataIds?: number[];
-            excludedMetaDataIds?: number[];
-            serverId?: string;
-            contentSearch?: components["schemas"]["ContentSearchElement"][];
-            metaDataSearch?: components["schemas"]["MetaDataSearchElement"][];
-            textSearchMetaDataColumns?: string[];
-            /** Format: int32 */
-            sendAttemptsLower?: number;
-            /** Format: int32 */
-            sendAttemptsUpper?: number;
-            attachment?: boolean;
-            error?: boolean;
-        };
-        MetaDataSearchElement: {
-            columnName?: string;
-            operator?: string;
-            value?: Record<string, never>;
-            ignoreCase?: boolean;
-        };
-        MessageWriterOptions: {
-            /** @enum {string} */
-            contentType?: "Raw" | "Processed Raw" | "Transformed" | "Encoded" | "Sent" | "Response" | "Response Transformed" | "Processed Response" | "Connector Map" | "Channel Map" | "Response Map" | "Processing Error" | "Postprocessor Error" | "Response Error" | "Source Map";
-            destinationContent?: boolean;
-            encrypt?: boolean;
-            includeAttachments?: boolean;
-            baseFolder?: string;
-            rootFolder?: string;
-            filePattern?: string;
-            archiveFileName?: string;
-            archiveFormat?: string;
-            compressFormat?: string;
-            passwordEnabled?: boolean;
-            password?: string;
-            /** @enum {string} */
-            encryptionType?: "STANDARD" | "AES128" | "AES256";
-        };
-        MetaDataSearch: {
-            columnName?: string;
-            /** @enum {string} */
-            operator?: "=" | "!=" | "<" | "<=" | ">" | ">=" | "CONTAINS" | "DOES NOT CONTAIN" | "STARTS WITH" | "DOES NOT START WITH" | "ENDS WITH" | "DOES NOT END WITH";
-            value?: string;
-        };
-        MessageImportResult: {
-            /** Format: int32 */
-            totalCount?: number;
-            /** Format: int32 */
-            successCount?: number;
+            originalMessageId?: number;
+            rawData?: string;
+            rawBytes?: string[];
+            destinationMetaDataIds?: number[];
+            sourceMap?: {
+                [key: string]: Record<string, never>;
+            };
+            binary?: boolean;
+            attachments?: components["schemas"]["Attachment"][];
         };
         ConnectorMessage: {
             /** Format: int64 */
@@ -4576,22 +4517,22 @@ export interface components {
             attemptedFirst?: boolean;
             /** Format: int64 */
             dispatcherId?: number;
-            postProcessorError?: string;
             sourceMap?: {
                 [key: string]: Record<string, never>;
             };
-            processingError?: string;
             responseMap?: {
                 [key: string]: Record<string, never>;
             };
-            responseError?: string;
             connectorMap?: {
                 [key: string]: Record<string, never>;
             };
             channelMap?: {
                 [key: string]: Record<string, never>;
             };
+            responseError?: string;
+            processingError?: string;
             messageContent?: components["schemas"]["MessageContent"];
+            postProcessorError?: string;
         };
         ErrorContent: {
             encrypted?: boolean;
@@ -4605,6 +4546,68 @@ export interface components {
             map?: {
                 [key: string]: Record<string, never>;
             };
+        };
+        MessageContent: {
+            encrypted?: boolean;
+            channelId?: string;
+            /** Format: int64 */
+            messageId?: number;
+            /** Format: int32 */
+            metaDataId?: number;
+            /** @enum {string} */
+            contentType?: "Raw" | "Processed Raw" | "Transformed" | "Encoded" | "Sent" | "Response" | "Response Transformed" | "Processed Response" | "Connector Map" | "Channel Map" | "Response Map" | "Processing Error" | "Postprocessor Error" | "Response Error" | "Source Map";
+            content?: string;
+            dataType?: string;
+        };
+        MetaDataSearch: {
+            columnName?: string;
+            /** @enum {string} */
+            operator?: "=" | "!=" | "<" | "<=" | ">" | ">=" | "CONTAINS" | "DOES NOT CONTAIN" | "STARTS WITH" | "DOES NOT START WITH" | "ENDS WITH" | "DOES NOT END WITH";
+            value?: string;
+        };
+        ContentSearchElement: {
+            /** Format: int32 */
+            contentCode?: number;
+            searches?: string[];
+        };
+        MessageFilter: {
+            /** Format: int64 */
+            maxMessageId?: number;
+            /** Format: int64 */
+            minMessageId?: number;
+            /** Format: int64 */
+            originalIdUpper?: number;
+            /** Format: int64 */
+            originalIdLower?: number;
+            /** Format: int64 */
+            importIdUpper?: number;
+            /** Format: int64 */
+            importIdLower?: number;
+            /** Format: date-time */
+            startDate?: string;
+            /** Format: date-time */
+            endDate?: string;
+            textSearch?: string;
+            textSearchRegex?: boolean;
+            statuses?: ("RECEIVED" | "FILTERED" | "TRANSFORMED" | "SENT" | "QUEUED" | "ERROR" | "PENDING")[];
+            includedMetaDataIds?: number[];
+            excludedMetaDataIds?: number[];
+            serverId?: string;
+            contentSearch?: components["schemas"]["ContentSearchElement"][];
+            metaDataSearch?: components["schemas"]["MetaDataSearchElement"][];
+            textSearchMetaDataColumns?: string[];
+            /** Format: int32 */
+            sendAttemptsLower?: number;
+            /** Format: int32 */
+            sendAttemptsUpper?: number;
+            attachment?: boolean;
+            error?: boolean;
+        };
+        MetaDataSearchElement: {
+            columnName?: string;
+            operator?: string;
+            value?: Record<string, never>;
+            ignoreCase?: boolean;
         };
         Message: {
             /** Format: int64 */
@@ -4626,39 +4629,28 @@ export interface components {
             };
             mergedConnectorMessage?: components["schemas"]["ConnectorMessage"];
         };
-        MessageContent: {
-            encrypted?: boolean;
-            channelId?: string;
-            /** Format: int64 */
-            messageId?: number;
+        MessageImportResult: {
             /** Format: int32 */
-            metaDataId?: number;
+            totalCount?: number;
+            /** Format: int32 */
+            successCount?: number;
+        };
+        MessageWriterOptions: {
             /** @enum {string} */
             contentType?: "Raw" | "Processed Raw" | "Transformed" | "Encoded" | "Sent" | "Response" | "Response Transformed" | "Processed Response" | "Connector Map" | "Channel Map" | "Response Map" | "Processing Error" | "Postprocessor Error" | "Response Error" | "Source Map";
-            content?: string;
-            dataType?: string;
-        };
-        RawMessage: {
-            overwrite?: boolean;
-            imported?: boolean;
-            /** Format: int64 */
-            originalMessageId?: number;
-            rawData?: string;
-            rawBytes?: string[];
-            destinationMetaDataIds?: number[];
-            sourceMap?: {
-                [key: string]: Record<string, never>;
-            };
-            binary?: boolean;
-            attachments?: components["schemas"]["Attachment"][];
-        };
-        SystemInfo: {
-            jvmVersion?: string;
-            osName?: string;
-            osVersion?: string;
-            osArchitecture?: string;
-            dbName?: string;
-            dbVersion?: string;
+            destinationContent?: boolean;
+            encrypt?: boolean;
+            includeAttachments?: boolean;
+            baseFolder?: string;
+            rootFolder?: string;
+            filePattern?: string;
+            archiveFileName?: string;
+            archiveFormat?: string;
+            compressFormat?: string;
+            passwordEnabled?: boolean;
+            password?: string;
+            /** @enum {string} */
+            encryptionType?: "STANDARD" | "AES128" | "AES256";
         };
         SystemStats: {
             /** Format: date-time */
@@ -4675,6 +4667,14 @@ export interface components {
             diskFreeBytes?: number;
             /** Format: int64 */
             diskTotalBytes?: number;
+        };
+        SystemInfo: {
+            jvmVersion?: string;
+            osName?: string;
+            osVersion?: string;
+            osArchitecture?: string;
+            dbName?: string;
+            dbVersion?: string;
         };
         LoginStatus: {
             /** @enum {string} */
@@ -4912,6 +4912,49 @@ export interface operations {
             };
         };
     };
+    getTemplates: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": {
+                        [key: string]: components["schemas"]["JmsConnectorProperties"];
+                    };
+                    "application/json": {
+                        [key: string]: components["schemas"]["JmsConnectorProperties"];
+                    };
+                    "application/mirthapi+json": {
+                        [key: string]: components["schemas"]["JmsConnectorProperties"];
+                    };
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": {
+                        [key: string]: components["schemas"]["JmsConnectorProperties"];
+                    };
+                    "application/json": {
+                        [key: string]: components["schemas"]["JmsConnectorProperties"];
+                    };
+                    "application/mirthapi+json": {
+                        [key: string]: components["schemas"]["JmsConnectorProperties"];
+                    };
+                };
+            };
+        };
+    };
     getTemplate: {
         parameters: {
             query?: never;
@@ -5021,49 +5064,6 @@ export interface operations {
             };
         };
     };
-    getTemplates: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": {
-                        [key: string]: components["schemas"]["JmsConnectorProperties"];
-                    };
-                    "application/json": {
-                        [key: string]: components["schemas"]["JmsConnectorProperties"];
-                    };
-                    "application/mirthapi+json": {
-                        [key: string]: components["schemas"]["JmsConnectorProperties"];
-                    };
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": {
-                        [key: string]: components["schemas"]["JmsConnectorProperties"];
-                    };
-                    "application/json": {
-                        [key: string]: components["schemas"]["JmsConnectorProperties"];
-                    };
-                    "application/mirthapi+json": {
-                        [key: string]: components["schemas"]["JmsConnectorProperties"];
-                    };
-                };
-            };
-        };
-    };
     sendTestEmail: {
         parameters: {
             query: {
@@ -5125,95 +5125,6 @@ export interface operations {
                 "application/xml": components["schemas"]["TcpDispatcherProperties"];
                 "application/json": components["schemas"]["TcpDispatcherProperties"];
                 "application/mirthapi+json": components["schemas"]["TcpDispatcherProperties"];
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["ConnectionTestResponse"];
-                    "application/json": components["schemas"]["ConnectionTestResponse"];
-                    "application/mirthapi+json": components["schemas"]["ConnectionTestResponse"];
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["ConnectionTestResponse"];
-                    "application/json": components["schemas"]["ConnectionTestResponse"];
-                    "application/mirthapi+json": components["schemas"]["ConnectionTestResponse"];
-                };
-            };
-        };
-    };
-    getDefinition: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/x-www-form-urlencoded": {
-                    /** @description The ID of the channel. */
-                    channelId: string;
-                    /** @description The name of the channel. */
-                    channelName?: string;
-                    /** @description The full URL to the WSDL describing the web service method to be called. */
-                    wsdlUrl: string;
-                    /** @description Username used to authenticate to the web server. */
-                    username?: string;
-                    /** @description Password used to authenticate to the web server. */
-                    password?: string;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["DefinitionServiceMap"];
-                    "application/json": components["schemas"]["DefinitionServiceMap"];
-                    "application/mirthapi+json": components["schemas"]["DefinitionServiceMap"];
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["DefinitionServiceMap"];
-                    "application/json": components["schemas"]["DefinitionServiceMap"];
-                    "application/mirthapi+json": components["schemas"]["DefinitionServiceMap"];
-                };
-            };
-        };
-    };
-    testConnection_2: {
-        parameters: {
-            query: {
-                /** @description The ID of the channel. */
-                channelId: string;
-                /** @description The name of the channel. */
-                channelName?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description The Web Service Sender properties to use. These properties can be found in the exported channel's XML file. Copy the data from the opening tag &lt;destinationConnectorProperties&gt; to the closing tag &lt;/wsdlDefinitionMap&gt; (including the tags). Paste over the information below between the opening and closing tags for &lt;com.mirth.connect.connectors.ws.WebServiceDispatcherProperties&gt;. */
-        requestBody: {
-            content: {
-                "application/xml": components["schemas"]["WebServiceDispatcherProperties"];
-                "application/json": components["schemas"]["WebServiceDispatcherProperties"];
-                "application/mirthapi+json": components["schemas"]["WebServiceDispatcherProperties"];
             };
         };
         responses: {
@@ -5328,56 +5239,6 @@ export interface operations {
             };
         };
     };
-    getSoapAction: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/x-www-form-urlencoded": {
-                    /** @description The ID of the channel. */
-                    channelId: string;
-                    /** @description The name of the channel. */
-                    channelName?: string;
-                    /** @description The full URL to the WSDL describing the web service method to be called. */
-                    wsdlUrl: string;
-                    /** @description Username used to authenticate to the web server. */
-                    username?: string;
-                    /** @description Password used to authenticate to the web server. */
-                    password?: string;
-                    /** @description The service name for the WSDL defined above. */
-                    service: string;
-                    /** @description The port / endpoint name for the service defined above. */
-                    port: string;
-                    /** @description The name of the operation. This is a method provided by the web service. */
-                    operation: string;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /** @example SomeAction */
-                    "text/plain": string;
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /** @example SomeAction */
-                    "text/plain": string;
-                };
-            };
-        };
-    };
     generateEnvelope: {
         parameters: {
             query?: never;
@@ -5428,33 +5289,43 @@ export interface operations {
             };
         };
     };
-    getChannelLog: {
+    getSoapAction: {
         parameters: {
-            query: {
-                /** @description The server ID to retrieve logs for. Logs for all servers are retrieved is this parameter is not specified. */
-                serverId?: string;
-                /** @description Specifies the maximum number of log items to return. */
-                fetchSize: number;
-                /** @description The last log ID the client retrieved. Only log items with a greater ID will be returned. */
-                lastLogId?: number;
-            };
+            query?: never;
             header?: never;
-            path: {
-                /** @description The channel ID to retrieve logs for. */
-                channelId: string;
-            };
+            path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody?: {
+            content: {
+                "application/x-www-form-urlencoded": {
+                    /** @description The ID of the channel. */
+                    channelId: string;
+                    /** @description The name of the channel. */
+                    channelName?: string;
+                    /** @description The full URL to the WSDL describing the web service method to be called. */
+                    wsdlUrl: string;
+                    /** @description Username used to authenticate to the web server. */
+                    username?: string;
+                    /** @description Password used to authenticate to the web server. */
+                    password?: string;
+                    /** @description The service name for the WSDL defined above. */
+                    service: string;
+                    /** @description The port / endpoint name for the service defined above. */
+                    port: string;
+                    /** @description The name of the operation. This is a method provided by the web service. */
+                    operation: string;
+                };
+            };
+        };
         responses: {
             default: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/xml": components["schemas"]["ConnectionLogItem"][];
-                    "application/json": components["schemas"]["ConnectionLogItem"][];
-                    "application/mirthapi+json": components["schemas"]["ConnectionLogItem"][];
+                    /** @example SomeAction */
+                    "text/plain": string;
                 };
             };
             "2XX": {
@@ -5462,9 +5333,97 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/xml": components["schemas"]["ConnectionLogItem"][];
-                    "application/json": components["schemas"]["ConnectionLogItem"][];
-                    "application/mirthapi+json": components["schemas"]["ConnectionLogItem"][];
+                    /** @example SomeAction */
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    testConnection_2: {
+        parameters: {
+            query: {
+                /** @description The ID of the channel. */
+                channelId: string;
+                /** @description The name of the channel. */
+                channelName?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The Web Service Sender properties to use. These properties can be found in the exported channel's XML file. Copy the data from the opening tag &lt;destinationConnectorProperties&gt; to the closing tag &lt;/wsdlDefinitionMap&gt; (including the tags). Paste over the information below between the opening and closing tags for &lt;com.mirth.connect.connectors.ws.WebServiceDispatcherProperties&gt;. */
+        requestBody: {
+            content: {
+                "application/xml": components["schemas"]["WebServiceDispatcherProperties"];
+                "application/json": components["schemas"]["WebServiceDispatcherProperties"];
+                "application/mirthapi+json": components["schemas"]["WebServiceDispatcherProperties"];
+            };
+        };
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["ConnectionTestResponse"];
+                    "application/json": components["schemas"]["ConnectionTestResponse"];
+                    "application/mirthapi+json": components["schemas"]["ConnectionTestResponse"];
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["ConnectionTestResponse"];
+                    "application/json": components["schemas"]["ConnectionTestResponse"];
+                    "application/mirthapi+json": components["schemas"]["ConnectionTestResponse"];
+                };
+            };
+        };
+    };
+    getDefinition: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/x-www-form-urlencoded": {
+                    /** @description The ID of the channel. */
+                    channelId: string;
+                    /** @description The name of the channel. */
+                    channelName?: string;
+                    /** @description The full URL to the WSDL describing the web service method to be called. */
+                    wsdlUrl: string;
+                    /** @description Username used to authenticate to the web server. */
+                    username?: string;
+                    /** @description Password used to authenticate to the web server. */
+                    password?: string;
+                };
+            };
+        };
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["DefinitionServiceMap"];
+                    "application/json": components["schemas"]["DefinitionServiceMap"];
+                    "application/mirthapi+json": components["schemas"]["DefinitionServiceMap"];
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["DefinitionServiceMap"];
+                    "application/json": components["schemas"]["DefinitionServiceMap"];
+                    "application/mirthapi+json": components["schemas"]["DefinitionServiceMap"];
                 };
             };
         };
@@ -5515,34 +5474,43 @@ export interface operations {
             };
         };
     };
-    getChannelState: {
+    getChannelLog: {
         parameters: {
-            query?: never;
+            query: {
+                /** @description The server ID to retrieve logs for. Logs for all servers are retrieved is this parameter is not specified. */
+                serverId?: string;
+                /** @description Specifies the maximum number of log items to return. */
+                fetchSize: number;
+                /** @description The last log ID the client retrieved. Only log items with a greater ID will be returned. */
+                lastLogId?: number;
+            };
             header?: never;
             path: {
-                /** @description The channel ID to return a dashboard status for. */
+                /** @description The channel ID to retrieve logs for. */
                 channelId: string;
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description default response */
             default: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "text/plain": string;
+                    "application/xml": components["schemas"]["ConnectionLogItem"][];
+                    "application/json": components["schemas"]["ConnectionLogItem"][];
+                    "application/mirthapi+json": components["schemas"]["ConnectionLogItem"][];
                 };
             };
-            /** @description default response */
             "2XX": {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "text/plain": string;
+                    "application/xml": components["schemas"]["ConnectionLogItem"][];
+                    "application/json": components["schemas"]["ConnectionLogItem"][];
+                    "application/mirthapi+json": components["schemas"]["ConnectionLogItem"][];
                 };
             };
         };
@@ -5590,6 +5558,38 @@ export interface operations {
             };
         };
     };
+    getChannelState: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The channel ID to return a dashboard status for. */
+                channelId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
     getAllChannelLogs: {
         parameters: {
             query: {
@@ -5624,6 +5624,49 @@ export interface operations {
                     "application/xml": components["schemas"]["ConnectionLogItem"][];
                     "application/json": components["schemas"]["ConnectionLogItem"][];
                     "application/mirthapi+json": components["schemas"]["ConnectionLogItem"][];
+                };
+            };
+        };
+    };
+    getStatusMap: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": {
+                        [key: string]: string;
+                    };
+                    "application/json": {
+                        [key: string]: string;
+                    };
+                    "application/mirthapi+json": {
+                        [key: string]: string;
+                    };
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": {
+                        [key: string]: string;
+                    };
+                    "application/json": {
+                        [key: string]: string;
+                    };
+                    "application/mirthapi+json": {
+                        [key: string]: string;
+                    };
                 };
             };
         };
@@ -5692,49 +5735,6 @@ export interface operations {
             };
         };
     };
-    getStatusMap: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": {
-                        [key: string]: string;
-                    };
-                    "application/json": {
-                        [key: string]: string;
-                    };
-                    "application/mirthapi+json": {
-                        [key: string]: string;
-                    };
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": {
-                        [key: string]: string;
-                    };
-                    "application/json": {
-                        [key: string]: string;
-                    };
-                    "application/mirthapi+json": {
-                        [key: string]: string;
-                    };
-                };
-            };
-        };
-    };
     getLibraries: {
         parameters: {
             query?: never;
@@ -5769,46 +5769,6 @@ export interface operations {
             };
         };
     };
-    getGlobalChannelMap: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The ID of the channel to retrieve global channel map information for. */
-                channelId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": {
-                        [key: string]: string;
-                    };
-                    "text/plain": {
-                        [key: string]: string;
-                    };
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": {
-                        [key: string]: string;
-                    };
-                    "text/plain": {
-                        [key: string]: string;
-                    };
-                };
-            };
-        };
-    };
     getGlobalMap: {
         parameters: {
             query?: never;
@@ -5829,6 +5789,9 @@ export interface operations {
                     "text/plain": {
                         [key: string]: string;
                     };
+                    "application/mirthapi+json": {
+                        [key: string]: string;
+                    };
                 };
             };
             "2XX": {
@@ -5840,6 +5803,9 @@ export interface operations {
                         [key: string]: string;
                     };
                     "text/plain": {
+                        [key: string]: string;
+                    };
+                    "application/mirthapi+json": {
                         [key: string]: string;
                     };
                 };
@@ -5995,6 +5961,52 @@ export interface operations {
             };
         };
     };
+    getGlobalChannelMap: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the channel to retrieve global channel map information for. */
+                channelId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": {
+                        [key: string]: string;
+                    };
+                    "text/plain": {
+                        [key: string]: string;
+                    };
+                    "application/mirthapi+json": {
+                        [key: string]: string;
+                    };
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": {
+                        [key: string]: string;
+                    };
+                    "text/plain": {
+                        [key: string]: string;
+                    };
+                    "application/mirthapi+json": {
+                        [key: string]: string;
+                    };
+                };
+            };
+        };
+    };
     getServerLogs: {
         parameters: {
             query: {
@@ -6031,7 +6043,7 @@ export interface operations {
             };
         };
     };
-    getAlertProtocolOptions: {
+    getAlertStatusList: {
         parameters: {
             query?: never;
             header?: never;
@@ -6045,21 +6057,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/xml": {
-                        [key: string]: {
-                            [key: string]: string;
-                        };
-                    };
-                    "application/json": {
-                        [key: string]: {
-                            [key: string]: string;
-                        };
-                    };
-                    "application/mirthapi+json": {
-                        [key: string]: {
-                            [key: string]: string;
-                        };
-                    };
+                    "application/xml": components["schemas"]["AlertStatus"][];
+                    "application/json": components["schemas"]["AlertStatus"][];
+                    "application/mirthapi+json": components["schemas"]["AlertStatus"][];
                 };
             };
             "2XX": {
@@ -6067,224 +6067,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/xml": {
-                        [key: string]: {
-                            [key: string]: string;
-                        };
-                    };
-                    "application/json": {
-                        [key: string]: {
-                            [key: string]: string;
-                        };
-                    };
-                    "application/mirthapi+json": {
-                        [key: string]: {
-                            [key: string]: string;
-                        };
-                    };
-                };
-            };
-        };
-    };
-    getAlerts: {
-        parameters: {
-            query?: {
-                /** @description The ID of the alert(s). If absent, all alerts will be returned. */
-                alertId?: string[];
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["AlertModel"][];
-                    "application/json": components["schemas"]["AlertModel"][];
-                    "application/mirthapi+json": components["schemas"]["AlertModel"][];
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["AlertModel"][];
-                    "application/json": components["schemas"]["AlertModel"][];
-                    "application/mirthapi+json": components["schemas"]["AlertModel"][];
-                };
-            };
-        };
-    };
-    createAlert: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description The alert to create. */
-        requestBody: {
-            content: {
-                "application/xml": components["schemas"]["AlertModel"];
-                "application/json": components["schemas"]["AlertModel"];
-                "application/mirthapi+json": components["schemas"]["AlertModel"];
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    getAlertsPost: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description The ID of the alert(s). If absent, all alerts will be returned. */
-        requestBody?: {
-            content: {
-                "application/xml": string[];
-                "application/json": string[];
-                "application/mirthapi+json": string[];
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["AlertModel"][];
-                    "application/json": components["schemas"]["AlertModel"][];
-                    "application/mirthapi+json": components["schemas"]["AlertModel"][];
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["AlertModel"][];
-                    "application/json": components["schemas"]["AlertModel"][];
-                    "application/mirthapi+json": components["schemas"]["AlertModel"][];
-                };
-            };
-        };
-    };
-    getAlertInfo: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description A map of ChannelHeader objects telling the server the state of the client-side channel cache. */
-        requestBody: {
-            content: {
-                "application/xml": {
-                    [key: string]: components["schemas"]["ChannelHeader"];
-                };
-                "application/json": {
-                    [key: string]: components["schemas"]["ChannelHeader"];
-                };
-                "application/mirthapi+json": {
-                    [key: string]: components["schemas"]["ChannelHeader"];
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["AlertInfo"];
-                    "application/json": components["schemas"]["AlertInfo"];
-                    "application/mirthapi+json": components["schemas"]["AlertInfo"];
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["AlertInfo"];
-                    "application/json": components["schemas"]["AlertInfo"];
-                    "application/mirthapi+json": components["schemas"]["AlertInfo"];
-                };
-            };
-        };
-    };
-    getAlertInfo_1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The ID of the alert. */
-                alertId: string;
-            };
-            cookie?: never;
-        };
-        /** @description A map of ChannelHeader objects telling the server the state of the client-side channel cache. */
-        requestBody: {
-            content: {
-                "application/xml": {
-                    [key: string]: components["schemas"]["ChannelHeader"];
-                };
-                "application/json": {
-                    [key: string]: components["schemas"]["ChannelHeader"];
-                };
-                "application/mirthapi+json": {
-                    [key: string]: components["schemas"]["ChannelHeader"];
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["AlertInfo"];
-                    "application/json": components["schemas"]["AlertInfo"];
-                    "application/mirthapi+json": components["schemas"]["AlertInfo"];
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["AlertInfo"];
-                    "application/json": components["schemas"]["AlertInfo"];
-                    "application/mirthapi+json": components["schemas"]["AlertInfo"];
+                    "application/xml": components["schemas"]["AlertStatus"][];
+                    "application/json": components["schemas"]["AlertStatus"][];
+                    "application/mirthapi+json": components["schemas"]["AlertStatus"][];
                 };
             };
         };
@@ -6438,37 +6223,6 @@ export interface operations {
             };
         };
     };
-    getAlertStatusList: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["AlertStatus"][];
-                    "application/json": components["schemas"]["AlertStatus"][];
-                    "application/mirthapi+json": components["schemas"]["AlertStatus"][];
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["AlertStatus"][];
-                    "application/json": components["schemas"]["AlertStatus"][];
-                    "application/mirthapi+json": components["schemas"]["AlertStatus"][];
-                };
-            };
-        };
-    };
     disableAlert: {
         parameters: {
             query?: never;
@@ -6501,6 +6255,309 @@ export interface operations {
                     "application/xml": unknown;
                     "application/json": unknown;
                     "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    getAlerts: {
+        parameters: {
+            query?: {
+                /** @description The ID of the alert(s). If absent, all alerts will be returned. */
+                alertId?: string[];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["AlertModel"][];
+                    "application/json": components["schemas"]["AlertModel"][];
+                    "application/mirthapi+json": components["schemas"]["AlertModel"][];
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["AlertModel"][];
+                    "application/json": components["schemas"]["AlertModel"][];
+                    "application/mirthapi+json": components["schemas"]["AlertModel"][];
+                };
+            };
+        };
+    };
+    createAlert: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The alert to create. */
+        requestBody: {
+            content: {
+                "application/xml": components["schemas"]["AlertModel"];
+                "application/json": components["schemas"]["AlertModel"];
+                "application/mirthapi+json": components["schemas"]["AlertModel"];
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    getAlertsPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The ID of the alert(s). If absent, all alerts will be returned. */
+        requestBody?: {
+            content: {
+                "application/xml": string[];
+                "application/json": string[];
+                "application/mirthapi+json": string[];
+            };
+        };
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["AlertModel"][];
+                    "application/json": components["schemas"]["AlertModel"][];
+                    "application/mirthapi+json": components["schemas"]["AlertModel"][];
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["AlertModel"][];
+                    "application/json": components["schemas"]["AlertModel"][];
+                    "application/mirthapi+json": components["schemas"]["AlertModel"][];
+                };
+            };
+        };
+    };
+    getAlertInfo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the alert. */
+                alertId: string;
+            };
+            cookie?: never;
+        };
+        /** @description A map of ChannelHeader objects telling the server the state of the client-side channel cache. */
+        requestBody: {
+            content: {
+                "application/xml": {
+                    [key: string]: components["schemas"]["ChannelHeader"];
+                };
+                "application/json": {
+                    [key: string]: components["schemas"]["ChannelHeader"];
+                };
+                "application/mirthapi+json": {
+                    [key: string]: components["schemas"]["ChannelHeader"];
+                };
+            };
+        };
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["AlertInfo"];
+                    "application/json": components["schemas"]["AlertInfo"];
+                    "application/mirthapi+json": components["schemas"]["AlertInfo"];
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["AlertInfo"];
+                    "application/json": components["schemas"]["AlertInfo"];
+                    "application/mirthapi+json": components["schemas"]["AlertInfo"];
+                };
+            };
+        };
+    };
+    getAlertInfo_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description A map of ChannelHeader objects telling the server the state of the client-side channel cache. */
+        requestBody: {
+            content: {
+                "application/xml": {
+                    [key: string]: components["schemas"]["ChannelHeader"];
+                };
+                "application/json": {
+                    [key: string]: components["schemas"]["ChannelHeader"];
+                };
+                "application/mirthapi+json": {
+                    [key: string]: components["schemas"]["ChannelHeader"];
+                };
+            };
+        };
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["AlertInfo"];
+                    "application/json": components["schemas"]["AlertInfo"];
+                    "application/mirthapi+json": components["schemas"]["AlertInfo"];
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["AlertInfo"];
+                    "application/json": components["schemas"]["AlertInfo"];
+                    "application/mirthapi+json": components["schemas"]["AlertInfo"];
+                };
+            };
+        };
+    };
+    getAlertProtocolOptions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": {
+                        [key: string]: {
+                            [key: string]: string;
+                        };
+                    };
+                    "application/json": {
+                        [key: string]: {
+                            [key: string]: string;
+                        };
+                    };
+                    "application/mirthapi+json": {
+                        [key: string]: {
+                            [key: string]: string;
+                        };
+                    };
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": {
+                        [key: string]: {
+                            [key: string]: string;
+                        };
+                    };
+                    "application/json": {
+                        [key: string]: {
+                            [key: string]: string;
+                        };
+                    };
+                    "application/mirthapi+json": {
+                        [key: string]: {
+                            [key: string]: string;
+                        };
+                    };
+                };
+            };
+        };
+    };
+    updateChannelGroups: {
+        parameters: {
+            query?: {
+                /** @description If true, the channel groups will be updated even if different revisions exist on the server. */
+                override?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** @description The channel group object to update or create. */
+                    channelGroups?: components["schemas"]["ChannelGroup"][];
+                    /** @description All channel group IDs known to be removed. */
+                    removedChannelGroupIds?: string[];
+                };
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": boolean;
+                    "application/mirthapi+json": boolean;
+                    "text/plain": boolean;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": boolean;
+                    "application/mirthapi+json": boolean;
+                    "text/plain": boolean;
                 };
             };
         };
@@ -6577,24 +6634,57 @@ export interface operations {
             };
         };
     };
-    updateChannelGroups: {
+    getChannels: {
         parameters: {
             query?: {
-                /** @description If true, the channel groups will be updated even if different revisions exist on the server. */
-                override?: boolean;
+                /** @description The IDs of the channels to retrieve. If absent, all channels will be retrieved. */
+                channelId?: string[];
+                /** @description If true, only channels with polling source connectors will be returned. */
+                pollingOnly?: boolean;
+                /** @description If true, code template libraries will be included in the channel. */
+                includeCodeTemplateLibraries?: boolean;
             };
             header?: never;
             path?: never;
             cookie?: never;
         };
-        requestBody?: {
-            content: {
-                "multipart/form-data": {
-                    /** @description The channel group object to update or create. */
-                    channelGroups?: components["schemas"]["ChannelGroup"][];
-                    /** @description All channel group IDs known to be removed. */
-                    removedChannelGroupIds?: string[];
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
                 };
+                content: {
+                    "application/xml": components["schemas"]["Channel"][];
+                    "application/json": components["schemas"]["Channel"][];
+                    "application/mirthapi+json": components["schemas"]["Channel"][];
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["Channel"][];
+                    "application/json": components["schemas"]["Channel"][];
+                    "application/mirthapi+json": components["schemas"]["Channel"][];
+                };
+            };
+        };
+    };
+    createChannel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The Channel object to create. */
+        requestBody: {
+            content: {
+                "application/xml": components["schemas"]["Channel"];
+                "application/json": components["schemas"]["Channel"];
+                "application/mirthapi+json": components["schemas"]["Channel"];
             };
         };
         responses: {
@@ -6618,6 +6708,246 @@ export interface operations {
                     "application/json": boolean;
                     "application/mirthapi+json": boolean;
                     "text/plain": boolean;
+                };
+            };
+        };
+    };
+    removeChannels: {
+        parameters: {
+            query: {
+                /** @description The IDs of the channels to remove. */
+                channelId: string[];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    getChannelSummary: {
+        parameters: {
+            query: {
+                /** @description If true, summaries will only be returned for channels in the map's entry set. */
+                ignoreNewChannels: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description A map of ChannelHeader objects telling the server the state of the client-side channel cache. */
+        requestBody: {
+            content: {
+                "application/xml": {
+                    [key: string]: components["schemas"]["ChannelHeader"];
+                };
+                "application/json": {
+                    [key: string]: components["schemas"]["ChannelHeader"];
+                };
+                "application/mirthapi+json": {
+                    [key: string]: components["schemas"]["ChannelHeader"];
+                };
+            };
+        };
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["ChannelSummary"][];
+                    "application/json": components["schemas"]["ChannelSummary"][];
+                    "application/mirthapi+json": components["schemas"]["ChannelSummary"][];
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["ChannelSummary"][];
+                    "application/json": components["schemas"]["ChannelSummary"][];
+                    "application/mirthapi+json": components["schemas"]["ChannelSummary"][];
+                };
+            };
+        };
+    };
+    setChannelEnabled: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/x-www-form-urlencoded": {
+                    channelId?: string[];
+                    enabled: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    setChannelEnabled_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the channel. */
+                channelId: string;
+                /** @description The enabled flag (true/false) to set. */
+                enabled: boolean;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    setChannelInitialState: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the channel. */
+                channelId: string;
+                /** @description The initial state of the channel. */
+                initialState: "STARTED" | "PAUSED" | "STOPPED";
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    setChannelInitialState_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/x-www-form-urlencoded": {
+                    channelId?: string[];
+                    /** @enum {string} */
+                    initialState: "STARTED" | "PAUSED" | "STOPPED";
+                };
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
                 };
             };
         };
@@ -6743,11 +7073,55 @@ export interface operations {
             };
         };
     };
-    getChannels: {
+    getConnectorNames: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the channel. */
+                channelId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": {
+                        [key: string]: string;
+                    };
+                    "application/json": {
+                        [key: string]: string;
+                    };
+                    "application/mirthapi+json": {
+                        [key: string]: string;
+                    };
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": {
+                        [key: string]: string;
+                    };
+                    "application/json": {
+                        [key: string]: string;
+                    };
+                    "application/mirthapi+json": {
+                        [key: string]: string;
+                    };
+                };
+            };
+        };
+    };
+    getChannelsPost: {
         parameters: {
             query?: {
-                /** @description The IDs of the channels to retrieve. If absent, all channels will be retrieved. */
-                channelId?: string[];
                 /** @description If true, only channels with polling source connectors will be returned. */
                 pollingOnly?: boolean;
                 /** @description If true, code template libraries will be included in the channel. */
@@ -6757,7 +7131,14 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        /** @description The IDs of the channels to retrieve. If absent, all channels will be retrieved. */
+        requestBody?: {
+            content: {
+                "application/xml": string[];
+                "application/json": string[];
+                "application/mirthapi+json": string[];
+            };
+        };
         responses: {
             default: {
                 headers: {
@@ -6781,57 +7162,95 @@ export interface operations {
             };
         };
     };
-    createChannel: {
+    getChannelIdsAndNames: {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** @description The Channel object to create. */
-        requestBody: {
-            content: {
-                "application/xml": components["schemas"]["Channel"];
-                "application/json": components["schemas"]["Channel"];
-                "application/mirthapi+json": components["schemas"]["Channel"];
-            };
-        };
+        requestBody?: never;
         responses: {
-            /** @description default response */
             default: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": boolean;
-                    "application/mirthapi+json": boolean;
-                    "text/plain": boolean;
+                    "application/xml": {
+                        [key: string]: string;
+                    };
+                    "application/json": {
+                        [key: string]: string;
+                    };
+                    "application/mirthapi+json": {
+                        [key: string]: string;
+                    };
                 };
             };
-            /** @description default response */
             "2XX": {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": boolean;
-                    "application/mirthapi+json": boolean;
-                    "text/plain": boolean;
+                    "application/xml": {
+                        [key: string]: string;
+                    };
+                    "application/json": {
+                        [key: string]: string;
+                    };
+                    "application/mirthapi+json": {
+                        [key: string]: string;
+                    };
                 };
             };
         };
     };
-    removeChannels: {
+    getChannelPortsInUse: {
         parameters: {
-            query: {
-                /** @description The IDs of the channels to remove. */
-                channelId: string[];
-            };
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["Ports"][];
+                    "application/json": components["schemas"]["Ports"][];
+                    "application/mirthapi+json": components["schemas"]["Ports"][];
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["Ports"][];
+                    "application/json": components["schemas"]["Ports"][];
+                    "application/mirthapi+json": components["schemas"]["Ports"][];
+                };
+            };
+        };
+    };
+    removeChannelsPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The IDs of the channels to remove. */
+        requestBody: {
+            content: {
+                "application/xml": string[];
+                "application/json": string[];
+                "application/mirthapi+json": string[];
+            };
+        };
         responses: {
             /** @description default response */
             default: {
@@ -6891,136 +7310,7 @@ export interface operations {
             };
         };
     };
-    getChannelsPost: {
-        parameters: {
-            query?: {
-                /** @description If true, only channels with polling source connectors will be returned. */
-                pollingOnly?: boolean;
-                /** @description If true, code template libraries will be included in the channel. */
-                includeCodeTemplateLibraries?: boolean;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description The IDs of the channels to retrieve. If absent, all channels will be retrieved. */
-        requestBody?: {
-            content: {
-                "application/xml": string[];
-                "application/json": string[];
-                "application/mirthapi+json": string[];
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["Channel"][];
-                    "application/json": components["schemas"]["Channel"][];
-                    "application/mirthapi+json": components["schemas"]["Channel"][];
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["Channel"][];
-                    "application/json": components["schemas"]["Channel"][];
-                    "application/mirthapi+json": components["schemas"]["Channel"][];
-                };
-            };
-        };
-    };
-    removeChannelsPost: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description The IDs of the channels to remove. */
-        requestBody: {
-            content: {
-                "application/xml": string[];
-                "application/json": string[];
-                "application/mirthapi+json": string[];
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    getConnectorNames: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The ID of the channel. */
-                channelId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": {
-                        [key: string]: string;
-                    };
-                    "application/json": {
-                        [key: string]: string;
-                    };
-                    "application/mirthapi+json": {
-                        [key: string]: string;
-                    };
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": {
-                        [key: string]: string;
-                    };
-                    "application/json": {
-                        [key: string]: string;
-                    };
-                    "application/mirthapi+json": {
-                        [key: string]: string;
-                    };
-                };
-            };
-        };
-    };
-    setChannelEnabled: {
+    getStatisticsPost: {
         parameters: {
             query?: never;
             header?: never;
@@ -7029,76 +7319,39 @@ export interface operations {
         };
         requestBody?: {
             content: {
-                "application/x-www-form-urlencoded": {
-                    channelId?: string[];
-                    enabled: boolean;
+                "multipart/form-data": {
+                    channelIds?: string[];
+                    includeUndeployed?: boolean;
+                    includeMetadataIds?: number[];
+                    excludeMetadataIds?: number[];
+                    aggregateStats?: boolean;
                 };
             };
         };
         responses: {
-            /** @description default response */
             default: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
+                    "application/xml": components["schemas"]["ChannelStatistics"][];
+                    "application/json": components["schemas"]["ChannelStatistics"][];
+                    "application/mirthapi+json": components["schemas"]["ChannelStatistics"][];
                 };
             };
-            /** @description default response */
             "2XX": {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
+                    "application/xml": components["schemas"]["ChannelStatistics"][];
+                    "application/json": components["schemas"]["ChannelStatistics"][];
+                    "application/mirthapi+json": components["schemas"]["ChannelStatistics"][];
                 };
             };
         };
     };
-    setChannelEnabled_1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The ID of the channel. */
-                channelId: string;
-                /** @description The enabled flag (true/false) to set. */
-                enabled: boolean;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    getChannelIdsAndNames: {
+    clearAllStatistics: {
         parameters: {
             query?: never;
             header?: never;
@@ -7107,57 +7360,6 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": {
-                        [key: string]: string;
-                    };
-                    "application/json": {
-                        [key: string]: string;
-                    };
-                    "application/mirthapi+json": {
-                        [key: string]: string;
-                    };
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": {
-                        [key: string]: string;
-                    };
-                    "application/json": {
-                        [key: string]: string;
-                    };
-                    "application/mirthapi+json": {
-                        [key: string]: string;
-                    };
-                };
-            };
-        };
-    };
-    setChannelInitialState: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/x-www-form-urlencoded": {
-                    channelId?: string[];
-                    /** @enum {string} */
-                    initialState: "STARTED" | "PAUSED" | "STOPPED";
-                };
-            };
-        };
-        responses: {
             /** @description default response */
             default: {
                 headers: {
@@ -7178,122 +7380,6 @@ export interface operations {
                     "application/xml": unknown;
                     "application/json": unknown;
                     "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    setChannelInitialState_1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The ID of the channel. */
-                channelId: string;
-                /** @description The initial state of the channel. */
-                initialState: "STARTED" | "PAUSED" | "STOPPED";
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    getChannelSummary: {
-        parameters: {
-            query: {
-                /** @description If true, summaries will only be returned for channels in the map's entry set. */
-                ignoreNewChannels: boolean;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description A map of ChannelHeader objects telling the server the state of the client-side channel cache. */
-        requestBody: {
-            content: {
-                "application/xml": {
-                    [key: string]: components["schemas"]["ChannelHeader"];
-                };
-                "application/json": {
-                    [key: string]: components["schemas"]["ChannelHeader"];
-                };
-                "application/mirthapi+json": {
-                    [key: string]: components["schemas"]["ChannelHeader"];
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["ChannelSummary"][];
-                    "application/json": components["schemas"]["ChannelSummary"][];
-                    "application/mirthapi+json": components["schemas"]["ChannelSummary"][];
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["ChannelSummary"][];
-                    "application/json": components["schemas"]["ChannelSummary"][];
-                    "application/mirthapi+json": components["schemas"]["ChannelSummary"][];
-                };
-            };
-        };
-    };
-    getChannelPortsInUse: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["Ports"][];
-                    "application/json": components["schemas"]["Ports"][];
-                    "application/mirthapi+json": components["schemas"]["Ports"][];
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["Ports"][];
-                    "application/json": components["schemas"]["Ports"][];
-                    "application/mirthapi+json": components["schemas"]["Ports"][];
                 };
             };
         };
@@ -7429,80 +7515,6 @@ export interface operations {
             };
         };
     };
-    getStatisticsPost: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "multipart/form-data": {
-                    channelIds?: string[];
-                    includeUndeployed?: boolean;
-                    includeMetadataIds?: number[];
-                    excludeMetadataIds?: number[];
-                    aggregateStats?: boolean;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["ChannelStatistics"][];
-                    "application/json": components["schemas"]["ChannelStatistics"][];
-                    "application/mirthapi+json": components["schemas"]["ChannelStatistics"][];
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["ChannelStatistics"][];
-                    "application/json": components["schemas"]["ChannelStatistics"][];
-                    "application/mirthapi+json": components["schemas"]["ChannelStatistics"][];
-                };
-            };
-        };
-    };
-    clearAllStatistics: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
     getChannelStatusListPost: {
         parameters: {
             query?: {
@@ -7582,370 +7594,6 @@ export interface operations {
             };
         };
     };
-    getChannelStatusList: {
-        parameters: {
-            query?: {
-                /** @description The channel IDs to return dashboard statuses for. If absent, all statuses will be returned. */
-                channelId?: string[];
-                /** @description The filter string to limit dashboard statuses with. */
-                filter?: string;
-                /** @description If true, statuses for undeployed channels will also be included. */
-                includeUndeployed?: boolean;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["DashboardStatus"][];
-                    "application/json": components["schemas"]["DashboardStatus"][];
-                    "application/mirthapi+json": components["schemas"]["DashboardStatus"][];
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["DashboardStatus"][];
-                    "application/json": components["schemas"]["DashboardStatus"][];
-                    "application/mirthapi+json": components["schemas"]["DashboardStatus"][];
-                };
-            };
-        };
-    };
-    haltChannels: {
-        parameters: {
-            query?: {
-                /** @description If true, an error response code and the exception will be returned. */
-                returnErrors?: boolean;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/x-www-form-urlencoded": {
-                    channelId: string[];
-                };
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    startConnector: {
-        parameters: {
-            query?: {
-                /** @description If true, an error response code and the exception will be returned. */
-                returnErrors?: boolean;
-            };
-            header?: never;
-            path: {
-                /** @description The channel ID to start a connector for. */
-                channelId: string;
-                /** @description The connector metadata ID to start. */
-                metaDataId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    resumeChannels: {
-        parameters: {
-            query?: {
-                /** @description If true, an error response code and the exception will be returned. */
-                returnErrors?: boolean;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/x-www-form-urlencoded": {
-                    channelId: string[];
-                };
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    startChannels: {
-        parameters: {
-            query?: {
-                /** @description If true, an error response code and the exception will be returned. */
-                returnErrors?: boolean;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/x-www-form-urlencoded": {
-                    channelId: string[];
-                };
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    stopConnector: {
-        parameters: {
-            query?: {
-                /** @description If true, an error response code and the exception will be returned. */
-                returnErrors?: boolean;
-            };
-            header?: never;
-            path: {
-                /** @description The channel ID to stop a connector for. */
-                channelId: string;
-                /** @description The connector metadata ID to stop. */
-                metaDataId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    getChannelStatus: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The channel ID to return a dashboard status for. */
-                channelId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["DashboardStatus"];
-                    "application/json": components["schemas"]["DashboardStatus"];
-                    "application/mirthapi+json": components["schemas"]["DashboardStatus"];
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["DashboardStatus"];
-                    "application/json": components["schemas"]["DashboardStatus"];
-                    "application/mirthapi+json": components["schemas"]["DashboardStatus"];
-                };
-            };
-        };
-    };
-    pauseChannels: {
-        parameters: {
-            query?: {
-                /** @description If true, an error response code and the exception will be returned. */
-                returnErrors?: boolean;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/x-www-form-urlencoded": {
-                    channelId: string[];
-                };
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    stopChannels: {
-        parameters: {
-            query?: {
-                /** @description If true, an error response code and the exception will be returned. */
-                returnErrors?: boolean;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/x-www-form-urlencoded": {
-                    channelId: string[];
-                };
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
     startChannel: {
         parameters: {
             query?: {
@@ -7994,94 +7642,6 @@ export interface operations {
             header?: never;
             path: {
                 /** @description The channel ID to stop. */
-                channelId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    stopConnectors: {
-        parameters: {
-            query?: {
-                /** @description If true, an error response code and the exception will be returned. */
-                returnErrors?: boolean;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description A map of channel and metadata IDs to stop connectors for. */
-        requestBody: {
-            content: {
-                "application/xml": {
-                    [key: string]: number[];
-                };
-                "application/json": {
-                    [key: string]: number[];
-                };
-                "application/mirthapi+json": {
-                    [key: string]: number[];
-                };
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    resumeChannel: {
-        parameters: {
-            query?: {
-                /** @description If true, an error response code and the exception will be returned. */
-                returnErrors?: boolean;
-            };
-            header?: never;
-            path: {
-                /** @description The channel ID to resume. */
                 channelId: string;
             };
             cookie?: never;
@@ -8190,6 +7750,45 @@ export interface operations {
             };
         };
     };
+    resumeChannel: {
+        parameters: {
+            query?: {
+                /** @description If true, an error response code and the exception will be returned. */
+                returnErrors?: boolean;
+            };
+            header?: never;
+            path: {
+                /** @description The channel ID to resume. */
+                channelId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
     startConnectors: {
         parameters: {
             query?: {
@@ -8239,57 +7838,354 @@ export interface operations {
             };
         };
     };
-    getCodeTemplateLibrariesPost: {
+    stopConnectors: {
         parameters: {
             query?: {
-                /** @description If true, full code templates will be included inside each library. */
-                includeCodeTemplates?: boolean;
+                /** @description If true, an error response code and the exception will be returned. */
+                returnErrors?: boolean;
             };
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** @description The ID of the library(s) to retrieve. */
-        requestBody?: {
+        /** @description A map of channel and metadata IDs to stop connectors for. */
+        requestBody: {
             content: {
-                "application/xml": string[];
-                "application/json": string[];
-                "application/mirthapi+json": string[];
+                "application/xml": {
+                    [key: string]: number[];
+                };
+                "application/json": {
+                    [key: string]: number[];
+                };
+                "application/mirthapi+json": {
+                    [key: string]: number[];
+                };
             };
         };
         responses: {
+            /** @description default response */
             default: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/xml": components["schemas"]["CodeTemplateLibrary"][];
-                    "application/json": components["schemas"]["CodeTemplateLibrary"][];
-                    "application/mirthapi+json": components["schemas"]["CodeTemplateLibrary"][];
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
                 };
             };
+            /** @description default response */
             "2XX": {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/xml": components["schemas"]["CodeTemplateLibrary"][];
-                    "application/json": components["schemas"]["CodeTemplateLibrary"][];
-                    "application/mirthapi+json": components["schemas"]["CodeTemplateLibrary"][];
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
                 };
             };
         };
     };
-    getCodeTemplateLibrary: {
+    startChannels: {
         parameters: {
             query?: {
-                /** @description If true, full code templates will be included inside each library. */
-                includeCodeTemplates?: boolean;
+                /** @description If true, an error response code and the exception will be returned. */
+                returnErrors?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/x-www-form-urlencoded": {
+                    channelId: string[];
+                };
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    stopChannels: {
+        parameters: {
+            query?: {
+                /** @description If true, an error response code and the exception will be returned. */
+                returnErrors?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/x-www-form-urlencoded": {
+                    channelId: string[];
+                };
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    pauseChannels: {
+        parameters: {
+            query?: {
+                /** @description If true, an error response code and the exception will be returned. */
+                returnErrors?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/x-www-form-urlencoded": {
+                    channelId: string[];
+                };
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    resumeChannels: {
+        parameters: {
+            query?: {
+                /** @description If true, an error response code and the exception will be returned. */
+                returnErrors?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/x-www-form-urlencoded": {
+                    channelId: string[];
+                };
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    startConnector: {
+        parameters: {
+            query?: {
+                /** @description If true, an error response code and the exception will be returned. */
+                returnErrors?: boolean;
             };
             header?: never;
             path: {
-                /** @description The ID of the library to retrieve. */
-                libraryId: string;
+                /** @description The channel ID to start a connector for. */
+                channelId: string;
+                /** @description The connector metadata ID to start. */
+                metaDataId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    stopConnector: {
+        parameters: {
+            query?: {
+                /** @description If true, an error response code and the exception will be returned. */
+                returnErrors?: boolean;
+            };
+            header?: never;
+            path: {
+                /** @description The channel ID to stop a connector for. */
+                channelId: string;
+                /** @description The connector metadata ID to stop. */
+                metaDataId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    haltChannels: {
+        parameters: {
+            query?: {
+                /** @description If true, an error response code and the exception will be returned. */
+                returnErrors?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/x-www-form-urlencoded": {
+                    channelId: string[];
+                };
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    getChannelStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The channel ID to return a dashboard status for. */
+                channelId: string;
             };
             cookie?: never;
         };
@@ -8300,9 +8196,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/xml": components["schemas"]["CodeTemplateLibrary"];
-                    "application/json": components["schemas"]["CodeTemplateLibrary"];
-                    "application/mirthapi+json": components["schemas"]["CodeTemplateLibrary"];
+                    "application/xml": components["schemas"]["DashboardStatus"];
+                    "application/json": components["schemas"]["DashboardStatus"];
+                    "application/mirthapi+json": components["schemas"]["DashboardStatus"];
                 };
             };
             "2XX": {
@@ -8310,103 +8206,70 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/xml": components["schemas"]["CodeTemplateLibrary"];
-                    "application/json": components["schemas"]["CodeTemplateLibrary"];
-                    "application/mirthapi+json": components["schemas"]["CodeTemplateLibrary"];
+                    "application/xml": components["schemas"]["DashboardStatus"];
+                    "application/json": components["schemas"]["DashboardStatus"];
+                    "application/mirthapi+json": components["schemas"]["DashboardStatus"];
                 };
             };
         };
     };
-    getCodeTemplatesPost: {
+    getChannelStatusList: {
+        parameters: {
+            query?: {
+                /** @description The channel IDs to return dashboard statuses for. If absent, all statuses will be returned. */
+                channelId?: string[];
+                /** @description The filter string to limit dashboard statuses with. */
+                filter?: string;
+                /** @description If true, statuses for undeployed channels will also be included. */
+                includeUndeployed?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["DashboardStatus"][];
+                    "application/json": components["schemas"]["DashboardStatus"][];
+                    "application/mirthapi+json": components["schemas"]["DashboardStatus"][];
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["DashboardStatus"][];
+                    "application/json": components["schemas"]["DashboardStatus"][];
+                    "application/mirthapi+json": components["schemas"]["DashboardStatus"][];
+                };
+            };
+        };
+    };
+    getCodeTemplateSummary: {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** @description The ID of the code template(s) to retrieve. */
-        requestBody?: {
-            content: {
-                "application/xml": string[];
-                "application/json": string[];
-                "application/mirthapi+json": string[];
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["CodeTemplate"][];
-                    "application/json": components["schemas"]["CodeTemplate"][];
-                    "application/mirthapi+json": components["schemas"]["CodeTemplate"][];
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["CodeTemplate"][];
-                    "application/json": components["schemas"]["CodeTemplate"][];
-                    "application/mirthapi+json": components["schemas"]["CodeTemplate"][];
-                };
-            };
-        };
-    };
-    getCodeTemplateLibraries: {
-        parameters: {
-            query?: {
-                /** @description The ID of the library(s) to retrieve. */
-                libraryId?: string[];
-                /** @description If true, full code templates will be included inside each library. */
-                includeCodeTemplates?: boolean;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["CodeTemplateLibrary"][];
-                    "application/json": components["schemas"]["CodeTemplateLibrary"][];
-                    "application/mirthapi+json": components["schemas"]["CodeTemplateLibrary"][];
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["CodeTemplateLibrary"][];
-                    "application/json": components["schemas"]["CodeTemplateLibrary"][];
-                    "application/mirthapi+json": components["schemas"]["CodeTemplateLibrary"][];
-                };
-            };
-        };
-    };
-    updateCodeTemplateLibraries: {
-        parameters: {
-            query?: {
-                /** @description If true, the code template library will be updated even if a different revision exists on the server. */
-                override?: boolean;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description The list of code template libraries to replace with. */
+        /** @description A map of revisions telling the server the state of the client-side code template cache. */
         requestBody: {
             content: {
-                "application/xml": components["schemas"]["CodeTemplateLibrary"][];
-                "application/json": components["schemas"]["CodeTemplateLibrary"][];
-                "application/mirthapi+json": components["schemas"]["CodeTemplateLibrary"][];
+                "application/xml": {
+                    [key: string]: number;
+                };
+                "application/json": {
+                    [key: string]: number;
+                };
+                "application/mirthapi+json": {
+                    [key: string]: number;
+                };
             };
         };
         responses: {
@@ -8415,9 +8278,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/xml": boolean;
-                    "application/json": boolean;
-                    "application/mirthapi+json": boolean;
+                    "application/xml": components["schemas"]["CodeTemplateSummary"][];
+                    "application/json": components["schemas"]["CodeTemplateSummary"][];
+                    "application/mirthapi+json": components["schemas"]["CodeTemplateSummary"][];
                 };
             };
             "2XX": {
@@ -8425,43 +8288,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/xml": boolean;
-                    "application/json": boolean;
-                    "application/mirthapi+json": boolean;
-                };
-            };
-        };
-    };
-    getCodeTemplates: {
-        parameters: {
-            query?: {
-                /** @description The ID of the code template(s) to retrieve. */
-                codeTemplateId?: string[];
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["CodeTemplate"][];
-                    "application/json": components["schemas"]["CodeTemplate"][];
-                    "application/mirthapi+json": components["schemas"]["CodeTemplate"][];
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["CodeTemplate"][];
-                    "application/json": components["schemas"]["CodeTemplate"][];
-                    "application/mirthapi+json": components["schemas"]["CodeTemplate"][];
+                    "application/xml": components["schemas"]["CodeTemplateSummary"][];
+                    "application/json": components["schemas"]["CodeTemplateSummary"][];
+                    "application/mirthapi+json": components["schemas"]["CodeTemplateSummary"][];
                 };
             };
         };
@@ -8627,25 +8456,22 @@ export interface operations {
             };
         };
     };
-    getCodeTemplateSummary: {
+    getCodeTemplateLibrariesPost: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description If true, full code templates will be included inside each library. */
+                includeCodeTemplates?: boolean;
+            };
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** @description A map of revisions telling the server the state of the client-side code template cache. */
-        requestBody: {
+        /** @description The ID of the library(s) to retrieve. */
+        requestBody?: {
             content: {
-                "application/xml": {
-                    [key: string]: number;
-                };
-                "application/json": {
-                    [key: string]: number;
-                };
-                "application/mirthapi+json": {
-                    [key: string]: number;
-                };
+                "application/xml": string[];
+                "application/json": string[];
+                "application/mirthapi+json": string[];
             };
         };
         responses: {
@@ -8654,9 +8480,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/xml": components["schemas"]["CodeTemplateSummary"][];
-                    "application/json": components["schemas"]["CodeTemplateSummary"][];
-                    "application/mirthapi+json": components["schemas"]["CodeTemplateSummary"][];
+                    "application/xml": components["schemas"]["CodeTemplateLibrary"][];
+                    "application/json": components["schemas"]["CodeTemplateLibrary"][];
+                    "application/mirthapi+json": components["schemas"]["CodeTemplateLibrary"][];
                 };
             };
             "2XX": {
@@ -8664,21 +8490,238 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/xml": components["schemas"]["CodeTemplateSummary"][];
-                    "application/json": components["schemas"]["CodeTemplateSummary"][];
-                    "application/mirthapi+json": components["schemas"]["CodeTemplateSummary"][];
+                    "application/xml": components["schemas"]["CodeTemplateLibrary"][];
+                    "application/json": components["schemas"]["CodeTemplateLibrary"][];
+                    "application/mirthapi+json": components["schemas"]["CodeTemplateLibrary"][];
                 };
             };
         };
     };
-    getProperty: {
+    getCodeTemplateLibrary: {
         parameters: {
-            query: {
-                /** @description The property group. */
-                group: string;
-                /** @description The name of the property. */
-                name: string;
+            query?: {
+                /** @description If true, full code templates will be included inside each library. */
+                includeCodeTemplates?: boolean;
             };
+            header?: never;
+            path: {
+                /** @description The ID of the library to retrieve. */
+                libraryId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["CodeTemplateLibrary"];
+                    "application/json": components["schemas"]["CodeTemplateLibrary"];
+                    "application/mirthapi+json": components["schemas"]["CodeTemplateLibrary"];
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["CodeTemplateLibrary"];
+                    "application/json": components["schemas"]["CodeTemplateLibrary"];
+                    "application/mirthapi+json": components["schemas"]["CodeTemplateLibrary"];
+                };
+            };
+        };
+    };
+    getCodeTemplateLibraries: {
+        parameters: {
+            query?: {
+                /** @description The ID of the library(s) to retrieve. */
+                libraryId?: string[];
+                /** @description If true, full code templates will be included inside each library. */
+                includeCodeTemplates?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["CodeTemplateLibrary"][];
+                    "application/json": components["schemas"]["CodeTemplateLibrary"][];
+                    "application/mirthapi+json": components["schemas"]["CodeTemplateLibrary"][];
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["CodeTemplateLibrary"][];
+                    "application/json": components["schemas"]["CodeTemplateLibrary"][];
+                    "application/mirthapi+json": components["schemas"]["CodeTemplateLibrary"][];
+                };
+            };
+        };
+    };
+    updateCodeTemplateLibraries: {
+        parameters: {
+            query?: {
+                /** @description If true, the code template library will be updated even if a different revision exists on the server. */
+                override?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The list of code template libraries to replace with. */
+        requestBody: {
+            content: {
+                "application/xml": components["schemas"]["CodeTemplateLibrary"][];
+                "application/json": components["schemas"]["CodeTemplateLibrary"][];
+                "application/mirthapi+json": components["schemas"]["CodeTemplateLibrary"][];
+            };
+        };
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": boolean;
+                    "application/json": boolean;
+                    "application/mirthapi+json": boolean;
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": boolean;
+                    "application/json": boolean;
+                    "application/mirthapi+json": boolean;
+                };
+            };
+        };
+    };
+    getCodeTemplatesPost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The ID of the code template(s) to retrieve. */
+        requestBody?: {
+            content: {
+                "application/xml": string[];
+                "application/json": string[];
+                "application/mirthapi+json": string[];
+            };
+        };
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["CodeTemplate"][];
+                    "application/json": components["schemas"]["CodeTemplate"][];
+                    "application/mirthapi+json": components["schemas"]["CodeTemplate"][];
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["CodeTemplate"][];
+                    "application/json": components["schemas"]["CodeTemplate"][];
+                    "application/mirthapi+json": components["schemas"]["CodeTemplate"][];
+                };
+            };
+        };
+    };
+    getCodeTemplates: {
+        parameters: {
+            query?: {
+                /** @description The ID of the code template(s) to retrieve. */
+                codeTemplateId?: string[];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["CodeTemplate"][];
+                    "application/json": components["schemas"]["CodeTemplate"][];
+                    "application/mirthapi+json": components["schemas"]["CodeTemplate"][];
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["CodeTemplate"][];
+                    "application/json": components["schemas"]["CodeTemplate"][];
+                    "application/mirthapi+json": components["schemas"]["CodeTemplate"][];
+                };
+            };
+        };
+    };
+    reloadResource: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The unique ID of the resource to reload. */
+                resourceId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    getJVMName: {
+        parameters: {
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;
@@ -8705,7 +8748,7 @@ export interface operations {
             };
         };
     };
-    getResources: {
+    getAbout: {
         parameters: {
             query?: never;
             header?: never;
@@ -8719,9 +8762,15 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/xml": components["schemas"]["ResourceProperties"][];
-                    "application/json": components["schemas"]["ResourceProperties"][];
-                    "application/mirthapi+json": components["schemas"]["ResourceProperties"][];
+                    "application/xml": {
+                        [key: string]: Record<string, never>;
+                    };
+                    "application/json": {
+                        [key: string]: Record<string, never>;
+                    };
+                    "application/mirthapi+json": {
+                        [key: string]: Record<string, never>;
+                    };
                 };
             };
             "2XX": {
@@ -8729,54 +8778,51 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/xml": components["schemas"]["ResourceProperties"][];
-                    "application/json": components["schemas"]["ResourceProperties"][];
-                    "application/mirthapi+json": components["schemas"]["ResourceProperties"][];
+                    "application/xml": {
+                        [key: string]: Record<string, never>;
+                    };
+                    "application/json": {
+                        [key: string]: Record<string, never>;
+                    };
+                    "application/mirthapi+json": {
+                        [key: string]: Record<string, never>;
+                    };
                 };
             };
         };
     };
-    setResources: {
+    getLicenseInfo: {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** @description The new list of resource properties to update with. */
-        requestBody: {
-            content: {
-                "application/xml": components["schemas"]["ResourceProperties"][];
-                "application/json": components["schemas"]["ResourceProperties"][];
-                "application/mirthapi+json": components["schemas"]["ResourceProperties"][];
-            };
-        };
+        requestBody?: never;
         responses: {
-            /** @description default response */
             default: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
+                    "application/xml": components["schemas"]["LicenseInfo"];
+                    "application/json": components["schemas"]["LicenseInfo"];
+                    "application/mirthapi+json": components["schemas"]["LicenseInfo"];
                 };
             };
-            /** @description default response */
             "2XX": {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
+                    "application/xml": components["schemas"]["LicenseInfo"];
+                    "application/json": components["schemas"]["LicenseInfo"];
+                    "application/mirthapi+json": components["schemas"]["LicenseInfo"];
                 };
             };
         };
     };
-    getVersion: {
+    getGuid: {
         parameters: {
             query?: never;
             header?: never;
@@ -8848,66 +8894,6 @@ export interface operations {
             };
         };
     };
-    getStatus: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": number;
-                    "application/json": number;
-                    "application/mirthapi+json": number;
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": number;
-                    "application/json": number;
-                    "application/mirthapi+json": number;
-                };
-            };
-        };
-    };
-    getServerId: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
     getServerSettings: {
         parameters: {
             query?: never;
@@ -8952,6 +8938,184 @@ export interface operations {
                 "application/xml": components["schemas"]["ServerSettings"];
                 "application/json": components["schemas"]["ServerSettings"];
                 "application/mirthapi+json": components["schemas"]["ServerSettings"];
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    getChannelMetadata: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": {
+                        [key: string]: components["schemas"]["ChannelMetadata"];
+                    };
+                    "application/json": {
+                        [key: string]: components["schemas"]["ChannelMetadata"];
+                    };
+                    "application/mirthapi+json": {
+                        [key: string]: components["schemas"]["ChannelMetadata"];
+                    };
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": {
+                        [key: string]: components["schemas"]["ChannelMetadata"];
+                    };
+                    "application/json": {
+                        [key: string]: components["schemas"]["ChannelMetadata"];
+                    };
+                    "application/mirthapi+json": {
+                        [key: string]: components["schemas"]["ChannelMetadata"];
+                    };
+                };
+            };
+        };
+    };
+    setChannelMetadata: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The map of channel metadata to set. */
+        requestBody: {
+            content: {
+                "application/xml": {
+                    [key: string]: components["schemas"]["ChannelMetadata"];
+                };
+                "application/json": {
+                    [key: string]: components["schemas"]["ChannelMetadata"];
+                };
+                "application/mirthapi+json": {
+                    [key: string]: components["schemas"]["ChannelMetadata"];
+                };
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    getConfigurationMap: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": {
+                        [key: string]: components["schemas"]["ConfigurationProperty"];
+                    };
+                    "application/json": {
+                        [key: string]: components["schemas"]["ConfigurationProperty"];
+                    };
+                    "application/mirthapi+json": {
+                        [key: string]: components["schemas"]["ConfigurationProperty"];
+                    };
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": {
+                        [key: string]: components["schemas"]["ConfigurationProperty"];
+                    };
+                    "application/json": {
+                        [key: string]: components["schemas"]["ConfigurationProperty"];
+                    };
+                    "application/mirthapi+json": {
+                        [key: string]: components["schemas"]["ConfigurationProperty"];
+                    };
+                };
+            };
+        };
+    };
+    setConfigurationMap: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The new configuration map to update with. */
+        requestBody: {
+            content: {
+                "application/xml": {
+                    [key: string]: components["schemas"]["ConfigurationProperty"];
+                };
+                "application/json": {
+                    [key: string]: components["schemas"]["ConfigurationProperty"];
+                };
+                "application/mirthapi+json": {
+                    [key: string]: components["schemas"]["ConfigurationProperty"];
+                };
             };
         };
         responses: {
@@ -9210,95 +9374,6 @@ export interface operations {
             };
         };
     };
-    getConfigurationMap: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": {
-                        [key: string]: components["schemas"]["ConfigurationProperty"];
-                    };
-                    "application/json": {
-                        [key: string]: components["schemas"]["ConfigurationProperty"];
-                    };
-                    "application/mirthapi+json": {
-                        [key: string]: components["schemas"]["ConfigurationProperty"];
-                    };
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": {
-                        [key: string]: components["schemas"]["ConfigurationProperty"];
-                    };
-                    "application/json": {
-                        [key: string]: components["schemas"]["ConfigurationProperty"];
-                    };
-                    "application/mirthapi+json": {
-                        [key: string]: components["schemas"]["ConfigurationProperty"];
-                    };
-                };
-            };
-        };
-    };
-    setConfigurationMap: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description The new configuration map to update with. */
-        requestBody: {
-            content: {
-                "application/xml": {
-                    [key: string]: components["schemas"]["ConfigurationProperty"];
-                };
-                "application/json": {
-                    [key: string]: components["schemas"]["ConfigurationProperty"];
-                };
-                "application/mirthapi+json": {
-                    [key: string]: components["schemas"]["ConfigurationProperty"];
-                };
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
     getChannelDependencies: {
         parameters: {
             query?: never;
@@ -9370,6 +9445,68 @@ export interface operations {
             };
         };
     };
+    getStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": number;
+                    "application/json": number;
+                    "application/mirthapi+json": number;
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": number;
+                    "application/json": number;
+                    "application/mirthapi+json": number;
+                };
+            };
+        };
+    };
+    getRhinoLanguageVersion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": number;
+                    "application/json": number;
+                    "application/mirthapi+json": number;
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": number;
+                    "application/json": number;
+                    "application/mirthapi+json": number;
+                };
+            };
+        };
+    };
     getServerTimezone: {
         parameters: {
             query?: never;
@@ -9426,6 +9563,99 @@ export interface operations {
                     "application/xml": string;
                     "application/json": string;
                     "application/mirthapi+json": string;
+                };
+            };
+        };
+    };
+    getAvailableCharsetEncodings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": string[];
+                    "application/json": string[];
+                    "application/mirthapi+json": string[];
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": string[];
+                    "application/json": string[];
+                    "application/mirthapi+json": string[];
+                };
+            };
+        };
+    };
+    getPublicServerSettings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["PublicServerSettings"];
+                    "application/json": components["schemas"]["PublicServerSettings"];
+                    "application/mirthapi+json": components["schemas"]["PublicServerSettings"];
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["PublicServerSettings"];
+                    "application/json": components["schemas"]["PublicServerSettings"];
+                    "application/mirthapi+json": components["schemas"]["PublicServerSettings"];
+                };
+            };
+        };
+    };
+    getEncryptionSettings: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["EncryptionSettings"];
+                    "application/json": components["schemas"]["EncryptionSettings"];
+                    "application/mirthapi+json": components["schemas"]["EncryptionSettings"];
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["EncryptionSettings"];
+                    "application/json": components["schemas"]["EncryptionSettings"];
+                    "application/mirthapi+json": components["schemas"]["EncryptionSettings"];
                 };
             };
         };
@@ -9530,199 +9760,6 @@ export interface operations {
             };
         };
     };
-    getChannelMetadata: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": {
-                        [key: string]: components["schemas"]["ChannelMetadata"];
-                    };
-                    "application/json": {
-                        [key: string]: components["schemas"]["ChannelMetadata"];
-                    };
-                    "application/mirthapi+json": {
-                        [key: string]: components["schemas"]["ChannelMetadata"];
-                    };
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": {
-                        [key: string]: components["schemas"]["ChannelMetadata"];
-                    };
-                    "application/json": {
-                        [key: string]: components["schemas"]["ChannelMetadata"];
-                    };
-                    "application/mirthapi+json": {
-                        [key: string]: components["schemas"]["ChannelMetadata"];
-                    };
-                };
-            };
-        };
-    };
-    setChannelMetadata: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description The map of channel metadata to set. */
-        requestBody: {
-            content: {
-                "application/xml": {
-                    [key: string]: components["schemas"]["ChannelMetadata"];
-                };
-                "application/json": {
-                    [key: string]: components["schemas"]["ChannelMetadata"];
-                };
-                "application/mirthapi+json": {
-                    [key: string]: components["schemas"]["ChannelMetadata"];
-                };
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    sendTestEmail_1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description Contains all properties needed to send the e-mail. Properties include: port, encryption, host, timeout, authentication, username, password, toAddress, fromAddress */
-        requestBody: {
-            content: {
-                "application/xml": string;
-                "application/json": string;
-                "application/mirthapi+json": {
-                    [key: string]: string;
-                };
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["ConnectionTestResponse"];
-                    "application/json": components["schemas"]["ConnectionTestResponse"];
-                    "application/mirthapi+json": components["schemas"]["ConnectionTestResponse"];
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["ConnectionTestResponse"];
-                    "application/json": components["schemas"]["ConnectionTestResponse"];
-                    "application/mirthapi+json": components["schemas"]["ConnectionTestResponse"];
-                };
-            };
-        };
-    };
-    getAvailableCharsetEncodings: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": string[];
-                    "application/json": string[];
-                    "application/mirthapi+json": string[];
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": string[];
-                    "application/json": string[];
-                    "application/mirthapi+json": string[];
-                };
-            };
-        };
-    };
-    getEncryptionSettings: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["EncryptionSettings"];
-                    "application/json": components["schemas"]["EncryptionSettings"];
-                    "application/mirthapi+json": components["schemas"]["EncryptionSettings"];
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["EncryptionSettings"];
-                    "application/json": components["schemas"]["EncryptionSettings"];
-                    "application/mirthapi+json": components["schemas"]["EncryptionSettings"];
-                };
-            };
-        };
-    };
     getServerConfiguration: {
         parameters: {
             query?: {
@@ -9806,68 +9843,6 @@ export interface operations {
             };
         };
     };
-    getRhinoLanguageVersion: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": number;
-                    "application/json": number;
-                    "application/mirthapi+json": number;
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": number;
-                    "application/json": number;
-                    "application/mirthapi+json": number;
-                };
-            };
-        };
-    };
-    getPublicServerSettings: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["PublicServerSettings"];
-                    "application/json": components["schemas"]["PublicServerSettings"];
-                    "application/mirthapi+json": components["schemas"]["PublicServerSettings"];
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["PublicServerSettings"];
-                    "application/json": components["schemas"]["PublicServerSettings"];
-                    "application/mirthapi+json": components["schemas"]["PublicServerSettings"];
-                };
-            };
-        };
-    };
     getPasswordRequirements: {
         parameters: {
             query?: never;
@@ -9899,36 +9874,7 @@ export interface operations {
             };
         };
     };
-    getJVMName: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    getAbout: {
+    getResources: {
         parameters: {
             query?: never;
             header?: never;
@@ -9942,15 +9888,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/xml": {
-                        [key: string]: Record<string, never>;
-                    };
-                    "application/json": {
-                        [key: string]: Record<string, never>;
-                    };
-                    "application/mirthapi+json": {
-                        [key: string]: Record<string, never>;
-                    };
+                    "application/xml": components["schemas"]["ResourceProperties"][];
+                    "application/json": components["schemas"]["ResourceProperties"][];
+                    "application/mirthapi+json": components["schemas"]["ResourceProperties"][];
                 };
             };
             "2XX": {
@@ -9958,90 +9898,28 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/xml": {
-                        [key: string]: Record<string, never>;
-                    };
-                    "application/json": {
-                        [key: string]: Record<string, never>;
-                    };
-                    "application/mirthapi+json": {
-                        [key: string]: Record<string, never>;
-                    };
+                    "application/xml": components["schemas"]["ResourceProperties"][];
+                    "application/json": components["schemas"]["ResourceProperties"][];
+                    "application/mirthapi+json": components["schemas"]["ResourceProperties"][];
                 };
             };
         };
     };
-    getLicenseInfo: {
+    setResources: {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["LicenseInfo"];
-                    "application/json": components["schemas"]["LicenseInfo"];
-                    "application/mirthapi+json": components["schemas"]["LicenseInfo"];
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["LicenseInfo"];
-                    "application/json": components["schemas"]["LicenseInfo"];
-                    "application/mirthapi+json": components["schemas"]["LicenseInfo"];
-                };
+        /** @description The new list of resource properties to update with. */
+        requestBody: {
+            content: {
+                "application/xml": components["schemas"]["ResourceProperties"][];
+                "application/json": components["schemas"]["ResourceProperties"][];
+                "application/mirthapi+json": components["schemas"]["ResourceProperties"][];
             };
         };
-    };
-    getGuid: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-        };
-    };
-    reloadResource: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The unique ID of the resource to reload. */
-                resourceId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
         responses: {
             /** @description default response */
             default: {
@@ -10063,6 +9941,140 @@ export interface operations {
                     "application/xml": unknown;
                     "application/json": unknown;
                     "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    sendTestEmail_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Contains all properties needed to send the e-mail. Properties include: port, encryption, host, timeout, authentication, username, password, toAddress, fromAddress */
+        requestBody: {
+            content: {
+                "application/xml": string;
+                "application/json": string;
+                "application/mirthapi+json": {
+                    [key: string]: string;
+                };
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["ConnectionTestResponse"];
+                    "application/json": components["schemas"]["ConnectionTestResponse"];
+                    "application/mirthapi+json": components["schemas"]["ConnectionTestResponse"];
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["ConnectionTestResponse"];
+                    "application/json": components["schemas"]["ConnectionTestResponse"];
+                    "application/mirthapi+json": components["schemas"]["ConnectionTestResponse"];
+                };
+            };
+        };
+    };
+    getServerId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getProperty: {
+        parameters: {
+            query: {
+                /** @description The property group. */
+                group: string;
+                /** @description The name of the property. */
+                name: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+        };
+    };
+    getVersion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
                 };
             };
         };
@@ -10212,14 +10224,61 @@ export interface operations {
             };
         };
     };
-    redeployAllChannels: {
+    deployChannel: {
+        parameters: {
+            query?: {
+                /** @description If true, an error response code and the exception will be returned. */
+                returnErrors?: boolean;
+                /**
+                 * @description If present, the channel will deploy in debug mode and use these options. The input should be a comma-separated list of 't' and 'f' values that indicate whether to debug Deploy/Undeploy/Preprocessor/Postprocessor scripts, Attachment/Batch scripts, Source Connectors scripts, Source Filter/Transformer scripts, Destination Filter/Transformer scripts, Destination Connector scripts, and Destination Response Transformer scripts, in that order. Example: "f,f,f,f,f,f,f")
+                 * @example f,f,f,f,f,f,f
+                 */
+                debugOptions?: string;
+            };
+            header?: never;
+            path: {
+                /** @description The ID of the channel to deploy. */
+                channelId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    undeployChannel: {
         parameters: {
             query?: {
                 /** @description If true, an error response code and the exception will be returned. */
                 returnErrors?: boolean;
             };
             header?: never;
-            path?: never;
+            path: {
+                /** @description The ID of the channel to undeploy. */
+                channelId: string;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -10334,61 +10393,14 @@ export interface operations {
             };
         };
     };
-    deployChannel: {
-        parameters: {
-            query?: {
-                /** @description If true, an error response code and the exception will be returned. */
-                returnErrors?: boolean;
-                /**
-                 * @description If present, the channel will deploy in debug mode and use these options. The input should be a comma-separated list of 't' and 'f' values that indicate whether to debug Deploy/Undeploy/Preprocessor/Postprocessor scripts, Attachment/Batch scripts, Source Connectors scripts, Source Filter/Transformer scripts, Destination Filter/Transformer scripts, Destination Connector scripts, and Destination Response Transformer scripts, in that order. Example: "f,f,f,f,f,f,f")
-                 * @example f,f,f,f,f,f,f
-                 */
-                debugOptions?: string;
-            };
-            header?: never;
-            path: {
-                /** @description The ID of the channel to deploy. */
-                channelId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    undeployChannel: {
+    redeployAllChannels: {
         parameters: {
             query?: {
                 /** @description If true, an error response code and the exception will be returned. */
                 returnErrors?: boolean;
             };
             header?: never;
-            path: {
-                /** @description The ID of the channel to undeploy. */
-                channelId: string;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -10413,169 +10425,6 @@ export interface operations {
                     "application/xml": unknown;
                     "application/json": unknown;
                     "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    getMaxEventId: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": number;
-                    "application/mirthapi+json": number;
-                    "text/plain": number;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": number;
-                    "application/mirthapi+json": number;
-                    "text/plain": number;
-                };
-            };
-        };
-    };
-    getEvent: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The ID of the event. */
-                eventId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["ServerEvent"];
-                    "application/json": components["schemas"]["ServerEvent"];
-                    "application/mirthapi+json": components["schemas"]["ServerEvent"];
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["ServerEvent"];
-                    "application/json": components["schemas"]["ServerEvent"];
-                    "application/mirthapi+json": components["schemas"]["ServerEvent"];
-                };
-            };
-        };
-    };
-    getEventCount: {
-        parameters: {
-            query?: {
-                /** @description The maximum event ID to query. */
-                maxEventId?: number;
-                /** @description The minimum event ID to query. */
-                minEventId?: number;
-                /** @description The type of events to query. */
-                level?: ("INFORMATION" | "WARNING" | "ERROR")[];
-                /** @description The earliest event date to query by. Example: 1985-10-26T09:00:00.000-0700 */
-                startDate?: string;
-                /** @description The latest event date to query by. Example: 2015-10-21T07:28:00.000-0700 */
-                endDate?: string;
-                /** @description Searches the event name for this string. */
-                name?: string;
-                /** @description Searches on whether the event outcome was successful or not. */
-                outcome?: "SUCCESS" | "FAILURE";
-                /** @description The user ID to query events by. */
-                userId?: number;
-                /** @description Searches the attributes for this string. */
-                attributeSearch?: string;
-                /** @description The IP address that originated the event. */
-                ipAddress?: string;
-                /** @description The ID of the server that the event was created from. */
-                serverId?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": number;
-                    "application/mirthapi+json": number;
-                    "text/plain": number;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": number;
-                    "application/mirthapi+json": number;
-                    "text/plain": number;
-                };
-            };
-        };
-    };
-    getEventCount_1: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description The EventFilter object to use to query events by. */
-        requestBody: {
-            content: {
-                "application/xml": components["schemas"]["EventFilter"];
-                "application/json": components["schemas"]["EventFilter"];
-                "application/mirthapi+json": components["schemas"]["EventFilter"];
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": number;
-                    "application/mirthapi+json": number;
-                    "text/plain": number;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": number;
-                    "application/mirthapi+json": number;
-                    "text/plain": number;
                 };
             };
         };
@@ -10681,6 +10530,102 @@ export interface operations {
             };
         };
     };
+    getEventCount: {
+        parameters: {
+            query?: {
+                /** @description The maximum event ID to query. */
+                maxEventId?: number;
+                /** @description The minimum event ID to query. */
+                minEventId?: number;
+                /** @description The type of events to query. */
+                level?: ("INFORMATION" | "WARNING" | "ERROR")[];
+                /** @description The earliest event date to query by. Example: 1985-10-26T09:00:00.000-0700 */
+                startDate?: string;
+                /** @description The latest event date to query by. Example: 2015-10-21T07:28:00.000-0700 */
+                endDate?: string;
+                /** @description Searches the event name for this string. */
+                name?: string;
+                /** @description Searches on whether the event outcome was successful or not. */
+                outcome?: "SUCCESS" | "FAILURE";
+                /** @description The user ID to query events by. */
+                userId?: number;
+                /** @description Searches the attributes for this string. */
+                attributeSearch?: string;
+                /** @description The IP address that originated the event. */
+                ipAddress?: string;
+                /** @description The ID of the server that the event was created from. */
+                serverId?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": number;
+                    "application/mirthapi+json": number;
+                    "text/plain": number;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": number;
+                    "application/mirthapi+json": number;
+                    "text/plain": number;
+                };
+            };
+        };
+    };
+    getEventCount_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The EventFilter object to use to query events by. */
+        requestBody: {
+            content: {
+                "application/xml": components["schemas"]["EventFilter"];
+                "application/json": components["schemas"]["EventFilter"];
+                "application/mirthapi+json": components["schemas"]["EventFilter"];
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": number;
+                    "application/mirthapi+json": number;
+                    "text/plain": number;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": number;
+                    "application/mirthapi+json": number;
+                    "text/plain": number;
+                };
+            };
+        };
+    };
     exportAllEvents: {
         parameters: {
             query?: never;
@@ -10706,6 +10651,229 @@ export interface operations {
                 };
                 content: {
                     "text/plain": string;
+                };
+            };
+        };
+    };
+    getEvent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the event. */
+                eventId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["ServerEvent"];
+                    "application/json": components["schemas"]["ServerEvent"];
+                    "application/mirthapi+json": components["schemas"]["ServerEvent"];
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["ServerEvent"];
+                    "application/json": components["schemas"]["ServerEvent"];
+                    "application/mirthapi+json": components["schemas"]["ServerEvent"];
+                };
+            };
+        };
+    };
+    getMaxEventId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": number;
+                    "application/mirthapi+json": number;
+                    "text/plain": number;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": number;
+                    "application/mirthapi+json": number;
+                    "text/plain": number;
+                };
+            };
+        };
+    };
+    setExtensionEnabled: {
+        parameters: {
+            query: {
+                /** @description The new enabled status to set. */
+                enabled: boolean;
+            };
+            header?: never;
+            path: {
+                /** @description The name of the extension to retrieve. */
+                extensionName: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    isExtensionEnabled: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The name of the extension to retrieve. */
+                extensionName: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": boolean;
+                    "application/json": boolean;
+                    "application/mirthapi+json": boolean;
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": boolean;
+                    "application/json": boolean;
+                    "application/mirthapi+json": boolean;
+                };
+            };
+        };
+    };
+    installExtension: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /**
+                     * Format: binary
+                     * @description The extension file to upload.
+                     */
+                    file?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    uninstallExtension: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The path attribute of the extension to uninstall. */
+        requestBody: {
+            content: {
+                "application/xml": string;
+                "application/json": string;
+                "application/mirthapi+json": string;
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
                 };
             };
         };
@@ -10740,6 +10908,92 @@ export interface operations {
                     "application/xml": components["schemas"]["MetaData"];
                     "application/json": components["schemas"]["MetaData"];
                     "application/mirthapi+json": components["schemas"]["MetaData"];
+                };
+            };
+        };
+    };
+    getConnectorMetaData: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": {
+                        [key: string]: components["schemas"]["ConnectorMetaData"];
+                    };
+                    "application/json": {
+                        [key: string]: components["schemas"]["ConnectorMetaData"];
+                    };
+                    "application/mirthapi+json": {
+                        [key: string]: components["schemas"]["ConnectorMetaData"];
+                    };
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": {
+                        [key: string]: components["schemas"]["ConnectorMetaData"];
+                    };
+                    "application/json": {
+                        [key: string]: components["schemas"]["ConnectorMetaData"];
+                    };
+                    "application/mirthapi+json": {
+                        [key: string]: components["schemas"]["ConnectorMetaData"];
+                    };
+                };
+            };
+        };
+    };
+    getPluginMetaData: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": {
+                        [key: string]: components["schemas"]["PluginMetaData"];
+                    };
+                    "application/json": {
+                        [key: string]: components["schemas"]["PluginMetaData"];
+                    };
+                    "application/mirthapi+json": {
+                        [key: string]: components["schemas"]["PluginMetaData"];
+                    };
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": {
+                        [key: string]: components["schemas"]["PluginMetaData"];
+                    };
+                    "application/json": {
+                        [key: string]: components["schemas"]["PluginMetaData"];
+                    };
+                    "application/mirthapi+json": {
+                        [key: string]: components["schemas"]["PluginMetaData"];
+                    };
                 };
             };
         };
@@ -10840,831 +11094,7 @@ export interface operations {
             };
         };
     };
-    getConnectorMetaData: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": {
-                        [key: string]: components["schemas"]["ConnectorMetaData"];
-                    };
-                    "application/json": {
-                        [key: string]: components["schemas"]["ConnectorMetaData"];
-                    };
-                    "application/mirthapi+json": {
-                        [key: string]: components["schemas"]["ConnectorMetaData"];
-                    };
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": {
-                        [key: string]: components["schemas"]["ConnectorMetaData"];
-                    };
-                    "application/json": {
-                        [key: string]: components["schemas"]["ConnectorMetaData"];
-                    };
-                    "application/mirthapi+json": {
-                        [key: string]: components["schemas"]["ConnectorMetaData"];
-                    };
-                };
-            };
-        };
-    };
-    getPluginMetaData: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": {
-                        [key: string]: components["schemas"]["PluginMetaData"];
-                    };
-                    "application/json": {
-                        [key: string]: components["schemas"]["PluginMetaData"];
-                    };
-                    "application/mirthapi+json": {
-                        [key: string]: components["schemas"]["PluginMetaData"];
-                    };
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": {
-                        [key: string]: components["schemas"]["PluginMetaData"];
-                    };
-                    "application/json": {
-                        [key: string]: components["schemas"]["PluginMetaData"];
-                    };
-                    "application/mirthapi+json": {
-                        [key: string]: components["schemas"]["PluginMetaData"];
-                    };
-                };
-            };
-        };
-    };
-    uninstallExtension: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description The path attribute of the extension to uninstall. */
-        requestBody: {
-            content: {
-                "application/xml": string;
-                "application/json": string;
-                "application/mirthapi+json": string;
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    installExtension: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "multipart/form-data": {
-                    /**
-                     * Format: binary
-                     * @description The extension file to upload.
-                     */
-                    file?: string;
-                };
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    setExtensionEnabled: {
-        parameters: {
-            query: {
-                /** @description The new enabled status to set. */
-                enabled: boolean;
-            };
-            header?: never;
-            path: {
-                /** @description The name of the extension to retrieve. */
-                extensionName: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    isExtensionEnabled: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The name of the extension to retrieve. */
-                extensionName: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": boolean;
-                    "application/json": boolean;
-                    "application/mirthapi+json": boolean;
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": boolean;
-                    "application/json": boolean;
-                    "application/mirthapi+json": boolean;
-                };
-            };
-        };
-    };
-    getAttachmentsByMessageId: {
-        parameters: {
-            query?: {
-                /** @description If false, only the attachment ID and type will be returned. */
-                includeContent?: boolean;
-            };
-            header?: never;
-            path: {
-                /** @description The ID of the channel. */
-                channelId: string;
-                /** @description The ID of the message. */
-                messageId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["Attachment"][];
-                    "application/json": components["schemas"]["Attachment"][];
-                    "application/mirthapi+json": components["schemas"]["Attachment"][];
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["Attachment"][];
-                    "application/json": components["schemas"]["Attachment"][];
-                    "application/mirthapi+json": components["schemas"]["Attachment"][];
-                };
-            };
-        };
-    };
-    auditQueriedPHIMessage: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description The attributes map of the channel messages filter. */
-        requestBody?: {
-            content: {
-                "application/xml": {
-                    [key: string]: string;
-                };
-                "application/json": {
-                    [key: string]: string;
-                };
-                "application/mirthapi+json": {
-                    [key: string]: string;
-                };
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    exportMessagesServer: {
-        parameters: {
-            query?: {
-                /** @description The maximum number of messages that will be queried at a time. */
-                pageSize?: number;
-            };
-            header?: never;
-            path: {
-                /** @description The ID of the channel. */
-                channelId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "multipart/form-data": {
-                    filter: components["schemas"]["MessageFilter"];
-                    writerOptions?: components["schemas"]["MessageWriterOptions"];
-                };
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": number;
-                    "application/json": number;
-                    "application/mirthapi+json": number;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": number;
-                    "application/json": number;
-                    "application/mirthapi+json": number;
-                };
-            };
-        };
-    };
-    exportMessagesServer_1: {
-        parameters: {
-            query: {
-                /** @description The minimum message ID to query. */
-                minMessageId?: number;
-                /** @description The maximum message ID to query. */
-                maxMessageId?: number;
-                /** @description The minimum original message ID to query. Messages that have been reprocessed will retain their original message ID. */
-                minOriginalId?: number;
-                /** @description The maximum original message ID to query. Messages that have been reprocessed will retain their original message ID. */
-                maxOriginalId?: number;
-                /** @description The minimum import message ID to query. Messages that have been imported will retain their original message ID under this value. */
-                minImportId?: number;
-                /** @description The maximum import message ID to query. Messages that have been imported will retain their original message ID under this value. */
-                maxImportId?: number;
-                /** @description The earliest original received date to query by. Example: 1985-10-26T09:00:00.000-0700 */
-                startDate?: string;
-                /** @description The latest original received date to query by. Example: 2015-10-21T07:28:00.000-0700 */
-                endDate?: string;
-                /** @description Searches all message content for this string. This process could take a long time depending on the amount of message content currently stored. Any message content that was encrypted by this channel will not be searchable. */
-                textSearch?: string;
-                /** @description If true, text search input will be considered a regular expression pattern to be matched. Only supported by PostgreSQL, MySQL and Oracle databases. */
-                textSearchRegex?: boolean;
-                /** @description Determines which message statuses to query by. */
-                status?: ("RECEIVED" | "FILTERED" | "TRANSFORMED" | "SENT" | "QUEUED" | "ERROR" | "PENDING")[];
-                /** @description If present, only connector metadata IDs in this list will be queried. */
-                includedMetaDataId?: number[];
-                /** @description If present, connector metadata IDs in this list will not be queried. */
-                excludedMetaDataId?: number[];
-                /** @description The server ID associated with messages. */
-                serverId?: string;
-                /** @description Searches the raw content of messages. */
-                rawContentSearch?: string[];
-                /** @description Searches the processed raw content of messages. */
-                processedRawContentSearch?: string[];
-                /** @description Searches the transformed content of messages. */
-                transformedContentSearch?: string[];
-                /** @description Searches the encoded content of messages. */
-                encodedContentSearch?: string[];
-                /** @description Searches the sent content of messages. */
-                sentContentSearch?: string[];
-                /** @description Searches the response content of messages. */
-                responseContentSearch?: string[];
-                /** @description Searches the response transformed content of messages. */
-                responseTransformedContentSearch?: string[];
-                /** @description Searches the processed response content of messages. */
-                processedResponseContentSearch?: string[];
-                /** @description Searches the connector map content of messages. */
-                connectorMapContentSearch?: string[];
-                /** @description Searches the channel map content of messages. */
-                channelMapContentSearch?: string[];
-                /** @description Searches the source map content of messages. */
-                sourceMapContentSearch?: string[];
-                /** @description Searches the response map content of messages. */
-                responseMapContentSearch?: string[];
-                /** @description Searches the processing error content of messages. */
-                processingErrorContentSearch?: string[];
-                /** @description Searches the postprocessor error content of messages. */
-                postprocessorErrorContentSearch?: string[];
-                /** @description Searches the response error content of messages. */
-                responseErrorContentSearch?: string[];
-                /** @description Searches a custom metadata column. Value should be in the form: COLUMN_NAME &lt;operator&gt; value, where operator is one of the following: =, !=, <, <=, >, >=, CONTAINS, DOES NOT CONTAIN, STARTS WITH, DOES NOT START WITH, ENDS WITH, DOES NOT END WITH */
-                metaDataSearch?: components["schemas"]["MetaDataSearch"][];
-                /** @description Searches a custom metadata column, ignoring case. Value should be in the form: COLUMN_NAME &lt;operator&gt; value. */
-                metaDataCaseInsensitiveSearch?: components["schemas"]["MetaDataSearch"][];
-                /** @description When using a text search, these custom metadata columns will also be searched. */
-                textSearchMetaDataColumn?: string[];
-                /** @description The minimum number of send attempts for connector messages. */
-                minSendAttempts?: number;
-                /** @description The maximum number of send attempts for connector messages. */
-                maxSendAttempts?: number;
-                /** @description If true, only messages with attachments are included in the results. */
-                attachment?: boolean;
-                /** @description If true, only messages with errors are included in the results. */
-                error?: boolean;
-                /** @description The maximum number of messages that will be queried at a time. Default Value: 100 */
-                pageSize?: number;
-                /** @description The ContentType that will be extracted from the message for writing. If null or not provided, the entire message will be written in serialized format. */
-                contentType?: "Raw" | "Processed Raw" | "Transformed" | "Encoded" | "Sent" | "Response" | "Response Transformed" | "Processed Response" | "Connector Map" | "Channel Map" | "Response Map" | "Processing Error" | "Postprocessor Error" | "Response Error" | "Source Map";
-                /** @description If true, the content to write will be extracted from the destination message(s), rather than the source message. */
-                destinationContent?: boolean;
-                /** @description If true, message content will be encrypted before writing. */
-                encrypt?: boolean;
-                /** @description Determines whether attachments will be included with messages. */
-                includeAttachments?: boolean;
-                /** @description The base directory to use when resolving relative paths in the root folder. */
-                baseFolder?: string;
-                /** @description The root folder to contain the written messages/sub-folders. */
-                rootFolder: string;
-                /** @description A string defining the folder/filename(s) for writing messages. It may contain variables to be replaced. */
-                filePattern: string;
-                /** @description The file name to use for archive exports. */
-                archiveFileName?: string;
-                /** @description The archiver format to use to archive messages/folders that are written to the root folder. Valid values: zip, tar */
-                archiveFormat?: string;
-                /** @description The compressor format to use to compress the archive file. Only valid when using the TAR archive format. Valid values: gz, bzip2 */
-                compressFormat?: string;
-                /** @description The password used to protect the archive file. Only valid when using the ZIP archive format. */
-                password?: string;
-                /** @description The algorithm used to encrypt the password-protected archive file. Only valid when using the ZIP archive format. Valid values: STANDARD, AES128, AES256 */
-                encryptionType?: "STANDARD" | "AES128" | "AES256";
-            };
-            header?: never;
-            path: {
-                /** @description The ID of the channel. */
-                channelId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": number;
-                    "application/json": number;
-                    "application/mirthapi+json": number;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": number;
-                    "application/json": number;
-                    "application/mirthapi+json": number;
-                };
-            };
-        };
-    };
-    auditAccessedPHIMessage: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description The attributes map of the channel message. */
-        requestBody?: {
-            content: {
-                "application/xml": {
-                    [key: string]: string;
-                };
-                "application/json": {
-                    [key: string]: string;
-                };
-                "application/mirthapi+json": {
-                    [key: string]: string;
-                };
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    auditExportMessages: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description The attributes map of the channel messages export. */
-        requestBody?: {
-            content: {
-                "application/xml": {
-                    [key: string]: string;
-                };
-                "application/json": {
-                    [key: string]: string;
-                };
-                "application/mirthapi+json": {
-                    [key: string]: string;
-                };
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    importMessagesServer: {
-        parameters: {
-            query?: {
-                /** @description If true, sub-folders will also be scanned recursively for messages. */
-                includeSubfolders?: boolean;
-            };
-            header?: never;
-            path: {
-                /** @description The ID of the channel. */
-                channelId: string;
-            };
-            cookie?: never;
-        };
-        /** @description The directory path on the server side to import messages from. */
-        requestBody: {
-            content: {
-                "text/plain": string;
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["MessageImportResult"];
-                    "application/json": components["schemas"]["MessageImportResult"];
-                    "application/mirthapi+json": components["schemas"]["MessageImportResult"];
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["MessageImportResult"];
-                    "application/json": components["schemas"]["MessageImportResult"];
-                    "application/mirthapi+json": components["schemas"]["MessageImportResult"];
-                };
-            };
-        };
-    };
-    exportAttachmentServer: {
-        parameters: {
-            query?: {
-                /** @description Indicates that the attachment is binary and should be Base64 decoded before writing to file. */
-                binary?: boolean;
-            };
-            header?: never;
-            path: {
-                /** @description The ID of the channel. */
-                channelId: string;
-                /** @description The ID of the message. */
-                messageId: number;
-                /** @description The ID of the attachment. */
-                attachmentId: string;
-            };
-            cookie?: never;
-        };
-        /** @description The file path to export the attachment to. */
-        requestBody: {
-            content: {
-                "application/xml": string;
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    auditExportMessagesSuccess: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description The attributes map of the channel messages export. */
-        requestBody?: {
-            content: {
-                "application/xml": {
-                    [key: string]: string;
-                };
-                "application/json": {
-                    [key: string]: string;
-                };
-                "application/mirthapi+json": {
-                    [key: string]: string;
-                };
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    removeAllMessagesPost: {
-        parameters: {
-            query?: {
-                /** @description If true, currently running channels will be stopped and restarted as part of the remove process. Otherwise, currently running channels will not be included. */
-                restartRunningChannels?: boolean;
-                /** @description If true, message statistics will also be cleared. */
-                clearStatistics?: boolean;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description The IDs of the channels. */
-        requestBody: {
-            content: {
-                "application/xml": string[];
-                "application/json": string[];
-                "application/mirthapi+json": string[];
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    removeMessages: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The ID of the channel. */
-                channelId: string;
-            };
-            cookie?: never;
-        };
-        /** @description The MessageFilter object to use to query messages by. */
-        requestBody: {
-            content: {
-                "application/xml": components["schemas"]["MessageFilter"];
-                "application/json": components["schemas"]["MessageFilter"];
-                "application/mirthapi+json": components["schemas"]["MessageFilter"];
-            };
-        };
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    getMessages: {
+    getMessages_1: {
         parameters: {
             query?: {
                 /** @description The minimum message ID to query. */
@@ -11777,7 +11207,7 @@ export interface operations {
             };
         };
     };
-    processMessage_1: {
+    processMessage: {
         parameters: {
             query?: {
                 /** @description Indicates which destinations to send the message to. */
@@ -11827,7 +11257,7 @@ export interface operations {
             };
         };
     };
-    removeMessages_1: {
+    removeMessages: {
         parameters: {
             query?: {
                 /** @description The minimum message ID to query. */
@@ -11936,242 +11366,7 @@ export interface operations {
             };
         };
     };
-    removeAllMessages: {
-        parameters: {
-            query?: {
-                /** @description If true, currently running channels will be stopped and restarted as part of the remove process. Otherwise, currently running channels will not be included. */
-                restartRunningChannels?: boolean;
-                /** @description If true, message statistics will also be cleared. */
-                clearStatistics?: boolean;
-            };
-            header?: never;
-            path: {
-                /** @description The ID of the channel. */
-                channelId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    removeAllMessages_1: {
-        parameters: {
-            query: {
-                /** @description The IDs of the channels. */
-                channelId: string[];
-                /** @description If true, currently running channels will be stopped and restarted as part of the remove process. Otherwise, currently running channels will not be included. */
-                restartRunningChannels?: boolean;
-                /** @description If true, message statistics will also be cleared. */
-                clearStatistics?: boolean;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    getMessageContent: {
-        parameters: {
-            query?: {
-                /** @description The metadata IDs of the connectors. */
-                metaDataId?: number[];
-            };
-            header?: never;
-            path: {
-                /** @description The ID of the channel. */
-                channelId: string;
-                /** @description The ID of the message. */
-                messageId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["Message"];
-                    "application/json": components["schemas"]["Message"];
-                    "application/mirthapi+json": components["schemas"]["Message"];
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["Message"];
-                    "application/json": components["schemas"]["Message"];
-                    "application/mirthapi+json": components["schemas"]["Message"];
-                };
-            };
-        };
-    };
-    removeMessage: {
-        parameters: {
-            query?: {
-                /** @description If present, only the specific connector message will be removed. If the metadata ID is 0, the entire message will be removed. */
-                metaDataId?: number;
-                /** @description The patient ID of the channel message. */
-                patientId?: string;
-            };
-            header?: never;
-            path: {
-                /** @description The ID of the channel. */
-                channelId: string;
-                /** @description The ID of the message. */
-                messageId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    getMaxMessageId: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The ID of the channel. */
-                channelId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": number;
-                    "application/json": number;
-                    "application/mirthapi+json": number;
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": number;
-                    "application/json": number;
-                    "application/mirthapi+json": number;
-                };
-            };
-        };
-    };
-    getAttachment: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The ID of the channel. */
-                channelId: string;
-                /** @description The ID of the message. */
-                messageId: number;
-                /** @description The ID of the attachment. */
-                attachmentId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["Attachment"];
-                    "application/json": components["schemas"]["Attachment"];
-                    "application/mirthapi+json": components["schemas"]["Attachment"];
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["Attachment"];
-                    "application/json": components["schemas"]["Attachment"];
-                    "application/mirthapi+json": components["schemas"]["Attachment"];
-                };
-            };
-        };
-    };
-    processMessage: {
+    processMessage_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -12208,6 +11403,45 @@ export interface operations {
                     "application/xml": number;
                     "application/json": number;
                     "application/mirthapi+json": number;
+                };
+            };
+        };
+    };
+    getAttachmentsByMessageId: {
+        parameters: {
+            query?: {
+                /** @description If false, only the attachment ID and type will be returned. */
+                includeContent?: boolean;
+            };
+            header?: never;
+            path: {
+                /** @description The ID of the channel. */
+                channelId: string;
+                /** @description The ID of the message. */
+                messageId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["Attachment"][];
+                    "application/json": components["schemas"]["Attachment"][];
+                    "application/mirthapi+json": components["schemas"]["Attachment"][];
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["Attachment"][];
+                    "application/json": components["schemas"]["Attachment"][];
+                    "application/mirthapi+json": components["schemas"]["Attachment"][];
                 };
             };
         };
@@ -12249,6 +11483,154 @@ export interface operations {
                 };
                 content: {
                     "text/plain": string;
+                };
+            };
+        };
+    };
+    getMessageCount: {
+        parameters: {
+            query?: {
+                /** @description The minimum message ID to query. */
+                minMessageId?: number;
+                /** @description The maximum message ID to query. */
+                maxMessageId?: number;
+                /** @description The minimum original message ID to query. Messages that have been reprocessed will retain their original message ID. */
+                minOriginalId?: number;
+                /** @description The maximum original message ID to query. Messages that have been reprocessed will retain their original message ID. */
+                maxOriginalId?: number;
+                /** @description The minimum import message ID to query. Messages that have been imported will retain their original message ID under this value. */
+                minImportId?: number;
+                /** @description The maximum import message ID to query. Messages that have been imported will retain their original message ID under this value. */
+                maxImportId?: number;
+                /** @description The earliest original received date to query by. Example: 1985-10-26T09:00:00.000-0700 */
+                startDate?: string;
+                /** @description The latest original received date to query by. Example: 2015-10-21T07:28:00.000-0700 */
+                endDate?: string;
+                /** @description Searches all message content for this string. This process could take a long time depending on the amount of message content currently stored. Any message content that was encrypted by this channel will not be searchable. */
+                textSearch?: string;
+                /** @description If true, text search input will be considered a regular expression pattern to be matched. Only supported by PostgreSQL, MySQL and Oracle databases. */
+                textSearchRegex?: boolean;
+                /** @description Determines which message statuses to query by. */
+                status?: ("RECEIVED" | "FILTERED" | "TRANSFORMED" | "SENT" | "QUEUED" | "ERROR" | "PENDING")[];
+                /** @description If present, only connector metadata IDs in this list will be queried. */
+                includedMetaDataId?: number[];
+                /** @description If present, connector metadata IDs in this list will not be queried. */
+                excludedMetaDataId?: number[];
+                /** @description The server ID associated with messages. */
+                serverId?: string;
+                /** @description Searches the raw content of messages. */
+                rawContentSearch?: string[];
+                /** @description Searches the processed raw content of messages. */
+                processedRawContentSearch?: string[];
+                /** @description Searches the transformed content of messages. */
+                transformedContentSearch?: string[];
+                /** @description Searches the encoded content of messages. */
+                encodedContentSearch?: string[];
+                /** @description Searches the sent content of messages. */
+                sentContentSearch?: string[];
+                /** @description Searches the response content of messages. */
+                responseContentSearch?: string[];
+                /** @description Searches the response transformed content of messages. */
+                responseTransformedContentSearch?: string[];
+                /** @description Searches the processed response content of messages. */
+                processedResponseContentSearch?: string[];
+                /** @description Searches the connector map content of messages. */
+                connectorMapContentSearch?: string[];
+                /** @description Searches the channel map content of messages. */
+                channelMapContentSearch?: string[];
+                /** @description Searches the source map content of messages. */
+                sourceMapContentSearch?: string[];
+                /** @description Searches the response map content of messages. */
+                responseMapContentSearch?: string[];
+                /** @description Searches the processing error content of messages. */
+                processingErrorContentSearch?: string[];
+                /** @description Searches the postprocessor error content of messages. */
+                postprocessorErrorContentSearch?: string[];
+                /** @description Searches the response error content of messages. */
+                responseErrorContentSearch?: string[];
+                /** @description Searches a custom metadata column. Value should be in the form: COLUMN_NAME &lt;operator&gt; value, where operator is one of the following: =, !=, <, <=, >, >=, CONTAINS, DOES NOT CONTAIN, STARTS WITH, DOES NOT START WITH, ENDS WITH, DOES NOT END WITH */
+                metaDataSearch?: components["schemas"]["MetaDataSearch"][];
+                /** @description Searches a custom metadata column, ignoring case. Value should be in the form: COLUMN_NAME &lt;operator&gt; value. */
+                metaDataCaseInsensitiveSearch?: components["schemas"]["MetaDataSearch"][];
+                /** @description When using a text search, these custom metadata columns will also be searched. */
+                textSearchMetaDataColumn?: string[];
+                /** @description The minimum number of send attempts for connector messages. */
+                minSendAttempts?: number;
+                /** @description The maximum number of send attempts for connector messages. */
+                maxSendAttempts?: number;
+                /** @description If true, only messages with attachments are included in the results. */
+                attachment?: boolean;
+                /** @description If true, only messages with errors are included in the results. */
+                error?: boolean;
+            };
+            header?: never;
+            path: {
+                /** @description The ID of the channel. */
+                channelId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": number;
+                    "application/json": number;
+                    "application/mirthapi+json": number;
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": number;
+                    "application/json": number;
+                    "application/mirthapi+json": number;
+                };
+            };
+        };
+    };
+    getMessageCount_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the channel. */
+                channelId: string;
+            };
+            cookie?: never;
+        };
+        /** @description The MessageFilter object to use to query messages by. */
+        requestBody: {
+            content: {
+                "application/xml": components["schemas"]["MessageFilter"];
+                "application/json": components["schemas"]["MessageFilter"];
+                "application/mirthapi+json": components["schemas"]["MessageFilter"];
+            };
+        };
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": number;
+                    "application/json": number;
+                    "application/mirthapi+json": number;
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": number;
+                    "application/json": number;
+                    "application/mirthapi+json": number;
                 };
             };
         };
@@ -12418,9 +11800,266 @@ export interface operations {
             };
         };
     };
-    getMessageCount: {
+    reprocessMessage: {
         parameters: {
             query?: {
+                /** @description If true, the message will overwrite the current one */
+                replace?: boolean;
+                /** @description If true, the metaDataId parameter will be used to determine which destinations to reprocess the message through. */
+                filterDestinations?: boolean;
+                /** @description Indicates which destinations to send the message to. */
+                metaDataId?: number[];
+            };
+            header?: never;
+            path: {
+                /** @description The ID of the channel. */
+                channelId: string;
+                /** @description The ID of the message. */
+                messageId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    getMessageContent: {
+        parameters: {
+            query?: {
+                /** @description The metadata IDs of the connectors. */
+                metaDataId?: number[];
+            };
+            header?: never;
+            path: {
+                /** @description The ID of the channel. */
+                channelId: string;
+                /** @description The ID of the message. */
+                messageId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["Message"];
+                    "application/json": components["schemas"]["Message"];
+                    "application/mirthapi+json": components["schemas"]["Message"];
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["Message"];
+                    "application/json": components["schemas"]["Message"];
+                    "application/mirthapi+json": components["schemas"]["Message"];
+                };
+            };
+        };
+    };
+    removeMessage: {
+        parameters: {
+            query?: {
+                /** @description If present, only the specific connector message will be removed. If the metadata ID is 0, the entire message will be removed. */
+                metaDataId?: number;
+                /** @description The patient ID of the channel message. */
+                patientId?: string;
+            };
+            header?: never;
+            path: {
+                /** @description The ID of the channel. */
+                channelId: string;
+                /** @description The ID of the message. */
+                messageId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    removeAllMessagesPost: {
+        parameters: {
+            query?: {
+                /** @description If true, currently running channels will be stopped and restarted as part of the remove process. Otherwise, currently running channels will not be included. */
+                restartRunningChannels?: boolean;
+                /** @description If true, message statistics will also be cleared. */
+                clearStatistics?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The IDs of the channels. */
+        requestBody: {
+            content: {
+                "application/xml": string[];
+                "application/json": string[];
+                "application/mirthapi+json": string[];
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    importMessage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the channel. */
+                channelId: string;
+            };
+            cookie?: never;
+        };
+        /** @description The Message object to import. */
+        requestBody: {
+            content: {
+                "application/xml": components["schemas"]["Message"];
+                "application/json": components["schemas"]["Message"];
+                "application/mirthapi+json": components["schemas"]["Message"];
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    importMessagesServer: {
+        parameters: {
+            query?: {
+                /** @description If true, sub-folders will also be scanned recursively for messages. */
+                includeSubfolders?: boolean;
+            };
+            header?: never;
+            path: {
+                /** @description The ID of the channel. */
+                channelId: string;
+            };
+            cookie?: never;
+        };
+        /** @description The directory path on the server side to import messages from. */
+        requestBody: {
+            content: {
+                "text/plain": string;
+            };
+        };
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["MessageImportResult"];
+                    "application/json": components["schemas"]["MessageImportResult"];
+                    "application/mirthapi+json": components["schemas"]["MessageImportResult"];
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["MessageImportResult"];
+                    "application/json": components["schemas"]["MessageImportResult"];
+                    "application/mirthapi+json": components["schemas"]["MessageImportResult"];
+                };
+            };
+        };
+    };
+    exportMessagesServer: {
+        parameters: {
+            query: {
                 /** @description The minimum message ID to query. */
                 minMessageId?: number;
                 /** @description The maximum message ID to query. */
@@ -12493,6 +12132,32 @@ export interface operations {
                 attachment?: boolean;
                 /** @description If true, only messages with errors are included in the results. */
                 error?: boolean;
+                /** @description The maximum number of messages that will be queried at a time. Default Value: 100 */
+                pageSize?: number;
+                /** @description The ContentType that will be extracted from the message for writing. If null or not provided, the entire message will be written in serialized format. */
+                contentType?: "Raw" | "Processed Raw" | "Transformed" | "Encoded" | "Sent" | "Response" | "Response Transformed" | "Processed Response" | "Connector Map" | "Channel Map" | "Response Map" | "Processing Error" | "Postprocessor Error" | "Response Error" | "Source Map";
+                /** @description If true, the content to write will be extracted from the destination message(s), rather than the source message. */
+                destinationContent?: boolean;
+                /** @description If true, message content will be encrypted before writing. */
+                encrypt?: boolean;
+                /** @description Determines whether attachments will be included with messages. */
+                includeAttachments?: boolean;
+                /** @description The base directory to use when resolving relative paths in the root folder. */
+                baseFolder?: string;
+                /** @description The root folder to contain the written messages/sub-folders. */
+                rootFolder: string;
+                /** @description A string defining the folder/filename(s) for writing messages. It may contain variables to be replaced. */
+                filePattern: string;
+                /** @description The file name to use for archive exports. */
+                archiveFileName?: string;
+                /** @description The archiver format to use to archive messages/folders that are written to the root folder. Valid values: zip, tar */
+                archiveFormat?: string;
+                /** @description The compressor format to use to compress the archive file. Only valid when using the TAR archive format. Valid values: gz, bzip2 */
+                compressFormat?: string;
+                /** @description The password used to protect the archive file. Only valid when using the ZIP archive format. */
+                password?: string;
+                /** @description The algorithm used to encrypt the password-protected archive file. Only valid when using the ZIP archive format. Valid values: STANDARD, AES128, AES256 */
+                encryptionType?: "STANDARD" | "AES128" | "AES256";
             };
             header?: never;
             path: {
@@ -12503,6 +12168,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description default response */
             default: {
                 headers: {
                     [name: string]: unknown;
@@ -12513,6 +12179,7 @@ export interface operations {
                     "application/mirthapi+json": number;
                 };
             };
+            /** @description default response */
             "2XX": {
                 headers: {
                     [name: string]: unknown;
@@ -12525,7 +12192,285 @@ export interface operations {
             };
         };
     };
-    getMessageCount_1: {
+    exportMessagesServer_1: {
+        parameters: {
+            query?: {
+                /** @description The maximum number of messages that will be queried at a time. */
+                pageSize?: number;
+            };
+            header?: never;
+            path: {
+                /** @description The ID of the channel. */
+                channelId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    filter: components["schemas"]["MessageFilter"];
+                    writerOptions?: components["schemas"]["MessageWriterOptions"];
+                };
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": number;
+                    "application/json": number;
+                    "application/mirthapi+json": number;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": number;
+                    "application/json": number;
+                    "application/mirthapi+json": number;
+                };
+            };
+        };
+    };
+    exportAttachmentServer: {
+        parameters: {
+            query?: {
+                /** @description Indicates that the attachment is binary and should be Base64 decoded before writing to file. */
+                binary?: boolean;
+            };
+            header?: never;
+            path: {
+                /** @description The ID of the channel. */
+                channelId: string;
+                /** @description The ID of the message. */
+                messageId: number;
+                /** @description The ID of the attachment. */
+                attachmentId: string;
+            };
+            cookie?: never;
+        };
+        /** @description The file path to export the attachment to. */
+        requestBody: {
+            content: {
+                "application/xml": string;
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    auditAccessedPHIMessage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The attributes map of the channel message. */
+        requestBody?: {
+            content: {
+                "application/xml": {
+                    [key: string]: string;
+                };
+                "application/json": {
+                    [key: string]: string;
+                };
+                "application/mirthapi+json": {
+                    [key: string]: string;
+                };
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    auditQueriedPHIMessage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The attributes map of the channel messages filter. */
+        requestBody?: {
+            content: {
+                "application/xml": {
+                    [key: string]: string;
+                };
+                "application/json": {
+                    [key: string]: string;
+                };
+                "application/mirthapi+json": {
+                    [key: string]: string;
+                };
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    auditExportMessages: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The attributes map of the channel messages export. */
+        requestBody?: {
+            content: {
+                "application/xml": {
+                    [key: string]: string;
+                };
+                "application/json": {
+                    [key: string]: string;
+                };
+                "application/mirthapi+json": {
+                    [key: string]: string;
+                };
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    auditExportMessagesSuccess: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The attributes map of the channel messages export. */
+        requestBody?: {
+            content: {
+                "application/xml": {
+                    [key: string]: string;
+                };
+                "application/json": {
+                    [key: string]: string;
+                };
+                "application/mirthapi+json": {
+                    [key: string]: string;
+                };
+            };
+        };
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    removeMessages_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -12544,46 +12489,45 @@ export interface operations {
             };
         };
         responses: {
+            /** @description default response */
             default: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/xml": number;
-                    "application/json": number;
-                    "application/mirthapi+json": number;
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
                 };
             };
+            /** @description default response */
             "2XX": {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/xml": number;
-                    "application/json": number;
-                    "application/mirthapi+json": number;
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
                 };
             };
         };
     };
-    importMessage: {
+    removeAllMessages: {
         parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The ID of the channel. */
-                channelId: string;
+            query: {
+                /** @description The IDs of the channels. */
+                channelId: string[];
+                /** @description If true, currently running channels will be stopped and restarted as part of the remove process. Otherwise, currently running channels will not be included. */
+                restartRunningChannels?: boolean;
+                /** @description If true, message statistics will also be cleared. */
+                clearStatistics?: boolean;
             };
+            header?: never;
+            path?: never;
             cookie?: never;
         };
-        /** @description The Message object to import. */
-        requestBody: {
-            content: {
-                "application/xml": components["schemas"]["Message"];
-                "application/json": components["schemas"]["Message"];
-                "application/mirthapi+json": components["schemas"]["Message"];
-            };
-        };
+        requestBody?: never;
         responses: {
             /** @description default response */
             default: {
@@ -12609,22 +12553,18 @@ export interface operations {
             };
         };
     };
-    reprocessMessage: {
+    removeAllMessages_1: {
         parameters: {
             query?: {
-                /** @description If true, the message will overwrite the current one */
-                replace?: boolean;
-                /** @description If true, the metaDataId parameter will be used to determine which destinations to reprocess the message through. */
-                filterDestinations?: boolean;
-                /** @description Indicates which destinations to send the message to. */
-                metaDataId?: number[];
+                /** @description If true, currently running channels will be stopped and restarted as part of the remove process. Otherwise, currently running channels will not be included. */
+                restartRunningChannels?: boolean;
+                /** @description If true, message statistics will also be cleared. */
+                clearStatistics?: boolean;
             };
             header?: never;
             path: {
                 /** @description The ID of the channel. */
                 channelId: string;
-                /** @description The ID of the message. */
-                messageId: number;
             };
             cookie?: never;
         };
@@ -12654,7 +12594,79 @@ export interface operations {
             };
         };
     };
-    getMessages_1: {
+    getMaxMessageId: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the channel. */
+                channelId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": number;
+                    "application/json": number;
+                    "application/mirthapi+json": number;
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": number;
+                    "application/json": number;
+                    "application/mirthapi+json": number;
+                };
+            };
+        };
+    };
+    getAttachment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The ID of the channel. */
+                channelId: string;
+                /** @description The ID of the message. */
+                messageId: number;
+                /** @description The ID of the attachment. */
+                attachmentId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["Attachment"];
+                    "application/json": components["schemas"]["Attachment"];
+                    "application/mirthapi+json": components["schemas"]["Attachment"];
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["Attachment"];
+                    "application/json": components["schemas"]["Attachment"];
+                    "application/mirthapi+json": components["schemas"]["Attachment"];
+                };
+            };
+        };
+    };
+    getMessages: {
         parameters: {
             query?: {
                 /** @description If true, message content will be returned with the results. */
@@ -12702,37 +12714,6 @@ export interface operations {
             };
         };
     };
-    getInfo: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["SystemInfo"];
-                    "application/json": components["schemas"]["SystemInfo"];
-                    "application/mirthapi+json": components["schemas"]["SystemInfo"];
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["SystemInfo"];
-                    "application/json": components["schemas"]["SystemInfo"];
-                    "application/mirthapi+json": components["schemas"]["SystemInfo"];
-                };
-            };
-        };
-    };
     getStats: {
         parameters: {
             query?: never;
@@ -12760,6 +12741,37 @@ export interface operations {
                     "application/xml": components["schemas"]["SystemStats"];
                     "application/json": components["schemas"]["SystemStats"];
                     "application/mirthapi+json": components["schemas"]["SystemStats"];
+                };
+            };
+        };
+    };
+    getInfo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["SystemInfo"];
+                    "application/json": components["schemas"]["SystemInfo"];
+                    "application/mirthapi+json": components["schemas"]["SystemInfo"];
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["SystemInfo"];
+                    "application/json": components["schemas"]["SystemInfo"];
+                    "application/mirthapi+json": components["schemas"]["SystemInfo"];
                 };
             };
         };
@@ -12808,7 +12820,7 @@ export interface operations {
             };
         };
     };
-    setUserNotificationAcknowledged: {
+    isUserLoggedIn: {
         parameters: {
             query?: never;
             header?: never;
@@ -12820,47 +12832,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description default response */
             default: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    getCurrentUser: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["User"];
-                    "application/json": components["schemas"]["User"];
-                    "application/mirthapi+json": components["schemas"]["User"];
+                    "application/xml": boolean;
+                    "application/json": boolean;
+                    "application/mirthapi+json": boolean;
                 };
             };
             "2XX": {
@@ -12868,82 +12847,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/xml": components["schemas"]["User"];
-                    "application/json": components["schemas"]["User"];
-                    "application/mirthapi+json": components["schemas"]["User"];
-                };
-            };
-        };
-    };
-    login: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/x-www-form-urlencoded": {
-                    /** @default admin */
-                    username: string;
-                    /** @default admin */
-                    password: string;
-                };
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["LoginStatus"];
-                    "application/json": components["schemas"]["LoginStatus"];
-                    "application/mirthapi+json": components["schemas"]["LoginStatus"];
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": components["schemas"]["LoginStatus"];
-                    "application/json": components["schemas"]["LoginStatus"];
-                    "application/mirthapi+json": components["schemas"]["LoginStatus"];
-                };
-            };
-        };
-    };
-    logout: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
+                    "application/xml": boolean;
+                    "application/json": boolean;
+                    "application/mirthapi+json": boolean;
                 };
             };
         };
@@ -13015,114 +12921,6 @@ export interface operations {
                     "application/xml": unknown;
                     "application/json": unknown;
                     "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    checkUserPassword: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** @description The plaintext password to check. */
-        requestBody: {
-            content: {
-                "text/plain": string;
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": string[];
-                    "application/json": string[];
-                    "application/mirthapi+json": string[];
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": string[];
-                    "application/json": string[];
-                    "application/mirthapi+json": string[];
-                };
-            };
-        };
-    };
-    inactivityLogout: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description default response */
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-            /** @description default response */
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": unknown;
-                    "application/json": unknown;
-                    "application/mirthapi+json": unknown;
-                };
-            };
-        };
-    };
-    updateUserPassword: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The unique ID of the user to update the password for. */
-                userId: number;
-            };
-            cookie?: never;
-        };
-        /** @description The plaintext password to update with. */
-        requestBody: {
-            content: {
-                "text/plain": string;
-            };
-        };
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": string[];
-                    "application/json": string[];
-                    "application/mirthapi+json": string[];
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": string[];
-                    "application/json": string[];
-                    "application/mirthapi+json": string[];
                 };
             };
         };
@@ -13312,40 +13110,6 @@ export interface operations {
             };
         };
     };
-    isUserLoggedIn: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description The unique ID of the user. */
-                userId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            default: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": boolean;
-                    "application/json": boolean;
-                    "application/mirthapi+json": boolean;
-                };
-            };
-            "2XX": {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/xml": boolean;
-                    "application/json": boolean;
-                    "application/mirthapi+json": boolean;
-                };
-            };
-        };
-    };
     getUserPreference: {
         parameters: {
             query?: never;
@@ -13398,6 +13162,254 @@ export interface operations {
                 "text/plain": string;
             };
         };
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    getCurrentUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["User"];
+                    "application/json": components["schemas"]["User"];
+                    "application/mirthapi+json": components["schemas"]["User"];
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["User"];
+                    "application/json": components["schemas"]["User"];
+                    "application/mirthapi+json": components["schemas"]["User"];
+                };
+            };
+        };
+    };
+    inactivityLogout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    checkUserPassword: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description The plaintext password to check. */
+        requestBody: {
+            content: {
+                "text/plain": string;
+            };
+        };
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": string[];
+                    "application/json": string[];
+                    "application/mirthapi+json": string[];
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": string[];
+                    "application/json": string[];
+                    "application/mirthapi+json": string[];
+                };
+            };
+        };
+    };
+    updateUserPassword: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The unique ID of the user to update the password for. */
+                userId: number;
+            };
+            cookie?: never;
+        };
+        /** @description The plaintext password to update with. */
+        requestBody: {
+            content: {
+                "text/plain": string;
+            };
+        };
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": string[];
+                    "application/json": string[];
+                    "application/mirthapi+json": string[];
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": string[];
+                    "application/json": string[];
+                    "application/mirthapi+json": string[];
+                };
+            };
+        };
+    };
+    setUserNotificationAcknowledged: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description The unique ID of the user. */
+                userId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description default response */
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+            /** @description default response */
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": unknown;
+                    "application/json": unknown;
+                    "application/mirthapi+json": unknown;
+                };
+            };
+        };
+    };
+    login: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/x-www-form-urlencoded": {
+                    /** @default admin */
+                    username: string;
+                    /** @default admin */
+                    password: string;
+                };
+            };
+        };
+        responses: {
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["LoginStatus"];
+                    "application/json": components["schemas"]["LoginStatus"];
+                    "application/mirthapi+json": components["schemas"]["LoginStatus"];
+                };
+            };
+            "2XX": {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/xml": components["schemas"]["LoginStatus"];
+                    "application/json": components["schemas"]["LoginStatus"];
+                    "application/mirthapi+json": components["schemas"]["LoginStatus"];
+                };
+            };
+        };
+    };
+    logout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description default response */
             default: {

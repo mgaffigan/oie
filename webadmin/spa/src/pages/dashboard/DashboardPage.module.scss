@@ -7,7 +7,7 @@
 
 @media screen and (min-width: 768px) {
     .dashboard {
-        grid-template-rows: 70fr 30fr;
+        grid-template-rows: minmax(0, 70%) minmax(0, 30%);
         height: 100%;
     }
 }
@@ -55,7 +55,7 @@
         display: flex;
         align-items: center;
 
-        & > a {
+        &>a {
             text-decoration: none;
             color: black;
         }
@@ -65,10 +65,12 @@
     .tabPanel {
         border-top-left-radius: 0;
         border-top-right-radius: 0;
+        min-height: 0;
     }
+}
 
-    /* mount point for the plugin */
-    .mountPoint, .mountPoint>div {
-        height: 100%;
-    }
+/* mount point for the plugin */
+.mountPoint,
+.mountPoint>div {
+    height: 100%;
 }
