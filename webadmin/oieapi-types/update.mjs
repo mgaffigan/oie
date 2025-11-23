@@ -1,9 +1,13 @@
 import { writeFileSync } from 'fs';
 import { execSync } from 'child_process';
-
+import stringify from 'json-stable-stringify';
 
 // Run in node to update the OIE API type definitions
 // Transforms OIE API type definitions into a format usable by tools
+
+function deterministicStringify(obj) {
+    return stringify(obj, { space: 2 });
+}
 
 // fetch from http://localhost:8080/api/openapi.json to api_raw.json
 const apiTextResp = await fetch('http://localhost:8080/api/openapi.json');
@@ -14,7 +18,7 @@ const apiText = await apiTextResp.text();
 const apis = JSON.parse(apiText);
 
 const apiRawPath = 'api_raw.json';
-const apiRawPretty = JSON.stringify(apis, null, 2);
+const apiRawPretty = deterministicStringify(apis);
 writeFileSync(apiRawPath, apiRawPretty, 'utf-8');
 
 // Strip examples that don't exist from the file
@@ -45,7 +49,7 @@ stripExamples(apis);
 
 // Write the cleaned API definition to a file
 const apiCleanedPath = 'api_cleaned.json';
-const apiCleanedPretty = JSON.stringify(apis, null, 2);
+const apiCleanedPretty = deterministicStringify(apis);
 writeFileSync(apiCleanedPath, apiCleanedPretty, 'utf-8');
 
 // Call npx swagger-cli bundle to bundle the cleaned API definition
