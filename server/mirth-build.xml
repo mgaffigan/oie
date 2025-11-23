@@ -26,7 +26,7 @@
 	</target>
 	
 	<!-- WebAdmin -->
-	<target name="build-webadmin" depends="init">
+	<target name="build-webadmin" depends="init" unless="disableWebadmin">
 		<ant antfile="${webadmin}/build.xml" dir="${webadmin}" target="dist"/>
 		<copy file="${webadmin}/dist/webadmin.war" todir="${server.build}/webapps" />
 		<copy file="${webadmin}/dist/webadmin.war" todir="${server.setup}/webapps" />

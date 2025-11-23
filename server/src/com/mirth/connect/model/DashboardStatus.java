@@ -22,6 +22,10 @@ import com.mirth.connect.donkey.model.channel.DeployedState;
 import com.mirth.connect.donkey.model.message.Status;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+
 /**
  * A DashboardStatus represents the status of a deployed channel, destination chain or
  * source/destination connector
@@ -33,19 +37,40 @@ public class DashboardStatus implements Serializable {
         CHANNEL, CHAIN, SOURCE_CONNECTOR, DESTINATION_CONNECTOR
     };
 
+    @JsonProperty(required = true)
     private String channelId;
+
+    @JsonProperty(required = true)
     private String name;
+
+    @JsonProperty(required = true)
     private DeployedState state;
+
     private Integer deployedRevisionDelta;
     private Calendar deployedDate;
     private Boolean codeTemplatesChanged;
+
+    @JsonProperty(required = true)
     private Map<Status, Long> statistics;
+
+    @JsonProperty(required = true)
     private Map<Status, Long> lifetimeStatistics;
+
+    @Schema(required = true)
     private List<DashboardStatus> childStatuses = new ArrayList<DashboardStatus>();
+
     private Integer metaDataId;
+
+    @JsonProperty(required = true)
     private boolean queueEnabled;
+
+    @JsonProperty(required = true)
     private Long queued = 0L;
+
+    @JsonProperty(required = true)
     private boolean waitForPrevious = false;
+
+    @JsonProperty(required = true)
     private StatusType statusType;
 
     public String getChannelId() {

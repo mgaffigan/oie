@@ -2067,7 +2067,7 @@
     },
     "/channels/_removeAllMessages": {
       "delete": {
-        "operationId": "removeAllMessages_1",
+        "operationId": "removeAllMessages",
         "parameters": [
           {
             "description": "The IDs of the channels.",
@@ -4245,7 +4245,7 @@
     },
     "/channels/{channelId}/messages": {
       "delete": {
-        "operationId": "removeMessages",
+        "operationId": "removeMessages_1",
         "parameters": [
           {
             "description": "The ID of the channel.",
@@ -4674,7 +4674,7 @@
         ]
       },
       "get": {
-        "operationId": "getMessages_1",
+        "operationId": "getMessages",
         "parameters": [
           {
             "description": "The ID of the channel.",
@@ -5172,7 +5172,7 @@
         ]
       },
       "post": {
-        "operationId": "processMessage",
+        "operationId": "processMessage_1",
         "parameters": [
           {
             "description": "The ID of the channel.",
@@ -6128,7 +6128,7 @@
     },
     "/channels/{channelId}/messages/_remove": {
       "post": {
-        "operationId": "removeMessages_1",
+        "operationId": "removeMessages",
         "parameters": [
           {
             "description": "The ID of the channel.",
@@ -6187,7 +6187,7 @@
     },
     "/channels/{channelId}/messages/_removeAll": {
       "delete": {
-        "operationId": "removeAllMessages",
+        "operationId": "removeAllMessages_1",
         "parameters": [
           {
             "description": "The ID of the channel.",
@@ -6795,7 +6795,7 @@
     },
     "/channels/{channelId}/messages/_search": {
       "post": {
-        "operationId": "getMessages",
+        "operationId": "getMessages_1",
         "parameters": [
           {
             "description": "The ID of the channel.",
@@ -6923,7 +6923,7 @@
     },
     "/channels/{channelId}/messages/count": {
       "get": {
-        "operationId": "getMessageCount_1",
+        "operationId": "getMessageCount",
         "parameters": [
           {
             "description": "The ID of the channel.",
@@ -7382,7 +7382,7 @@
     },
     "/channels/{channelId}/messages/count/_search": {
       "post": {
-        "operationId": "getMessageCount",
+        "operationId": "getMessageCount_1",
         "parameters": [
           {
             "description": "The ID of the channel.",
@@ -8085,7 +8085,7 @@
     },
     "/channels/{channelId}/messagesWithObj": {
       "post": {
-        "operationId": "processMessage_1",
+        "operationId": "processMessage",
         "parameters": [
           {
             "description": "The ID of the channel.",
@@ -11353,7 +11353,7 @@
     },
     "/events/count": {
       "get": {
-        "operationId": "getEventCount",
+        "operationId": "getEventCount_1",
         "parameters": [
           {
             "description": "The maximum event ID to query.",
@@ -11518,7 +11518,7 @@
     },
     "/events/count/_search": {
       "post": {
-        "operationId": "getEventCount_1",
+        "operationId": "getEventCount",
         "requestBody": {
           "content": {
             "application/json": {
@@ -16880,6 +16880,7 @@
             "type": "string"
           },
           "description": {
+            "nullable": true,
             "type": "string"
           },
           "destinationConnectors": {
@@ -16898,6 +16899,7 @@
             "$ref": "#/components/schemas/ChannelExportData"
           },
           "id": {
+            "nullable": true,
             "type": "string"
           },
           "name": {
@@ -16933,6 +16935,18 @@
             "type": "string"
           }
         },
+        "required": [
+          "deployScript",
+          "description",
+          "destinationConnectors",
+          "id",
+          "name",
+          "nextMetaDataId",
+          "postprocessingScript",
+          "preprocessingScript",
+          "revision",
+          "undeployScript"
+        ],
         "type": "object"
       },
       "ChannelDependency": {
@@ -16988,9 +17002,9 @@
       },
       "ChannelGroup": {
         "properties": {
-          "channels": {
+          "channelIds": {
             "items": {
-              "$ref": "#/components/schemas/Channel"
+              "type": "string"
             },
             "type": "array"
           },
@@ -17020,7 +17034,7 @@
           }
         },
         "required": [
-          "channels",
+          "channelIds",
           "description",
           "id",
           "lastModified",
@@ -17244,50 +17258,8 @@
       },
       "ChannelTag": {
         "properties": {
-          "backgroundColor": {
-            "properties": {
-              "alpha": {
-                "format": "int32",
-                "type": "integer"
-              },
-              "blue": {
-                "format": "int32",
-                "type": "integer"
-              },
-              "colorSpace": {
-                "properties": {
-                  "cs_sRGB": {
-                    "type": "boolean"
-                  },
-                  "numComponents": {
-                    "format": "int32",
-                    "type": "integer"
-                  },
-                  "type": {
-                    "format": "int32",
-                    "type": "integer"
-                  }
-                },
-                "type": "object"
-              },
-              "green": {
-                "format": "int32",
-                "type": "integer"
-              },
-              "red": {
-                "format": "int32",
-                "type": "integer"
-              },
-              "rgb": {
-                "format": "int32",
-                "type": "integer"
-              },
-              "transparency": {
-                "format": "int32",
-                "type": "integer"
-              }
-            },
-            "type": "object"
+          "backgroundColorHex": {
+            "type": "string"
           },
           "channelIds": {
             "items": {
@@ -17309,6 +17281,12 @@
             "type": "object"
           }
         },
+        "required": [
+          "backgroundColorHex",
+          "channelIds",
+          "id",
+          "name"
+        ],
         "type": "object"
       },
       "CodeTemplate": {
@@ -18302,11 +18280,7 @@
         "required": [
           "channelId",
           "childStatuses",
-          "codeTemplatesChanged",
-          "deployedDate",
-          "deployedRevisionDelta",
           "lifetimeStatistics",
-          "metaDataId",
           "name",
           "queueEnabled",
           "queued",

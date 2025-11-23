@@ -26,15 +26,27 @@ import com.mirth.connect.donkey.util.purge.Purgable;
 import com.mirth.connect.donkey.util.purge.PurgeUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @XStreamAlias("channelTag")
 public class ChannelTag implements Serializable, Purgable {
 
     public static final int MAX_NAME_LENGTH = 24;
     public static final Pattern INVALID_NAME_PATTERN = Pattern.compile("[^a-zA-Z_0-9\\-\\s]");
 
+    @JsonProperty(required = true)
     private String id;
+
+    @JsonProperty(required = true)
     private String name;
+
+    @JsonProperty(required = true)
     private Set<String> channelIds;
+
+    @JsonIgnore
     private Color backgroundColor;
 
     public ChannelTag(String name) {
@@ -93,6 +105,15 @@ public class ChannelTag implements Serializable, Purgable {
 
     public void setBackgroundColor(Color backgroundColor) {
         this.backgroundColor = backgroundColor;
+    }
+
+    public String getBackgroundColorHex() {
+        return String.format("#%02x%02x%02x", backgroundColor.getRed(), backgroundColor.getGreen(), backgroundColor.getBlue());
+    }
+
+    @JsonProperty(required = true)
+    public void setBackgroundColorHex(String hex) {
+        this.backgroundColor = Color.decode(hex);
     }
 
     public static String fixName(String name) {

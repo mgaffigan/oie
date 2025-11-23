@@ -30,6 +30,10 @@ import com.mirth.connect.model.converters.ObjectXMLSerializer;
 import com.mirth.connect.util.ColorUtil;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+
 /**
  * A Channel is the main element of the Mirth architecture. Channels connect a single source with
  * multiple destinations which are represented by Connectors.
@@ -38,18 +42,46 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("channel")
 public class Channel implements Serializable, Auditable, Migratable, Purgable, Cacheable<Channel>, ExportClearable {
+
+    @JsonProperty(required = true)
+    @Schema(nullable = true)
     private String id;
+
+    @JsonProperty(required = true)
     private Integer nextMetaDataId;
+
+    @JsonProperty(required = true)
     private String name;
+
+    @JsonProperty(required = true)
+    @Schema(nullable = true)
     private String description;
+
+    @JsonProperty(required = true)
     private int revision;
+
+    @JsonProperty(required = true)
     private Connector sourceConnector;
+
+    @JsonProperty(required = true)
     private List<Connector> destinationConnectors;
+
+    @JsonProperty(required = true)
     private String preprocessingScript;
+
+    @JsonProperty(required = true)
     private String postprocessingScript;
+    
+    @JsonProperty(required = true)
     private String deployScript;
+    
+    @JsonProperty(required = true)
     private String undeployScript;
+
+    @JsonProperty(required = true)
     private ChannelProperties properties;
+
+    @JsonProperty(required = true)
     private ChannelExportData exportData;
 
     public Channel() {

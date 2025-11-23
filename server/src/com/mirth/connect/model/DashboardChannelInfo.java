@@ -13,12 +13,19 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("dashboardChannelInfo")
 public class DashboardChannelInfo implements Serializable {
+    @JsonProperty(required = true)
     private List<DashboardStatus> dashboardStatuses;
+
+    @JsonProperty(required = true)
     private Set<String> remainingChannelIds;
+
+    @JsonProperty(required = true)
     private int deployedChannelCount;
 
     public DashboardChannelInfo(List<DashboardStatus> dashboardStatuses, Set<String> remainingChannelIds, int deployedChannelCount) {
@@ -47,7 +54,7 @@ public class DashboardChannelInfo implements Serializable {
         return deployedChannelCount;
     }
 
-    public void setDeployedChannelNames(int deployedChannelCount) {
+    public void setDeployedChannelCount(int deployedChannelCount) {
         this.deployedChannelCount = deployedChannelCount;
     }
 }

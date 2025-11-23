@@ -69,7 +69,7 @@
 		<mkdir dir="${logs}" />
 
 		<delete dir="${classes}" />
-		<delete dir="${setup}" />
+		<!-- <delete dir="${setup}" /> -->
 		<delete dir="${dist}" />
 		<delete dir="${build}" />
 		<delete dir="${docs.javadocs}" />

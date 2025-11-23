@@ -24,7 +24,13 @@ import com.mirth.connect.donkey.util.DonkeyElement;
 import com.mirth.connect.donkey.util.migration.Migratable;
 import com.mirth.connect.donkey.util.purge.Purgable;
 import com.mirth.connect.donkey.util.purge.PurgeUtil;
+
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @XStreamAlias("channelGroup")
 public class ChannelGroup implements Serializable, Migratable, Purgable, Cacheable<ChannelGroup> {
@@ -32,11 +38,23 @@ public class ChannelGroup implements Serializable, Migratable, Purgable, Cacheab
     public static final String DEFAULT_ID = "Default Group";
     public static final String DEFAULT_NAME = "[Default Group]";
 
+    @JsonProperty(required = true)
     private String id;
+
+    @JsonProperty(required = true)
     private String name;
+
+    @JsonProperty(required = true)
     private Integer revision;
+
+    @JsonProperty(required = true)
     private Calendar lastModified;
+
+    @JsonProperty(required = true)
+    @Schema(nullable = true)
     private String description;
+
+    @JsonIgnore
     private List<Channel> channels;
 
     public ChannelGroup() {
@@ -121,6 +139,22 @@ public class ChannelGroup implements Serializable, Migratable, Purgable, Cacheab
 
     public void setChannels(List<Channel> channels) {
         this.channels = channels;
+    }
+
+    public List<String> getChannelIds() {
+        List<String> channelIds = new ArrayList<String>();
+        for (Channel channel : channels) {
+            channelIds.add(channel.getId());
+        }
+        return channelIds;
+    }
+
+    @JsonProperty(required = true)
+    public void setChannelIds(List<String> channelIds) {
+        this.channels = new ArrayList<Channel>();
+        for (String channelId : channelIds) {
+            this.channels.add(new Channel(channelId));
+        }
     }
 
     public void replaceChannelsWithIds() {

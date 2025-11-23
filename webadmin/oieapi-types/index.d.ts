@@ -445,7 +445,7 @@ export interface paths {
         put?: never;
         post?: never;
         /** Removes all messages for multiple specified channels. */
-        delete: operations["removeAllMessages_1"];
+        delete: operations["removeAllMessages"];
         options?: never;
         head?: never;
         patch?: never;
@@ -971,12 +971,12 @@ export interface paths {
             cookie?: never;
         };
         /** Search for messages by specific filter criteria. */
-        get: operations["getMessages_1"];
+        get: operations["getMessages"];
         put?: never;
         /** Processes a new message through a channel. */
-        post: operations["processMessage"];
+        post: operations["processMessage_1"];
         /** Remove messages by specific filter criteria. */
-        delete: operations["removeMessages"];
+        delete: operations["removeMessages_1"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1060,7 +1060,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Remove messages by specific filter criteria. */
-        post: operations["removeMessages_1"];
+        post: operations["removeMessages"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1078,7 +1078,7 @@ export interface paths {
         put?: never;
         post?: never;
         /** Removes all messages for the specified channel. */
-        delete: operations["removeAllMessages"];
+        delete: operations["removeAllMessages_1"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1128,7 +1128,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Search for messages by specific filter criteria. */
-        post: operations["getMessages"];
+        post: operations["getMessages_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1143,7 +1143,7 @@ export interface paths {
             cookie?: never;
         };
         /** Count number for messages by specific filter criteria. */
-        get: operations["getMessageCount_1"];
+        get: operations["getMessageCount"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1162,7 +1162,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Count number for messages by specific filter criteria. */
-        post: operations["getMessageCount"];
+        post: operations["getMessageCount_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1299,7 +1299,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Processes a new message through a channel, using the RawMessage object. */
-        post: operations["processMessage_1"];
+        post: operations["processMessage"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1880,7 +1880,7 @@ export interface paths {
             cookie?: never;
         };
         /** Count number for events by specific filter criteria. */
-        get: operations["getEventCount"];
+        get: operations["getEventCount_1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1899,7 +1899,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Count number for events by specific filter criteria. */
-        post: operations["getEventCount_1"];
+        post: operations["getEventCount"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3183,25 +3183,25 @@ export interface components {
             };
         };
         Channel: {
-            deployScript?: string;
-            description?: string;
-            destinationConnectors?: components["schemas"]["Connector"][];
+            deployScript: string;
+            description: string | null;
+            destinationConnectors: components["schemas"]["Connector"][];
             enabledDestinationConnectors?: components["schemas"]["Connector"][];
             exportData?: components["schemas"]["ChannelExportData"];
-            id?: string;
-            name?: string;
+            id: string | null;
+            name: string;
             /** Format: int32 */
-            nextMetaDataId?: number;
-            postprocessingScript?: string;
-            preprocessingScript?: string;
+            nextMetaDataId: number;
+            postprocessingScript: string;
+            preprocessingScript: string;
             properties?: components["schemas"]["ChannelProperties"];
             purgedProperties?: {
                 [key: string]: Record<string, never>;
             };
             /** Format: int32 */
-            revision?: number;
+            revision: number;
             sourceConnector?: components["schemas"]["Connector"];
-            undeployScript?: string;
+            undeployScript: string;
         };
         ChannelDependency: {
             dependencyId?: string;
@@ -3218,7 +3218,7 @@ export interface components {
             };
         };
         ChannelGroup: {
-            channels: components["schemas"]["Channel"][];
+            channelIds: string[];
             description: string | null;
             id: string;
             /** Format: date-time */
@@ -3312,30 +3312,10 @@ export interface components {
             undeployed?: boolean;
         };
         ChannelTag: {
-            backgroundColor?: {
-                /** Format: int32 */
-                alpha?: number;
-                /** Format: int32 */
-                blue?: number;
-                colorSpace?: {
-                    cs_sRGB?: boolean;
-                    /** Format: int32 */
-                    numComponents?: number;
-                    /** Format: int32 */
-                    type?: number;
-                };
-                /** Format: int32 */
-                green?: number;
-                /** Format: int32 */
-                red?: number;
-                /** Format: int32 */
-                rgb?: number;
-                /** Format: int32 */
-                transparency?: number;
-            };
-            channelIds?: string[];
-            id?: string;
-            name?: string;
+            backgroundColorHex: string;
+            channelIds: string[];
+            id: string;
+            name: string;
             purgedProperties?: {
                 [key: string]: Record<string, never>;
             };
@@ -3644,17 +3624,17 @@ export interface components {
         DashboardStatus: {
             channelId: string;
             childStatuses: components["schemas"]["DashboardStatus"][];
-            codeTemplatesChanged: boolean;
+            codeTemplatesChanged?: boolean;
             /** Format: date-time */
-            deployedDate: string;
+            deployedDate?: string;
             /** Format: int32 */
-            deployedRevisionDelta: number;
+            deployedRevisionDelta?: number;
             key?: string;
             lifetimeStatistics: {
                 [key: string]: number;
             };
             /** Format: int32 */
-            metaDataId: number;
+            metaDataId?: number;
             name: string;
             queueEnabled: boolean;
             /** Format: int64 */
@@ -5919,7 +5899,7 @@ export interface operations {
             };
         };
     };
-    removeAllMessages_1: {
+    removeAllMessages: {
         parameters: {
             query: {
                 /** @description The IDs of the channels. */
@@ -7269,7 +7249,7 @@ export interface operations {
             };
         };
     };
-    getMessages_1: {
+    getMessages: {
         parameters: {
             query?: {
                 /** @description The minimum message ID to query. */
@@ -7382,7 +7362,7 @@ export interface operations {
             };
         };
     };
-    processMessage: {
+    processMessage_1: {
         parameters: {
             query?: {
                 /** @description Indicates which destinations to send the message to. */
@@ -7432,7 +7412,7 @@ export interface operations {
             };
         };
     };
-    removeMessages: {
+    removeMessages_1: {
         parameters: {
             query?: {
                 /** @description The minimum message ID to query. */
@@ -7807,7 +7787,7 @@ export interface operations {
             };
         };
     };
-    removeMessages_1: {
+    removeMessages: {
         parameters: {
             query?: never;
             header?: never;
@@ -7850,7 +7830,7 @@ export interface operations {
             };
         };
     };
-    removeAllMessages: {
+    removeAllMessages_1: {
         parameters: {
             query?: {
                 /** @description If true, currently running channels will be stopped and restarted as part of the remove process. Otherwise, currently running channels will not be included. */
@@ -8056,7 +8036,7 @@ export interface operations {
             };
         };
     };
-    getMessages: {
+    getMessages_1: {
         parameters: {
             query?: {
                 /** @description If true, message content will be returned with the results. */
@@ -8104,7 +8084,7 @@ export interface operations {
             };
         };
     };
-    getMessageCount_1: {
+    getMessageCount: {
         parameters: {
             query?: {
                 /** @description The minimum message ID to query. */
@@ -8211,7 +8191,7 @@ export interface operations {
             };
         };
     };
-    getMessageCount: {
+    getMessageCount_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -8579,7 +8559,7 @@ export interface operations {
             };
         };
     };
-    processMessage_1: {
+    processMessage: {
         parameters: {
             query?: never;
             header?: never;
@@ -10166,7 +10146,7 @@ export interface operations {
             };
         };
     };
-    getEventCount: {
+    getEventCount_1: {
         parameters: {
             query?: {
                 /** @description The maximum event ID to query. */
@@ -10222,7 +10202,7 @@ export interface operations {
             };
         };
     };
-    getEventCount_1: {
+    getEventCount: {
         parameters: {
             query?: never;
             header?: never;

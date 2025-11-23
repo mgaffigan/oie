@@ -1,68 +1,66 @@
-import { useCallback, useState } from "react";
+import { useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Client } from "../../services/Services";
+import { useReactTable, getCoreRowModel, getExpandedRowModel, flexRender, type ColumnDef } from "@tanstack/react-table";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { getDashboardData, type DashboardRowModel } from "./DashboardData";
+import { type FilterPreferences, type TagDisplayMode, DASHBOARD_PREFS_KEY } from "./DashboardPrefs";
 import css from "./DashboardList.module.scss";
 import styleIcon from '../../assets/icons/style.png';
 import tagIcon from '../../assets/icons/tag_blue.png';
 import serverDatabaseIcon from '../../assets/icons/server_database.png';
 import serverIcon from '../../assets/icons/server.png';
+import { useLocalStoragePreferences } from "../../services/LocalStoragePreferences";
+import { useSession } from "../../services/Session";
 
 export const CHANNEL_LIST_QUERY_KEY = 'channelList';
 
-async function getDashboardData(prefs: FilterPreferences) {
-    const { data: groups } = await Client.GET("/channelgroups");
-    if (!groups) throw new Error("Failed to fetch channel groups");
-
-    const { data: channels } = await Client.GET("/channels");
-    if (!channels) throw new Error("Failed to fetch channels");
-
-    const { data: stats } = await Client.GET("/channels/statistics");
-    if (!stats) throw new Error("Failed to fetch channel statistics");
-
-    const { data: tags } = await Client.GET("/server/channelTags");
-    if (!tags) throw new Error("Failed to fetch tags");
-
-    return { groups, channels, stats, tags };
-}
-
-const DASHBOARD_PREFS_KEY = "dashboardListPrefs";
-
-type TagDisplayMode = 'Names' | 'Icons' | 'None';
-type StatisticsDisplayMode = 'Current' | 'Lifetime';
-
-interface FilterPreferences {
-    textFilter: string;
-    useGroups: boolean;
-    statsMode: StatisticsDisplayMode;
-    tagDisplayMode: TagDisplayMode;
-}
-
-function getPrefs(): FilterPreferences {
-    const saved = localStorage.getItem(DASHBOARD_PREFS_KEY);
-    if (saved) {
-        return JSON.parse(saved) as FilterPreferences;
-    }
-    return {
-        textFilter: '',
-        useGroups: true,
-        statsMode: 'Current' as StatisticsDisplayMode,
-        tagDisplayMode: 'Icons' as TagDisplayMode,
-    };
-}
+const DashboardColumns: ColumnDef<DashboardRowModel>[] = [
+    { header: 'Status', accessorKey: 'state' },
+    {
+        id: 'expander',
+        header: '',
+        cell: ({ row }) => {
+            if (!row.getCanExpand()) return null;
+            return (
+                <button
+                    type="button"
+                    className="btn btn-sm btn-link"
+                    onClick={row.getToggleExpandedHandler()}
+                    aria-label={row.getIsExpanded() ? "Collapse" : "Expand"}>
+                    {row.getIsExpanded() ? '▼' : '▶'}
+                </button>
+            );
+        },
+        size: 32,
+    },
+    { header: 'Name', accessorKey: 'name' },
+    { header: 'Rev Δ', accessorKey: ';' },
+    {
+        header: 'Last Deployed',
+        accessorKey: 'deployedDate',
+        cell: info => info.getValue() ? new Date(info.getValue() as string).toLocaleString() : '',
+    },
+    { header: 'Received', accessorKey: 'statistics.RECEIVED' },
+    { header: 'Filtered', accessorKey: 'statistics.FILTERED' },
+    { header: 'Queued', accessorKey: 'statistics.QUEUED' },
+    { header: 'Sent', accessorKey: 'statistics.SENT' },
+    { header: 'Errored', accessorKey: 'statistics.ERROR' },
+];
 
 export function DashboardList() {
-    const [prefs, setPrefsRaw] = useState<FilterPreferences>(getPrefs);
-    const setPrefs = useCallback((newPrefs: Partial<FilterPreferences>) => {
-        setPrefsRaw(p => {
-            const newValue = { ...p, ...newPrefs };
-            localStorage.setItem(DASHBOARD_PREFS_KEY, JSON.stringify(newValue));
-            return newValue;
-        });
-    }, []);
+    const sess = useSession();
+    const [prefs, setPrefs] = useLocalStoragePreferences<FilterPreferences>(DASHBOARD_PREFS_KEY, () => ({
+        textFilter: '',
+        useGroups: true,
+        statsMode: 'Current',
+        tagDisplayMode: 'Icons',
+    }));
 
-    const { data: channels } = useQuery({
-        queryKey: [CHANNEL_LIST_QUERY_KEY],
+    const refreshIntervalSeconds = typeof sess.prefs.intervalTime === "number" ? sess.prefs.intervalTime : 10;
+    const { data: dashboard } = useQuery({
+        queryKey: [CHANNEL_LIST_QUERY_KEY, prefs.textFilter, prefs.statsMode, refreshIntervalSeconds],
         queryFn: () => getDashboardData(prefs),
+        refetchInterval: refreshIntervalSeconds * 1000,
     });
 
     const toggleTagDisplayMode = (button: TagDisplayMode) => {
@@ -73,13 +71,79 @@ export function DashboardList() {
         }
     };
 
-    if (!channels) {
-        return <span>Loading...</span>;
-    }
+    const rows: DashboardRowModel[] = dashboard?.groups ?? [];
+    const table = useReactTable({
+        data: rows,
+        columns: DashboardColumns,
+        getCoreRowModel: getCoreRowModel(),
+        getExpandedRowModel: getExpandedRowModel(),
+        getSubRows: (row) => row.children,
+    });
+
+    const parentRef = useRef<HTMLDivElement>(null);
+    const rowVirtualizer = useVirtualizer({
+        count: table.getRowModel().rows.length,
+        getScrollElement: () => parentRef.current,
+        estimateSize: () => 28,
+        overscan: 10,
+    });
+    const virtualRows = rowVirtualizer.getVirtualItems();
 
     return <div className={`card p-2 ${css.dashboardListCard}`}>
-        <div className={css.dashboardList}>
-            <pre style={{height:'100%', overflowY: 'auto', fontFamily: 'monospace', marginBottom: 0}}>{JSON.stringify(channels, null, 2)}</pre>
+        <div className={css.dashboardList} ref={parentRef}>
+            {!dashboard ? (
+                <span>Loading...</span>
+            ) : (
+                <table className="table table-sm table-striped">
+                    <thead>
+                        {table.getHeaderGroups().map(headerGroup => (
+                            <tr key={headerGroup.id}>
+                                {headerGroup.headers.map(header => (
+                                    <th key={header.id} style={{ width: header.getSize() ? `${header.getSize()}px` : undefined }}>
+                                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                                    </th>
+                                ))}
+                            </tr>
+                        ))}
+                    </thead>
+                    <tbody>
+                        {virtualRows.length === 0 ? (
+                            <>
+                                {table.getRowModel().rows.map(row => (
+                                    <tr key={row.id}>
+                                        {row.getVisibleCells().map(cell => (
+                                            <td key={cell.id} style={cell.column.id === 'expander' ? { paddingLeft: `${row.depth * 16}px` } : undefined}>
+                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </>
+                        ) : (
+                            <>
+                                <tr>
+                                    <td colSpan={table.getVisibleFlatColumns().length} style={{ height: virtualRows[0].start }} />
+                                </tr>
+                                {virtualRows.map(virtualRow => {
+                                    const row = table.getRowModel().rows[virtualRow.index];
+                                    return (
+                                        <tr key={row.id} style={{ height: virtualRow.size }}>
+                                            {row.getVisibleCells().map(cell => (
+                                                <td key={cell.id} style={cell.column.id === 'expander' ? { paddingLeft: `${row.depth * 16}px` } : undefined}>
+                                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                                </td>
+                                            ))}
+                                        </tr>
+                                    );
+                                })}
+                                <tr>
+                                    <td colSpan={table.getVisibleFlatColumns().length} style={{ height: rowVirtualizer.getTotalSize() - virtualRows[virtualRows.length - 1].end }} />
+                                </tr>
+                            </>
+                        )}
+                    </tbody>
+                </table>
+            )}
         </div>
         <div className={css.toolbar}>
             <form className="d-flex flex-row align-items-center" onSubmit={e => e.preventDefault()}>
@@ -93,9 +157,9 @@ export function DashboardList() {
                 </button>
             </form>
 
-            <div>
-                1 Groups, 1 Deployed Channels
-            </div>
+            {dashboard && <div>
+                {dashboard.groups.length.toLocaleString()} Groups, {dashboard.deployedChannelCount.toLocaleString()} Deployed Channels
+            </div>}
 
             <div style={{ marginLeft: 'auto' }}>
                 <input type="radio" id="dashboard-stats-mode" value="Current" name="dashboard-stats-mode"
