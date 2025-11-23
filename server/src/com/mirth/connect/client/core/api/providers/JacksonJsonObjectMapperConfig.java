@@ -21,6 +21,9 @@ public class JacksonJsonObjectMapperConfig implements ContextResolver<ObjectMapp
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        // Swagger/Jackson assumes toString() is used for enum serialization
+        objectMapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
+        objectMapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
     }
 
     @Override

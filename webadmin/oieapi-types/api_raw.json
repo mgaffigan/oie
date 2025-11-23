@@ -156,11 +156,8 @@
             "type": "string"
           },
           "content": {
-            "items": {
-              "format": "byte",
-              "type": "string"
-            },
-            "type": "array"
+            "format": "byte",
+            "type": "string"
           },
           "encrypted": {
             "type": "boolean"
@@ -291,12 +288,15 @@
           "deployScript",
           "description",
           "destinationConnectors",
+          "exportData",
           "id",
           "name",
           "nextMetaDataId",
           "postprocessingScript",
           "preprocessingScript",
+          "properties",
           "revision",
+          "sourceConnector",
           "undeployScript"
         ],
         "type": "object"
@@ -823,7 +823,13 @@
       },
       "CodeTemplateLibrarySaveResult": {
         "properties": {
-          "cause": {
+          "codeTemplateResults": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/CodeTemplateUpdateResult"
+            },
+            "type": "object"
+          },
+          "librariesCause": {
             "properties": {
               "localizedMessage": {
                 "type": "string"
@@ -863,60 +869,7 @@
                   "type": "object"
                 },
                 "type": "array"
-              },
-              "suppressed": {
-                "items": {
-                  "properties": {
-                    "localizedMessage": {
-                      "type": "string"
-                    },
-                    "message": {
-                      "type": "string"
-                    },
-                    "stackTrace": {
-                      "items": {
-                        "properties": {
-                          "classLoaderName": {
-                            "type": "string"
-                          },
-                          "className": {
-                            "type": "string"
-                          },
-                          "fileName": {
-                            "type": "string"
-                          },
-                          "lineNumber": {
-                            "format": "int32",
-                            "type": "integer"
-                          },
-                          "methodName": {
-                            "type": "string"
-                          },
-                          "moduleName": {
-                            "type": "string"
-                          },
-                          "moduleVersion": {
-                            "type": "string"
-                          },
-                          "nativeMethod": {
-                            "type": "boolean"
-                          }
-                        },
-                        "type": "object"
-                      },
-                      "type": "array"
-                    }
-                  },
-                  "type": "object"
-                },
-                "type": "array"
               }
-            },
-            "type": "object"
-          },
-          "codeTemplateResults": {
-            "additionalProperties": {
-              "$ref": "#/components/schemas/CodeTemplateUpdateResult"
             },
             "type": "object"
           },
@@ -1017,53 +970,6 @@
                     },
                     "nativeMethod": {
                       "type": "boolean"
-                    }
-                  },
-                  "type": "object"
-                },
-                "type": "array"
-              },
-              "suppressed": {
-                "items": {
-                  "properties": {
-                    "localizedMessage": {
-                      "type": "string"
-                    },
-                    "message": {
-                      "type": "string"
-                    },
-                    "stackTrace": {
-                      "items": {
-                        "properties": {
-                          "classLoaderName": {
-                            "type": "string"
-                          },
-                          "className": {
-                            "type": "string"
-                          },
-                          "fileName": {
-                            "type": "string"
-                          },
-                          "lineNumber": {
-                            "format": "int32",
-                            "type": "integer"
-                          },
-                          "methodName": {
-                            "type": "string"
-                          },
-                          "moduleName": {
-                            "type": "string"
-                          },
-                          "moduleVersion": {
-                            "type": "string"
-                          },
-                          "nativeMethod": {
-                            "type": "boolean"
-                          }
-                        },
-                        "type": "object"
-                      },
-                      "type": "array"
                     }
                   },
                   "type": "object"
@@ -1945,11 +1851,8 @@
             "type": "object"
           },
           "secretKey": {
-            "items": {
-              "format": "byte",
-              "type": "string"
-            },
-            "type": "array"
+            "format": "byte",
+            "type": "string"
           },
           "securityProvider": {
             "type": "string"
@@ -3454,11 +3357,8 @@
             "type": "boolean"
           },
           "rawBytes": {
-            "items": {
-              "format": "byte",
-              "type": "string"
-            },
-            "type": "array"
+            "format": "byte",
+            "type": "string"
           },
           "rawData": {
             "type": "string"
@@ -4761,7 +4661,7 @@
     },
     "/alerts/_getInfo": {
       "post": {
-        "operationId": "getAlertInfo_1",
+        "operationId": "getAlertInfo",
         "requestBody": {
           "content": {
             "application/json": {
@@ -5170,7 +5070,7 @@
     },
     "/alerts/{alertId}/_getInfo": {
       "post": {
-        "operationId": "getAlertInfo",
+        "operationId": "getAlertInfo_1",
         "parameters": [
           {
             "description": "The ID of the alert.",
@@ -6319,6 +6219,7 @@
               "schema": {
                 "properties": {
                   "channelId": {
+                    "description": "The channel IDs to halt.",
                     "items": {
                       "type": "string"
                     },
@@ -6372,6 +6273,7 @@
               "schema": {
                 "properties": {
                   "channelId": {
+                    "description": "The channel IDs to pause.",
                     "items": {
                       "type": "string"
                     },
@@ -6440,7 +6342,7 @@
     },
     "/channels/_removeAllMessages": {
       "delete": {
-        "operationId": "removeAllMessages",
+        "operationId": "removeAllMessages_1",
         "parameters": [
           {
             "description": "The IDs of the channels.",
@@ -6666,6 +6568,7 @@
               "schema": {
                 "properties": {
                   "channelId": {
+                    "description": "The channel IDs to resume.",
                     "items": {
                       "type": "string"
                     },
@@ -6702,13 +6605,14 @@
     },
     "/channels/_setEnabled": {
       "post": {
-        "operationId": "setChannelEnabled",
+        "operationId": "setChannelEnabled_1",
         "requestBody": {
           "content": {
             "application/x-www-form-urlencoded": {
               "schema": {
                 "properties": {
                   "channelId": {
+                    "description": "The IDs of the channels to enable/disable. If absent, all channels will be enabled/disabled.",
                     "items": {
                       "type": "string"
                     },
@@ -6716,6 +6620,7 @@
                     "uniqueItems": true
                   },
                   "enabled": {
+                    "description": "Indicates whether the channels should be enabled or disabled.",
                     "type": "boolean"
                   }
                 },
@@ -6755,6 +6660,7 @@
               "schema": {
                 "properties": {
                   "channelId": {
+                    "description": "The IDs of the channels to modify initial states on. If absent, the initial state will be set on all channels.",
                     "items": {
                       "type": "string"
                     },
@@ -6762,6 +6668,7 @@
                     "uniqueItems": true
                   },
                   "initialState": {
+                    "description": "The initial state of the channel.",
                     "enum": [
                       "STARTED",
                       "PAUSED",
@@ -6816,6 +6723,7 @@
               "schema": {
                 "properties": {
                   "channelId": {
+                    "description": "The channel IDs to start.",
                     "items": {
                       "type": "string"
                     },
@@ -6955,6 +6863,7 @@
               "schema": {
                 "properties": {
                   "channelId": {
+                    "description": "The channel IDs to stop.",
                     "items": {
                       "type": "string"
                     },
@@ -7369,9 +7278,11 @@
               "schema": {
                 "properties": {
                   "aggregateStats": {
+                    "description": "If true, statistics will be aggregated into one result",
                     "type": "boolean"
                   },
                   "channelIds": {
+                    "description": "The IDs of the channels to retrieve. If absent, all channels will be retrieved.",
                     "items": {
                       "type": "string"
                     },
@@ -7379,6 +7290,7 @@
                     "uniqueItems": true
                   },
                   "excludeMetadataIds": {
+                    "description": "The ids of connectors to exclude. Cannot include and exclude connectors.",
                     "items": {
                       "format": "int32",
                       "type": "integer"
@@ -7387,6 +7299,7 @@
                     "uniqueItems": true
                   },
                   "includeMetadataIds": {
+                    "description": "The ids of connectors to include. Cannot include and exclude connectors.",
                     "items": {
                       "format": "int32",
                       "type": "integer"
@@ -7395,6 +7308,7 @@
                     "uniqueItems": true
                   },
                   "includeUndeployed": {
+                    "description": "If true, statistics for undeployed channels will also be included.",
                     "type": "boolean"
                   }
                 },
@@ -8352,7 +8266,7 @@
     },
     "/channels/{channelId}/enabled/{enabled}": {
       "post": {
-        "operationId": "setChannelEnabled_1",
+        "operationId": "setChannelEnabled",
         "parameters": [
           {
             "description": "The ID of the channel.",
@@ -8865,7 +8779,7 @@
         ]
       },
       "get": {
-        "operationId": "getMessages",
+        "operationId": "getMessages_1",
         "parameters": [
           {
             "description": "The ID of the channel.",
@@ -10319,7 +10233,7 @@
     },
     "/channels/{channelId}/messages/_removeAll": {
       "delete": {
-        "operationId": "removeAllMessages_1",
+        "operationId": "removeAllMessages",
         "parameters": [
           {
             "description": "The ID of the channel.",
@@ -10924,7 +10838,7 @@
     },
     "/channels/{channelId}/messages/_search": {
       "post": {
-        "operationId": "getMessages_1",
+        "operationId": "getMessages",
         "parameters": [
           {
             "description": "The ID of the channel.",
@@ -11048,7 +10962,7 @@
     },
     "/channels/{channelId}/messages/count": {
       "get": {
-        "operationId": "getMessageCount",
+        "operationId": "getMessageCount_1",
         "parameters": [
           {
             "description": "The ID of the channel.",
@@ -11497,7 +11411,7 @@
     },
     "/channels/{channelId}/messages/count/_search": {
       "post": {
-        "operationId": "getMessageCount_1",
+        "operationId": "getMessageCount",
         "parameters": [
           {
             "description": "The ID of the channel.",
@@ -19174,10 +19088,12 @@
                 "properties": {
                   "password": {
                     "default": "admin",
+                    "description": "The password to login with.",
                     "type": "string"
                   },
                   "username": {
                     "default": "admin",
+                    "description": "The username to login with.",
                     "type": "string"
                   }
                 },

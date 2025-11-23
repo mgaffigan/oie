@@ -49,7 +49,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Returns an AlertInfo object containing alert protocol options and any updated channel summaries. */
-        post: operations["getAlertInfo_1"];
+        post: operations["getAlertInfo"];
         delete?: never;
         options?: never;
         head?: never;
@@ -153,7 +153,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Returns an AlertInfo object containing the alert model, alert protocol options, and any updated channel summaries. */
-        post: operations["getAlertInfo"];
+        post: operations["getAlertInfo_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -445,7 +445,7 @@ export interface paths {
         put?: never;
         post?: never;
         /** Removes all messages for multiple specified channels. */
-        delete: operations["removeAllMessages"];
+        delete: operations["removeAllMessages_1"];
         options?: never;
         head?: never;
         patch?: never;
@@ -512,7 +512,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Enables/disables the specified channels. ("Try it Out" only works when submitting an array containing one element for this endpoint, but the descriptions are valid. If you want to modify multiple items at once, please use another tool for testing.) */
-        post: operations["setChannelEnabled"];
+        post: operations["setChannelEnabled_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -939,7 +939,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Enables/disables the specified channel. */
-        post: operations["setChannelEnabled_1"];
+        post: operations["setChannelEnabled"];
         delete?: never;
         options?: never;
         head?: never;
@@ -971,7 +971,7 @@ export interface paths {
             cookie?: never;
         };
         /** Search for messages by specific filter criteria. */
-        get: operations["getMessages"];
+        get: operations["getMessages_1"];
         put?: never;
         /** Processes a new message through a channel. */
         post: operations["processMessage_1"];
@@ -1078,7 +1078,7 @@ export interface paths {
         put?: never;
         post?: never;
         /** Removes all messages for the specified channel. */
-        delete: operations["removeAllMessages_1"];
+        delete: operations["removeAllMessages"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1128,7 +1128,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Search for messages by specific filter criteria. */
-        post: operations["getMessages_1"];
+        post: operations["getMessages"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1143,7 +1143,7 @@ export interface paths {
             cookie?: never;
         };
         /** Count number for messages by specific filter criteria. */
-        get: operations["getMessageCount"];
+        get: operations["getMessageCount_1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1162,7 +1162,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** Count number for messages by specific filter criteria. */
-        post: operations["getMessageCount_1"];
+        post: operations["getMessageCount"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3154,7 +3154,8 @@ export interface components {
         };
         Attachment: {
             attachmentId?: string;
-            content?: string[];
+            /** Format: byte */
+            content?: string;
             encrypted?: boolean;
             encryptionHeader?: string;
             id?: string;
@@ -3187,20 +3188,20 @@ export interface components {
             description: string | null;
             destinationConnectors: components["schemas"]["Connector"][];
             enabledDestinationConnectors?: components["schemas"]["Connector"][];
-            exportData?: components["schemas"]["ChannelExportData"];
+            exportData: components["schemas"]["ChannelExportData"];
             id: string | null;
             name: string;
             /** Format: int32 */
             nextMetaDataId: number;
             postprocessingScript: string;
             preprocessingScript: string;
-            properties?: components["schemas"]["ChannelProperties"];
+            properties: components["schemas"]["ChannelProperties"];
             purgedProperties?: {
                 [key: string]: Record<string, never>;
             };
             /** Format: int32 */
             revision: number;
-            sourceConnector?: components["schemas"]["Connector"];
+            sourceConnector: components["schemas"]["Connector"];
             undeployScript: string;
         };
         ChannelDependency: {
@@ -3364,7 +3365,10 @@ export interface components {
             revision?: number;
         };
         CodeTemplateLibrarySaveResult: {
-            cause?: {
+            codeTemplateResults?: {
+                [key: string]: components["schemas"]["CodeTemplateUpdateResult"];
+            };
+            librariesCause?: {
                 localizedMessage?: string;
                 message?: string;
                 stackTrace?: {
@@ -3378,24 +3382,6 @@ export interface components {
                     moduleVersion?: string;
                     nativeMethod?: boolean;
                 }[];
-                suppressed?: {
-                    localizedMessage?: string;
-                    message?: string;
-                    stackTrace?: {
-                        classLoaderName?: string;
-                        className?: string;
-                        fileName?: string;
-                        /** Format: int32 */
-                        lineNumber?: number;
-                        methodName?: string;
-                        moduleName?: string;
-                        moduleVersion?: string;
-                        nativeMethod?: boolean;
-                    }[];
-                }[];
-            };
-            codeTemplateResults?: {
-                [key: string]: components["schemas"]["CodeTemplateUpdateResult"];
             };
             librariesSuccess?: boolean;
             libraryResults?: {
@@ -3433,21 +3419,6 @@ export interface components {
                     moduleName?: string;
                     moduleVersion?: string;
                     nativeMethod?: boolean;
-                }[];
-                suppressed?: {
-                    localizedMessage?: string;
-                    message?: string;
-                    stackTrace?: {
-                        classLoaderName?: string;
-                        className?: string;
-                        fileName?: string;
-                        /** Format: int32 */
-                        lineNumber?: number;
-                        methodName?: string;
-                        moduleName?: string;
-                        moduleVersion?: string;
-                        nativeMethod?: boolean;
-                    }[];
                 }[];
             };
             /** Format: date-time */
@@ -3764,7 +3735,8 @@ export interface components {
             properties?: {
                 [key: string]: string;
             };
-            secretKey?: string[];
+            /** Format: byte */
+            secretKey?: string;
             securityProvider?: string;
         };
         ErrorContent: {
@@ -4264,7 +4236,8 @@ export interface components {
             /** Format: int64 */
             originalMessageId?: number;
             overwrite?: boolean;
-            rawBytes?: string[];
+            /** Format: byte */
+            rawBytes?: string;
             rawData?: string;
             sourceMap?: {
                 [key: string]: Record<string, never>;
@@ -4781,7 +4754,7 @@ export interface operations {
             };
         };
     };
-    getAlertInfo_1: {
+    getAlertInfo: {
         parameters: {
             query?: never;
             header?: never;
@@ -5096,7 +5069,7 @@ export interface operations {
             };
         };
     };
-    getAlertInfo: {
+    getAlertInfo_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -5792,6 +5765,7 @@ export interface operations {
         requestBody?: {
             content: {
                 "application/x-www-form-urlencoded": {
+                    /** @description The channel IDs to halt. */
                     channelId: string[];
                 };
             };
@@ -5834,6 +5808,7 @@ export interface operations {
         requestBody?: {
             content: {
                 "application/x-www-form-urlencoded": {
+                    /** @description The channel IDs to pause. */
                     channelId: string[];
                 };
             };
@@ -5899,7 +5874,7 @@ export interface operations {
             };
         };
     };
-    removeAllMessages: {
+    removeAllMessages_1: {
         parameters: {
             query: {
                 /** @description The IDs of the channels. */
@@ -6037,6 +6012,7 @@ export interface operations {
         requestBody?: {
             content: {
                 "application/x-www-form-urlencoded": {
+                    /** @description The channel IDs to resume. */
                     channelId: string[];
                 };
             };
@@ -6066,7 +6042,7 @@ export interface operations {
             };
         };
     };
-    setChannelEnabled: {
+    setChannelEnabled_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -6076,7 +6052,9 @@ export interface operations {
         requestBody?: {
             content: {
                 "application/x-www-form-urlencoded": {
+                    /** @description The IDs of the channels to enable/disable. If absent, all channels will be enabled/disabled. */
                     channelId?: string[];
+                    /** @description Indicates whether the channels should be enabled or disabled. */
                     enabled: boolean;
                 };
             };
@@ -6116,8 +6094,12 @@ export interface operations {
         requestBody?: {
             content: {
                 "application/x-www-form-urlencoded": {
+                    /** @description The IDs of the channels to modify initial states on. If absent, the initial state will be set on all channels. */
                     channelId?: string[];
-                    /** @enum {string} */
+                    /**
+                     * @description The initial state of the channel.
+                     * @enum {string}
+                     */
                     initialState: "STARTED" | "PAUSED" | "STOPPED";
                 };
             };
@@ -6160,6 +6142,7 @@ export interface operations {
         requestBody?: {
             content: {
                 "application/x-www-form-urlencoded": {
+                    /** @description The channel IDs to start. */
                     channelId: string[];
                 };
             };
@@ -6251,6 +6234,7 @@ export interface operations {
         requestBody?: {
             content: {
                 "application/x-www-form-urlencoded": {
+                    /** @description The channel IDs to stop. */
                     channelId: string[];
                 };
             };
@@ -6498,10 +6482,15 @@ export interface operations {
         requestBody?: {
             content: {
                 "multipart/form-data": {
+                    /** @description If true, statistics will be aggregated into one result */
                     aggregateStats?: boolean;
+                    /** @description The IDs of the channels to retrieve. If absent, all channels will be retrieved. */
                     channelIds?: string[];
+                    /** @description The ids of connectors to exclude. Cannot include and exclude connectors. */
                     excludeMetadataIds?: number[];
+                    /** @description The ids of connectors to include. Cannot include and exclude connectors. */
                     includeMetadataIds?: number[];
+                    /** @description If true, statistics for undeployed channels will also be included. */
                     includeUndeployed?: boolean;
                 };
             };
@@ -7173,7 +7162,7 @@ export interface operations {
             };
         };
     };
-    setChannelEnabled_1: {
+    setChannelEnabled: {
         parameters: {
             query?: never;
             header?: never;
@@ -7249,7 +7238,7 @@ export interface operations {
             };
         };
     };
-    getMessages: {
+    getMessages_1: {
         parameters: {
             query?: {
                 /** @description The minimum message ID to query. */
@@ -7830,7 +7819,7 @@ export interface operations {
             };
         };
     };
-    removeAllMessages_1: {
+    removeAllMessages: {
         parameters: {
             query?: {
                 /** @description If true, currently running channels will be stopped and restarted as part of the remove process. Otherwise, currently running channels will not be included. */
@@ -8036,7 +8025,7 @@ export interface operations {
             };
         };
     };
-    getMessages_1: {
+    getMessages: {
         parameters: {
             query?: {
                 /** @description If true, message content will be returned with the results. */
@@ -8084,7 +8073,7 @@ export interface operations {
             };
         };
     };
-    getMessageCount: {
+    getMessageCount_1: {
         parameters: {
             query?: {
                 /** @description The minimum message ID to query. */
@@ -8191,7 +8180,7 @@ export interface operations {
             };
         };
     };
-    getMessageCount_1: {
+    getMessageCount: {
         parameters: {
             query?: never;
             header?: never;
@@ -12948,9 +12937,15 @@ export interface operations {
         requestBody?: {
             content: {
                 "application/x-www-form-urlencoded": {
-                    /** @default admin */
+                    /**
+                     * @description The password to login with.
+                     * @default admin
+                     */
                     password: string;
-                    /** @default admin */
+                    /**
+                     * @description The username to login with.
+                     * @default admin
+                     */
                     username: string;
                 };
             };
