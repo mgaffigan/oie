@@ -36,16 +36,6 @@ public class ArrayAppender extends AbstractAppender {
             return;
         }
 
-        String channelId = null;
-        String channelName = null;
-
-        // Check theoretically not necessary, as getContextMap never returns null
-        // Safety first
-        if (logEvent.getContextMap() != null) {
-            channelId = logEvent.getContextMap().getOrDefault("channelId", "");
-            channelName = logEvent.getContextMap().getOrDefault("channelName", "");
-        }
-
         String level = String.valueOf(logEvent.getLevel());
         Date date = new Date(logEvent.getTimeMillis());
         String threadName = logEvent.getThreadName();
@@ -71,6 +61,7 @@ public class ArrayAppender extends AbstractAppender {
             throwableInformation = logText.toString();
         }
 
-        serverLogProvider.newServerLogReceived(channelId, channelName, level, date, threadName, category, lineNumber, message, throwableInformation);
+        serverLogProvider.newServerLogReceived(level, date, threadName, category, lineNumber, message, 
+            throwableInformation, logEvent.getContextData().toMap());
     }
 }
