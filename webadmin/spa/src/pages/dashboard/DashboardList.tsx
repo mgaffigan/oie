@@ -157,11 +157,11 @@ export function DashboardList() {
                 </button>
             </form>
 
-            {dashboard && <div>
+            {dashboard && <div className={css.dashboardSummary}>
                 {dashboard.groups.length.toLocaleString()} Groups, {dashboard.deployedChannelCount.toLocaleString()} Deployed Channels
             </div>}
 
-            <div style={{ marginLeft: 'auto' }}>
+            <div className={css.statsModeSelector}>
                 <input type="radio" id="dashboard-stats-mode" value="Current" name="dashboard-stats-mode"
                     checked={prefs.statsMode === 'Current'} onChange={() => setPrefs({ statsMode: 'Current' })} />
                 <label htmlFor="dashboard-stats-mode" className="ms-1 me-2">Current Statistics</label>

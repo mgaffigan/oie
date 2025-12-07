@@ -9,6 +9,12 @@
         display: grid;
         grid-template-rows: none;
         grid-template-columns: auto 1fr;
+
+        /* Ensure children have an exact height/width */
+        & > * {
+            min-height: 0;
+            min-width: 0;
+        }
     }
 }
 
@@ -37,6 +43,12 @@
         height: 100%;
         display: grid;
         grid-template-rows: auto 1fr;
+
+        /* Ensure children have an exact height/width */
+        & > * {
+            min-height: 0;
+            min-width: 0;
+        }
     }
 
     .clientContent {
