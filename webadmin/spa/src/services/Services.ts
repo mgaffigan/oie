@@ -16,9 +16,14 @@ interface LoginCredentials {
 }
 
 export async function login(creds: LoginCredentials) {
-    const { data, error } = await Client.POST('/users/_login', {
+    const resp = await Client.POST('/users/_login', {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: creds,
     });
-    return data || error;
+    // Error responses must have both message and status properties
+    // otherwise, we take the HTTP status as an error
+    if (!resp.response.ok && !(resp.error?.message && resp.error?.status)) {
+        throw new Error(`Error during login: ${resp.response.status}`);
+    }
+    return resp.data || resp.error;
 }
