@@ -5,7 +5,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta http-equiv="x-ua-compatible" content="IE=edge">
         
-        <title>Mirth Connect Administrator</title>
+        <title>Engine Administrator</title>
         
         <link rel="shortcut icon" type="image/x-icon" href="images/NG_MC_Icon_16x16.png" />
         <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
@@ -30,13 +30,13 @@
                 </div>
     
                 <div id="mcadministrator" class="col-xs-6 col-xs-6-custom">
-                    <h1 style="text-align: center;">Mirth Connect Administrator</h1>
+                    <h1 style="text-align: center;">Engine Administrator</h1>
                     
                     <div id="launchbuttoncontainer">
 	                    <div class="help-block">
 	                        Click the big green button below, and choose to open the file with the Administrator Launcher instead of using Java Web Start. If you don't have the Administrator Launcher installed, click the big blue button below.
 	                    </div>
-                        <a class="btn btn-md btn-themebutton" href="javascript:launchAdministrator()">Launch Mirth Connect Administrator</a>
+                        <a class="btn btn-md btn-themebutton" href="javascript:launchAdministrator()">Launch Administrator</a>
                         <div id="optionsDropdownContainer" class="dropdown" style="text-align: center;">
                         	<button id="optionsButton" class="btn btn-default btn-lg dropdown-toggle opt-button" data-toggle="dropdown" role="button">
 	                        	<span class="glyphicon glyphicon-cog"></span>
@@ -55,10 +55,10 @@
                     
                     <div>
 	                    <div class="help-block">
-	                        <strong>Mirth Connect Administrator Launcher:</strong><br /> This is a separate application that replaces<br/>Java Web Start and allows you to launch the Administrator from your local workstation.  
+	                        <strong>Administrator Launcher:</strong><br /> This is a separate application that replaces<br/>Java Web Start and allows you to launch the Administrator from your local workstation.
 	                    </div>
                         <a class="btn btn-md btn-downloadbutton" href="javascript:downloadAdministratorLauncher()">Download Administrator Launcher</a>
-                        <div id="administratorLauncherOptionsDropdownContainer" class="dropdown">
+                        <!-- <div id="administratorLauncherOptionsDropdownContainer" class="dropdown">
                         	<button id="administratorLauncherOptionsButton" class="btn btn-default btn-lg dropdown-toggle opt-button" data-toggle="dropdown" role="button">
 	                        	<span class="glyphicon glyphicon-cog"></span>
                         	</button>
@@ -70,13 +70,13 @@
                         			<p id="operatingSystemWarning" class="dropdown-warning">Select the operating system you want to install the Administrator Launcher on.</p>
                         		</li>
                         	</ul>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
-    
+
                 <div id="webdashboardsignin" class="col-xs-6 col-xs-6-custom">
                     <h1 id="webDashboardHeader" style="text-align: center;">Web Dashboard Sign in</h1>
-    				    				
+
     				<c:choose>
     				 	<c:when test="${actionBean.secureHttps == true}">
 		                     <form id="webLoginForm" name="loginform" action="Login.action" method="post">
@@ -101,23 +101,23 @@
 		            	</c:when>
 		              	<c:otherwise>
 		              		<div id="securesiteaccess">
-		              			<p id="httpsInfoParagraph">The Mirth Connect Web Dashboard must be accessed over HTTPS. Click below button to switch to the secure site.</p>
+		              			<p id="httpsInfoParagraph">The Web Dashboard must be accessed over HTTPS. Click below button to switch to the secure site.</p>
 		                   		<div class="help-block">
 		                	        <br/><strong>Note:</strong><br/> You may see a certificate error if your server is using a <a href="http://en.wikipedia.org/wiki/Self-signed_certificate" target="_blank">self-signed certificate</a>. To prevent further warnings, you can add this certificate to your browser or operating system.
 		                        </div>
 			                </div>
 		                    <div id="accessSecureSiteButton" style="text-align: center;">
 		                    	<a class="btn btn-md btn-themebutton" href="javascript:accessSecureSite()">Access Secure Site</a>
-		                    </div> 
+		                    </div>
   						</c:otherwise>
                     </c:choose>
                 </div>
             </div>
         </div>
         <div id="smallSubPage">
-        	<p>&copy; 2024 NextGen Healthcare | Mirth Connect</p>
+        	<p>&copy; 2025 Innovar Healthcare | OIE</p>
         </div>
-    
+
         <script type="text/javascript">
             $(document).ready(
                     function detectMobile() {
@@ -147,7 +147,7 @@
                             $("#password").css("width", "100%");
 
                             $("#securesiteaccess").css("margin-left", "30px");
-    
+
                             // Set viewport meta tag
                             var mt = $('meta[name=viewport]');
             				mt = mt.length ? mt : $('<meta name="viewport" />').appendTo('head');
@@ -161,18 +161,18 @@
         <script type="text/javascript">
             var showAlert = false;
             $(document).ready(function() {
-            
+
             	/**** Administrator Max Heap Size Options ****/
-            	
+
             	// Get the default max heap size and options from the context
                 var defaultMaxHeapSize = convertHeapSizeString('${actionBean.context.maxHeapSize}', 512);
                 var maxHeapSizeOptions = '${actionBean.context.maxHeapSizeOptions}';
                 var options = [];
-                
+
                 // Set the options if they were specified in the context
                 if (maxHeapSizeOptions) {
                 	var optionsStringArray = maxHeapSizeOptions.split(',');
-                	
+
                 	for (var i = 0; i < optionsStringArray.length; i++) {
                 		var heapSize = convertHeapSizeString(optionsStringArray[i]);
                 		if (heapSize) {
@@ -180,12 +180,12 @@
                 		}
                 	}
                 }
-                
+
                 // If no options were specified or they were invalid, set the defaults
                 if (options.length == 0) {
 	                options = [256,512,1024,2048];
                 }
-                
+
                 // Determine if the default is contained in the options array
                 var found = false;
                 for (var i = 0; i < options.length; i++) {
@@ -193,39 +193,39 @@
                 		found = true;
                 	}
                 }
-                
+
                 // If not, put it in the array
                 if (!found) {
                 	options.push(defaultMaxHeapSize);
                 }
-                
+
                 // Sort the options array
                 options.sort(function(a,b) {return a-b});
-                
+
                 // Build the options HTML for the select input
                 var selectHtml = '';
                 for (var i = 0; i < options.length; i++) {
                 	var num = options[i];
                 	var selected = (num.toString() == defaultMaxHeapSize);
                 	var letter = 'm';
-                	
+
                 	if (num % 1024 == 0) {
                 		num /= 1024;
                 		letter = 'g';
                 	}
                 	selectHtml += '<option value="' + num + letter + '"' + (selected ? ' selected' : '') + '>' + num + ' ' + letter.toUpperCase() + 'B</option>';
                 }
-                
+
                 // Set the options
                 $('#maxHeapSizeSelect').html(selectHtml);
-                
-                // This prevents closing the Bootstrap dropdown when clicking on the select input 
+
+                // This prevents closing the Bootstrap dropdown when clicking on the select input
                 $('#optionsDropdownMenu').click(function(e) {
                 	e.stopPropagation();
                 });
-                
+
                 /**** Administrator Launcher Options ****/
-                
+
                 var platform = '';
             	if (window.navigator) {
             		if (window.navigator.oscpu) {
@@ -234,7 +234,7 @@
             			platform = window.navigator.platform;
             		}
             	}
-            		
+
         		if (platform.toLowerCase().indexOf('mac') >= 0) {
         			platform = 'macos';
         		} else if (platform.toLowerCase().indexOf('win') >= 0) {
@@ -246,23 +246,23 @@
         		} else {
         			platform = 'linux';
         		}
-        		
+
         		var operatingSystemSelectHtml = '';
         		operatingSystemSelectHtml += '<option value="macos.dmg"' + (platform == 'macos' ? ' selected' : '') + '>macOS</option>';
         		operatingSystemSelectHtml += '<option value="linux.sh"' + (platform == 'linux' ? ' selected' : '') + '>Linux</option>';
         		operatingSystemSelectHtml += '<option value="windows.exe"' + (platform == 'windows' ? ' selected' : '') + '>Windows 32-bit</option>';
         		operatingSystemSelectHtml += '<option value="windows-x64.exe"' + (platform == 'windows-x64' ? ' selected' : '') + '>Windows 64-bit</option>';
-        		
+
         		// Set the options
         		$('#operatingSystemSelect').html(operatingSystemSelectHtml);
-        		
-        		// This prevents closing the Bootstrap dropdown when clicking on the select input 
+
+        		// This prevents closing the Bootstrap dropdown when clicking on the select input
                 $('#administratorLauncherOptionsDropdownMenu').click(function(e) {
                 	e.stopPropagation();
                 });
-                
+
                 /**** Show Error Alert ****/
-                
+
                 $.urlParam = function(name) {
                     var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href);
                     if (results != null) {
@@ -279,12 +279,12 @@
                     return true;
                 }
             });
-            
+
             function convertHeapSizeString(str, defaultSize) {
             	str = new String(str);
             	defaultSize = new Number(defaultSize) || 0;
                 var heapSize = new Number(str.replace(/[^\d]/g,'')) || defaultSize;
-                
+
                 var heapSizeLetter = str.replace(/[^mg]/ig,'');
                 if (!/[mg]/i.test(heapSizeLetter)) {
                 	heapSizeLetter = 'm';
@@ -292,14 +292,14 @@
                 if (heapSizeLetter.toLowerCase() == 'g') {
                 	heapSize *= 1024;
                 }
-                
+
                 return heapSize;
             }
         </script>
         <script type="text/javascript">
         	function downloadAdministratorLauncher(){
         		var url = '${actionBean.context.currentScheme}://' + window.location.hostname + ':${actionBean.context.currentPort}${actionBean.context.contextPath}/launcher/' + $('#operatingSystemSelect').val();
-        		
+
         		$.ajax({url: url, type: 'HEAD', success: function() {
         			window.location.href = url;
         		}, error: function() {
@@ -307,7 +307,7 @@
         			if (suffix == 'linux.sh') {
         				suffix = 'unix.sh';
         			}
-        			window.location.href = 'https://s3.amazonaws.com/downloads.mirthcorp.com/connect-client-launcher/mirth-administrator-launcher-latest-' + suffix;
+        			window.location.href = 'http://example.org/';
         		}});
        		}
         

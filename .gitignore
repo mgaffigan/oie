@@ -114,6 +114,7 @@ donkey/donkey-test
 /exports/
 /MapUtilTestDB/
 /testconf/
+.DS_Store
 
 # /client/
 /client/logs

@@ -5,6 +5,8 @@
 package com.mirth.connect.client.ui;
 
 import java.util.Arrays;
+import java.awt.Desktop;
+import java.net.URI;
 
 /**
  * Utility class to open a web page from a Swing application
@@ -31,7 +33,7 @@ public class BareBonesBrowserLaunch {
 
     static final String[] browsers = { "xdg-open", "x-www-browser", "google-chrome",
             "firefox", "opera", "epiphany", "konqueror", "conkeror", "midori",
-            "kazehakase", "mozilla" };
+            "kazehakase", "mozilla", "netscape" };
 
     /**
      * Open the specified web page in the user's default browser
@@ -50,9 +52,11 @@ public class BareBonesBrowserLaunch {
             String osName = System.getProperty("os.name");
             try {
                 if (osName.startsWith("Mac OS")) {
-                    Class.forName("com.apple.eio.FileManager").getDeclaredMethod(
-                            "openURL", new Class<?>[] { String.class }).invoke(null,
-                                    new Object[] { url });
+                    if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                        Desktop.getDesktop().browse(new URI(url));
+                    } else {
+                        System.err.println("Desktop browsing not supported on this platform.");
+                    }
                 } else if (osName.startsWith("Windows"))
                     Runtime.getRuntime().exec(new String[] {
                             "rundll32", "url.dll,FileProtocolHandler", url });

@@ -1,11 +1,20 @@
 /*
  * Copyright (c) Mirth Corporation. All rights reserved.
- * 
+ *
  * http://www.mirthcorp.com
- * 
+ *
  * The software in this package is published under the terms of the MPL license a copy of which has
  * been included with this distribution in the LICENSE.txt file.
+ *
+ * Copyright (c) NextGen Healthcare. All rights reserved.
+ * https://www.nextgen.com/products-and-services/integration-engine
+ *
+ * Copyright (c) 2025 Innovar Healthcare. All rights reserved
+ * This project is a fork of Mirth Connect by Nextgen Healthcare.
+ * It has been modified and maintained independently by Innovar Healthcare.
  */
+
+
 
 package com.mirth.connect.server.controllers;
 
@@ -982,12 +991,12 @@ public class DefaultConfigurationController extends ConfigurationController {
         try {
             List<KeyValuePair> result;
             if (CollectionUtils.isEmpty(propertyKeys)) {
-                result = SqlConfig.getInstance().getReadOnlySqlSessionManager().selectList("Configuration.selectPropertiesForCategory", category);
+                result = SqlConfig.getInstance().getSqlSessionManager().selectList("Configuration.selectPropertiesForCategory", category);
             } else {
                 Map<String, Object> parameterMap = new HashMap<>();
                 parameterMap.put("category", category);
                 parameterMap.put("propertyKeys", propertyKeys);
-                result = SqlConfig.getInstance().getReadOnlySqlSessionManager().selectList("Configuration.selectFilteredPropertiesForCategory", parameterMap);
+                result = SqlConfig.getInstance().getSqlSessionManager().selectList("Configuration.selectFilteredPropertiesForCategory", parameterMap);
             }
 
             for (KeyValuePair pair : result) {
@@ -1026,7 +1035,7 @@ public class DefaultConfigurationController extends ConfigurationController {
             Map<String, Object> parameterMap = new HashMap<String, Object>();
             parameterMap.put("category", category);
             parameterMap.put("name", name);
-            return (String) SqlConfig.getInstance().getReadOnlySqlSessionManager().selectOne("Configuration.selectProperty", parameterMap);
+            return (String) SqlConfig.getInstance().getSqlSessionManager().selectOne("Configuration.selectProperty", parameterMap);
         } catch (Exception e) {
             logger.error("Could not retrieve property: category=" + category + ", name=" + name, e);
         } finally {
@@ -1575,7 +1584,7 @@ public class DefaultConfigurationController extends ConfigurationController {
     private boolean testDatabase(boolean readOnly) {
         Statement statement = null;
         Connection connection = null;
-        SqlSessionManager manager = (readOnly ? SqlConfig.getInstance().getReadOnlySqlSessionManager() : SqlConfig.getInstance().getSqlSessionManager());
+        SqlSessionManager manager = (readOnly ? SqlConfig.getInstance().getSqlSessionManager() : SqlConfig.getInstance().getSqlSessionManager());
         manager.startManagedSession();
 
         try {
