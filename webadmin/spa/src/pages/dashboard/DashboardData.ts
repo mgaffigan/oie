@@ -72,7 +72,7 @@ function aggregateStatistics(statsList: StatisticsMap[]): StatisticsMap {
     }, {} as StatisticsMap);
 }
 
-type ChannelStateOrMixed = ChannelState | 'Mixed';
+export type ChannelStateOrMixed = ChannelState | 'Mixed';
 function aggregateChannelStatus(status: ChannelState[]): ChannelStateOrMixed {
     if (status.length === 0) {
         return 'Unknown';

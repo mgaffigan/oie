@@ -1,21 +1,56 @@
-import { useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useReactTable, getCoreRowModel, getExpandedRowModel, flexRender, type ColumnDef } from "@tanstack/react-table";
-import { useVirtualizer } from "@tanstack/react-virtual";
-import { getDashboardData, type DashboardRowModel } from "./DashboardData";
+import { useReactTable, getCoreRowModel, getExpandedRowModel, flexRender, type ColumnDef, type Row, getSortedRowModel } from "@tanstack/react-table";
+import { getDashboardData, type DashboardRowModel, type ChannelStateOrMixed } from "./DashboardData";
 import { type FilterPreferences, type TagDisplayMode, DASHBOARD_PREFS_KEY } from "./DashboardPrefs";
 import css from "./DashboardList.module.scss";
 import styleIcon from '../../assets/icons/style.png';
 import tagIcon from '../../assets/icons/tag_blue.png';
 import serverDatabaseIcon from '../../assets/icons/server_database.png';
 import serverIcon from '../../assets/icons/server.png';
-import { useLocalStoragePreferences } from "../../services/LocalStoragePreferences";
+import { usePreferences } from "../../services/Preferences";
 import { useSession } from "../../services/Session";
 
 export const CHANNEL_LIST_QUERY_KEY = 'channelList';
 
+function ChannelNameCell({ row }: { row: Row<DashboardRowModel> }) {
+    return <>
+        {row.original.name}
+    </>;
+}
+
+function iconForStatus(state: ChannelStateOrMixed) {
+    switch (state) {
+        case 'Deploying':
+        case 'Undeploying':
+        case 'Starting':
+        case 'Stopping':
+        case 'Pausing':
+        case 'Syncing':
+        case 'Mixed':
+            return '🟠';
+
+        case 'Started':
+            return '🟢';
+
+        case 'Stopped':
+            return '🔴';
+
+        case 'Paused':
+            return '🟡';
+
+        default:
+            return '⚫';
+    }
+}
+
+function StatusCell({ row }: { row: Row<DashboardRowModel> }) {
+    return <>
+        <span style={{ fontSize: "5pt", verticalAlign: "3px", paddingRight: "2px" }}>{iconForStatus(row.original.state)}</span> {row.original.state}
+    </>;
+}
+
 const DashboardColumns: ColumnDef<DashboardRowModel>[] = [
-    { header: 'Status', accessorKey: 'state' },
+    { header: 'Status', accessorKey: 'state', cell: StatusCell },
     {
         id: 'expander',
         header: '',
@@ -33,7 +68,7 @@ const DashboardColumns: ColumnDef<DashboardRowModel>[] = [
         },
         size: 32,
     },
-    { header: 'Name', accessorKey: 'name' },
+    { header: 'Name', accessorKey: 'name', cell: ChannelNameCell },
     { header: 'Rev Δ', accessorKey: ';' },
     {
         header: 'Last Deployed',
@@ -49,7 +84,7 @@ const DashboardColumns: ColumnDef<DashboardRowModel>[] = [
 
 export function DashboardList() {
     const sess = useSession();
-    const [prefs, setPrefs] = useLocalStoragePreferences<FilterPreferences>(DASHBOARD_PREFS_KEY, () => ({
+    const [prefs, setPrefs] = usePreferences<FilterPreferences>(DASHBOARD_PREFS_KEY, () => ({
         textFilter: '',
         useGroups: true,
         statsMode: 'Current',
@@ -58,7 +93,7 @@ export function DashboardList() {
 
     const refreshIntervalSeconds = typeof sess.prefs.intervalTime === "number" ? sess.prefs.intervalTime : 10;
     const { data: dashboard } = useQuery({
-        queryKey: [CHANNEL_LIST_QUERY_KEY, prefs.textFilter, prefs.statsMode, refreshIntervalSeconds],
+        queryKey: [CHANNEL_LIST_QUERY_KEY, prefs.textFilter, prefs.useGroups, prefs.statsMode, refreshIntervalSeconds],
         queryFn: () => getDashboardData(prefs),
         refetchInterval: refreshIntervalSeconds * 1000,
     });
@@ -77,73 +112,36 @@ export function DashboardList() {
         columns: DashboardColumns,
         getCoreRowModel: getCoreRowModel(),
         getExpandedRowModel: getExpandedRowModel(),
+        getSortedRowModel: getSortedRowModel(),
         getSubRows: (row) => row.children,
     });
 
-    const parentRef = useRef<HTMLDivElement>(null);
-    const rowVirtualizer = useVirtualizer({
-        count: table.getRowModel().rows.length,
-        getScrollElement: () => parentRef.current,
-        estimateSize: () => 28,
-        overscan: 10,
-    });
-    const virtualRows = rowVirtualizer.getVirtualItems();
-
     return <div className={`card p-2 ${css.dashboardListCard}`}>
-        <div className={css.dashboardList} ref={parentRef}>
-            {!dashboard ? (
-                <span>Loading...</span>
-            ) : (
-                <table className="table table-sm table-striped">
-                    <thead>
-                        {table.getHeaderGroups().map(headerGroup => (
-                            <tr key={headerGroup.id}>
-                                {headerGroup.headers.map(header => (
-                                    <th key={header.id} style={{ width: header.getSize() ? `${header.getSize()}px` : undefined }}>
-                                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                                    </th>
-                                ))}
-                            </tr>
+        <div className={css.dashboardList}>
+            <table className={`table table-sm table-striped ${css.dashboardTable}`}>
+                <thead>
+                    {table.getHeaderGroups().map(headerGroup => (
+                        <tr key={headerGroup.id}>
+                            {headerGroup.headers.map(header => (
+                                <th key={header.id} style={{ width: header.getSize() ? `${header.getSize()}px` : undefined }}
+                                    onClick={header.column.getToggleSortingHandler()}>
+                                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                                    {{ asc: ' ▲', desc: ' ▼' }[header.column.getIsSorted() as string] ?? null}
+                                </th>
+                            ))}
+                        </tr>
+                    ))}
+                </thead>
+                <tbody>
+                    {table.getRowModel().rows.map(row => <tr key={row.id}>
+                        {row.getVisibleCells().map(cell => (
+                            <td key={cell.id} style={cell.column.id === 'expander' ? { paddingLeft: `${row.depth * 16}px` } : undefined}>
+                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            </td>
                         ))}
-                    </thead>
-                    <tbody>
-                        {virtualRows.length === 0 ? (
-                            <>
-                                {table.getRowModel().rows.map(row => (
-                                    <tr key={row.id}>
-                                        {row.getVisibleCells().map(cell => (
-                                            <td key={cell.id} style={cell.column.id === 'expander' ? { paddingLeft: `${row.depth * 16}px` } : undefined}>
-                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                            </td>
-                                        ))}
-                                    </tr>
-                                ))}
-                            </>
-                        ) : (
-                            <>
-                                <tr>
-                                    <td colSpan={table.getVisibleFlatColumns().length} style={{ height: virtualRows[0].start }} />
-                                </tr>
-                                {virtualRows.map(virtualRow => {
-                                    const row = table.getRowModel().rows[virtualRow.index];
-                                    return (
-                                        <tr key={row.id} style={{ height: virtualRow.size }}>
-                                            {row.getVisibleCells().map(cell => (
-                                                <td key={cell.id} style={cell.column.id === 'expander' ? { paddingLeft: `${row.depth * 16}px` } : undefined}>
-                                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                                </td>
-                                            ))}
-                                        </tr>
-                                    );
-                                })}
-                                <tr>
-                                    <td colSpan={table.getVisibleFlatColumns().length} style={{ height: rowVirtualizer.getTotalSize() - virtualRows[virtualRows.length - 1].end }} />
-                                </tr>
-                            </>
-                        )}
-                    </tbody>
-                </table>
-            )}
+                    </tr>)}
+                </tbody>
+            </table>
         </div>
         <div className={css.toolbar}>
             <form className="d-flex flex-row align-items-center" onSubmit={e => e.preventDefault()}>
