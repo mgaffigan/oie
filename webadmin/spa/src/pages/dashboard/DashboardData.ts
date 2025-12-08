@@ -61,7 +61,7 @@ export interface DashboardConnectorModel {
     statistics: StatisticsMap;
 }
 
-export type DashboardRowModel = (DashboardChannelGroupModel | DashboardChannelModel | DashboardConnectorModel) & { children?: DashboardRowModel[] };
+export type DashboardRowModel = DashboardChannelGroupModel | DashboardChannelModel | DashboardConnectorModel;
 
 function aggregateStatistics(statsList: StatisticsMap[]): StatisticsMap {
     return statsList.reduce((aggregate, stats) => {

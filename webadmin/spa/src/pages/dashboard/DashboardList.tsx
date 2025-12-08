@@ -9,13 +9,44 @@ import serverDatabaseIcon from '../../assets/icons/server_database.png';
 import serverIcon from '../../assets/icons/server.png';
 import { usePreferences } from "../../services/Preferences";
 import { useSession } from "../../services/Session";
+import type { ReactNode } from "react";
 
 export const CHANNEL_LIST_QUERY_KEY = 'channelList';
 
+function getRowPrefixes(row: Row<DashboardRowModel>, inverseDepth = 0): Array<ReactNode> {
+    if (!row.getParentRow()) {
+        return [];
+    }
+
+    const siblings = row.getParentRow()!.subRows;
+    const isLast = siblings.indexOf(row) === siblings.length - 1;
+
+    const parentPrefixes = getRowPrefixes(row.getParentRow()!, inverseDepth + 1);
+    const thisPrefix = inverseDepth == 0
+        ? (isLast ? 'last-child' : 'intermediate-child')
+        : (isLast ? 'blank' : 'continue');
+
+    return [...parentPrefixes, <div className={css.treePrefixSymbol} data-symbol-type={thisPrefix}></div>];
+}
+
 function ChannelNameCell({ row }: { row: Row<DashboardRowModel> }) {
-    return <>
-        {row.original.name}
-    </>;
+    let prefix = getRowPrefixes(row);
+
+    return <div className={css.channelNameCell}>
+        <div className={css.treePrefix}>
+            {prefix}
+            {row.getCanExpand() && <button
+                type="button"
+                className={`${css.expanderButton} ${row.getIsExpanded() ? css.expanded : ''}`}
+                onClick={row.getToggleExpandedHandler()}
+                aria-label={row.getIsExpanded() ? "Collapse" : "Expand"}>
+                {row.getIsExpanded() ? '-' : '+'}
+            </button>}
+        </div>
+        <div className={css.channelNameText}>
+            {row.original.name}
+        </div>
+    </div>;
 }
 
 function iconForStatus(state: ChannelStateOrMixed) {
@@ -49,27 +80,17 @@ function StatusCell({ row }: { row: Row<DashboardRowModel> }) {
     </>;
 }
 
+function RevisionCountCell({ row }: { row: Row<DashboardRowModel> }) {
+    if (!("deployedRevisionDelta" in row.original)) return null;
+    return <>
+        {row.original.deployedRevisionDelta > 0 ? `+${row.original.deployedRevisionDelta}` : '--'}
+    </>;
+}
+
 const DashboardColumns: ColumnDef<DashboardRowModel>[] = [
     { header: 'Status', accessorKey: 'state', cell: StatusCell },
-    {
-        id: 'expander',
-        header: '',
-        cell: ({ row }) => {
-            if (!row.getCanExpand()) return null;
-            return (
-                <button
-                    type="button"
-                    className="btn btn-sm btn-link"
-                    onClick={row.getToggleExpandedHandler()}
-                    aria-label={row.getIsExpanded() ? "Collapse" : "Expand"}>
-                    {row.getIsExpanded() ? '▼' : '▶'}
-                </button>
-            );
-        },
-        size: 32,
-    },
-    { header: 'Name', accessorKey: 'name', cell: ChannelNameCell },
-    { header: 'Rev Δ', accessorKey: ';' },
+    { header: 'Name', accessorKey: 'name', cell: ChannelNameCell, size: 500 },
+    { header: 'Rev Δ', accessorKey: 'deployedRevisionDelta', cell: RevisionCountCell },
     {
         header: 'Last Deployed',
         accessorKey: 'deployedDate',
@@ -113,7 +134,7 @@ export function DashboardList() {
         getCoreRowModel: getCoreRowModel(),
         getExpandedRowModel: getExpandedRowModel(),
         getSortedRowModel: getSortedRowModel(),
-        getSubRows: (row) => row.children,
+        getSubRows: (row) => "children" in row ? row.children : undefined,
     });
 
     return <div className={`card p-2 ${css.dashboardListCard}`}>
@@ -135,7 +156,7 @@ export function DashboardList() {
                 <tbody>
                     {table.getRowModel().rows.map(row => <tr key={row.id}>
                         {row.getVisibleCells().map(cell => (
-                            <td key={cell.id} style={cell.column.id === 'expander' ? { paddingLeft: `${row.depth * 16}px` } : undefined}>
+                            <td key={cell.id} data-column={cell.column.id}>
                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
                             </td>
                         ))}
