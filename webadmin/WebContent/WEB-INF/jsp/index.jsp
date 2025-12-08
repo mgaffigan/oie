@@ -115,7 +115,7 @@
             </div>
         </div>
         <div id="smallSubPage">
-        	<p>&copy; 2025 Innovar Healthcare | OIE</p>
+        	<p>&copy; 2025 Open Integration Engine | OIE</p>
         </div>
 
         <script type="text/javascript">
