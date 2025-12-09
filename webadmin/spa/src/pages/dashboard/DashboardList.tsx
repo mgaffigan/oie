@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useReactTable, getCoreRowModel, getExpandedRowModel, flexRender, type ColumnDef, type Row, getSortedRowModel } from "@tanstack/react-table";
 import { getDashboardData, type DashboardRowModel, type ChannelStateOrMixed } from "./DashboardData";
 import { type FilterPreferences, type TagDisplayMode, DASHBOARD_PREFS_KEY } from "./DashboardPrefs";
@@ -9,7 +9,7 @@ import serverDatabaseIcon from '../../assets/icons/server_database.png';
 import serverIcon from '../../assets/icons/server.png';
 import { usePreferences } from "../../services/Preferences";
 import { useSession } from "../../services/Session";
-import type { ReactNode } from "react";
+import { useMemo, type ReactNode } from "react";
 
 export const CHANNEL_LIST_QUERY_KEY = 'channelList';
 
@@ -26,7 +26,7 @@ function getRowPrefixes(row: Row<DashboardRowModel>, inverseDepth = 0): Array<Re
         ? (isLast ? 'last-child' : 'intermediate-child')
         : (isLast ? 'blank' : 'continue');
 
-    return [...parentPrefixes, <div className={css.treePrefixSymbol} data-symbol-type={thisPrefix}></div>];
+    return [...parentPrefixes, <div key={inverseDepth} className={css.treePrefixSymbol} data-symbol-type={thisPrefix}></div>];
 }
 
 function ChannelNameCell({ row }: { row: Row<DashboardRowModel> }) {
@@ -103,6 +103,10 @@ const DashboardColumns: ColumnDef<DashboardRowModel>[] = [
     { header: 'Errored', accessorKey: 'statistics.ERROR' },
 ];
 
+function getChildRows(row: DashboardRowModel) {
+    return "children" in row ? row.children : undefined;
+}
+
 export function DashboardList() {
     const sess = useSession();
     const [prefs, setPrefs] = usePreferences<FilterPreferences>(DASHBOARD_PREFS_KEY, () => ({
@@ -117,6 +121,7 @@ export function DashboardList() {
         queryKey: [CHANNEL_LIST_QUERY_KEY, prefs.textFilter, prefs.useGroups, prefs.statsMode, refreshIntervalSeconds],
         queryFn: () => getDashboardData(prefs),
         refetchInterval: refreshIntervalSeconds * 1000,
+        placeholderData: keepPreviousData,
     });
 
     const toggleTagDisplayMode = (button: TagDisplayMode) => {
@@ -127,14 +132,14 @@ export function DashboardList() {
         }
     };
 
-    const rows: DashboardRowModel[] = dashboard?.groups ?? [];
+    const rows = useMemo<DashboardRowModel[]>(() => dashboard?.groups ?? [], [dashboard]);
     const table = useReactTable({
         data: rows,
         columns: DashboardColumns,
         getCoreRowModel: getCoreRowModel(),
         getExpandedRowModel: getExpandedRowModel(),
         getSortedRowModel: getSortedRowModel(),
-        getSubRows: (row) => "children" in row ? row.children : undefined,
+        getSubRows: getChildRows,
     });
 
     return <div className={`card p-2 ${css.dashboardListCard}`}>
