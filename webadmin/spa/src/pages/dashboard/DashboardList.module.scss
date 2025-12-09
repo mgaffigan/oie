@@ -43,6 +43,7 @@
 
 .expanderButton {
     position: relative;
+    top: -0.15rem;
     /* Emulating a Windows / Java +/- expander style */
     display: inline-block;
     width: 11px;
@@ -51,7 +52,7 @@
     border: 1px solid #666;
     background-color: #f0f0f0;
     font-size: 8px;
-    line-height: 6px;
+    line-height: 8px;
     text-align: center;
     z-index: 10;
 }
@@ -64,6 +65,7 @@
 }
 
 .channelNameCell {
+    display: flex;
 }
 
 .treePrefix, .channelNameText {
@@ -71,37 +73,43 @@
 }
 
 .channelNameText {
-    margin-left: 4px;
+    margin-left: 0.4rem;
+}
+
+.channelIcon {
+    position: relative;
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    margin-left: 0.2rem;
+    z-index: 10;
 }
 
 .treePrefixSymbol {
     position: relative;
-    top: -1.1rem;
+    top: -1.25rem;
     left: 0.4rem;
     display: inline-block;
     width: 1rem;
     height: 2.1rem;
+    margin-left: 16px;
     margin-bottom: -1rem;
     z-index: 5;
 
+    /*
     &[data-symbol-type="blank"] {
-        /* No additional styling needed for blank */
+        No additional styling needed for blank
     }
+    */
 
     &[data-symbol-type="continue"] {
         /* Vertical line to indicate continuation */
         border-left: 1px dotted #666;
     }
 
-    &[data-symbol-type="last-child"] {
+    &[data-symbol-type="last-child"], &[data-symbol-type="intermediate-child"] {
         /* └ style drawing */
         border-bottom: 1px dotted #666;
         border-left: 1px dotted #666;
-    }
-
-    &[data-symbol-type="intermediate-child"] {
-        /* ├ style drawing */
-        border-left: 1px dotted #666;
-        border-bottom: 1px dotted #666;
     }
 }

@@ -42,6 +42,7 @@ function ChannelNameCell({ row }: { row: Row<DashboardRowModel> }) {
                 aria-label={row.getIsExpanded() ? "Collapse" : "Expand"}>
                 {row.getIsExpanded() ? '-' : '+'}
             </button>}
+            {row.getCanExpand() && <img className={css.channelIcon} src={!row.getParentRow() ? serverDatabaseIcon : serverIcon} alt="icon" />}
         </div>
         <div className={css.channelNameText}>
             {row.original.name}
