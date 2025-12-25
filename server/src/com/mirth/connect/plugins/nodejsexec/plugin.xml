@@ -1,0 +1,14 @@
+<pluginMetaData path="nodejsexec">
+	<name>Node.js Execution</name>
+	<author>OIE Contributors</author>
+	<pluginVersion>@mirthversion</pluginVersion>
+	<mirthVersion>4.5.2</mirthVersion>
+	<url>https://openintegrationengine.org</url>
+	<description>This plugin provides a Node.js rule-type for Open Integration Engine filters and transformers</description>
+	<clientClasses>
+		<string>com.mirth.connect.plugins.nodejsexec.NodeJsRulePlugin</string>
+		<string>com.mirth.connect.plugins.nodejsexec.NodeJsStepPlugin</string>
+	</clientClasses>
+	<library type="CLIENT" path="nodejsexec-client.jar" />
+	<library type="SHARED" path="nodejsexec-shared.jar" />
+</pluginMetaData>

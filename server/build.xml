@@ -50,6 +50,7 @@
 		<property name="plugins.imageviewer" value="${extensions}/imageviewer" />
 		<property name="plugins.javascriptrule" value="${extensions}/javascriptrule" />
 		<property name="plugins.javascriptstep" value="${extensions}/javascriptstep" />
+		<property name="plugins.nodejsexec" value="${extensions}/nodejsexec" />
 		<property name="plugins.mapper" value="${extensions}/mapper" />
 		<property name="plugins.messagebuilder" value="${extensions}/messagebuilder" />
 		<property name="plugins.datapruner" value="${extensions}/datapruner" />
@@ -772,6 +773,20 @@
 		</copy>
 		<jar destfile="${plugins.javascriptstep}/javascriptstep-shared.jar" basedir="${classes}">
 			<include name="com/mirth/connect/plugins/javascriptstep/JavaScriptStep.class" />
+		</jar>
+
+		<!-- plugins.nodejsexec -->
+		<mkdir dir="${plugins.nodejsexec}" />
+		<copy todir="${plugins.nodejsexec}">
+			<fileset dir="${src}/com/mirth/connect/plugins/nodejsexec">
+				<include name="*.xml" />
+			</fileset>
+		</copy>
+		<copy todir="${plugins.nodejsexec}/lib" failonerror="false" quiet="true">
+			<fileset dir="${lib.extensions}/nodejsexec" />
+		</copy>
+		<jar destfile="${plugins.nodejsexec}/nodejsexec-shared.jar" basedir="${classes}">
+			<include name="com/mirth/connect/plugins/nodejsexec/**/*.class" />
 		</jar>
 
 		<!-- plugins.mapper -->
