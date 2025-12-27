@@ -1,0 +1,31 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build OIE",
+      "type": "shell",
+      "command": "ant -f server/mirth-build.xml build -DdisableSigning=true -DdisableTests=true",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Run OIE Server",
+      "type": "shell",
+      "command": "./server/setup/oieserver",
+      "problemMatcher": [],
+      "dependsOn": ["Build OIE"],
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    }
+  ]
+}
