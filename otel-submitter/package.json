@@ -1,0 +1,25 @@
+{
+  "name": "otel-submitter",
+  "version": "1.0.0",
+  "description": "OpenTelemetry span exporter for Mirth Connect/Open Integration Engine",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/sdk-trace-base": "^2.2.0",
+    "@opentelemetry/sdk-trace-node": "^2.2.0",
+    "@opentelemetry/resources": "^2.2.0",
+    "@opentelemetry/semantic-conventions": "^1.38.0",
+    "@opentelemetry/exporter-trace-otlp-grpc": "^0.208.0",
+    "dotenv": "^17.2.3",
+    "fast-xml-parser": "^5.3.3",
+    "node-fetch": "^3.3.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

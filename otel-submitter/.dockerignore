@@ -1,0 +1,17 @@
+node_modules
+npm-debug.log
+.env
+.env.*
+.poll-state.json
+.git
+.gitignore
+*.md
+.DS_Store
+Dockerfile
+.dockerignore
+logs
+*.log
+coverage
+.nyc_output
+.idea
+.vscode
