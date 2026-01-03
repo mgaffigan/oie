@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<project name="datatype-dicom" basedir="." default="build">
+
+	<!-- Load shared plugin properties -->
+	<dirname property="plugin.dir" file="${ant.file.datatype-dicom}"/>
+	<property file="${plugin.dir}/../build.properties" />
+
+	<!-- Local properties -->
+	<property name="classes" value="${basedir}/classes" />
+	<property name="src.plugin" value="${server.src}/com/mirth/connect/plugins/datatypes/dicom" />
+	<property name="lib" value="${server.lib.extensions}/datatypes/dicom" />
+	<property name="dist" value="${server.extensions}/datatype-dicom" />
+
+	<path id="classpath">
+		<fileset dir="${server.lib}" includes="**/*.jar" />
+		<pathelement location="${server.classes}" />
+	</path>
+
+	<target name="clean">
+		<delete dir="${classes}" />
+	</target>
+
+	<target name="init">
+		<mkdir dir="${classes}" />
+		<mkdir dir="${dist}" />
+	</target>
+
+	<target name="compile" depends="init">
+		<javac srcdir="${server.src}" destdir="${classes}" debug="on" includeAntRuntime="false">
+			<include name="com/mirth/connect/plugins/datatypes/dicom/**" />
+			<classpath refid="classpath" />
+		</javac>
+	</target>
+
+	<target name="build" depends="compile">
+		<copy todir="${dist}">
+			<fileset dir="${src.plugin}">
+				<include name="*.xml" />
+			</fileset>
+		</copy>
+		<copy todir="${dist}/lib" failonerror="false" quiet="true">
+			<fileset dir="${lib}" />
+		</copy>
+		<jar destfile="${dist}/datatype-dicom-shared.jar" basedir="${classes}">
+			<include name="com/mirth/connect/plugins/datatypes/dicom/**" />
+			<exclude name="com/mirth/connect/plugins/datatypes/dicom/DICOMDataTypeServerPlugin.class" />
+		</jar>
+		<jar destfile="${dist}/datatype-dicom-server.jar" basedir="${classes}">
+			<include name="com/mirth/connect/plugins/datatypes/dicom/DICOMDataTypeServerPlugin.class" />
+		</jar>
+	</target>
+
+	<target name="create-zip">
+		<zip destfile="${server.dist.extensions}/datatype-dicom-${version}.zip" basedir="${server.extensions}" includes="datatype-dicom/**/*" />
+	</target>
+
+</project>

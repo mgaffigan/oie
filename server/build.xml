@@ -20,7 +20,6 @@
 		<!-- connectors -->
 		<property name="connectors.jms" value="${extensions}/jms" />
 		<property name="connectors.jdbc" value="${extensions}/jdbc" />
-		<property name="connectors.dicom" value="${extensions}/dicom" />
 		<property name="connectors.http" value="${extensions}/http" />
 		<property name="connectors.doc" value="${extensions}/doc" />
 		<property name="connectors.smtp" value="${extensions}/smtp" />
@@ -32,7 +31,6 @@
 
 		<!-- datatypes -->
 		<property name="plugins.datatype-delimited" value="${extensions}/datatype-delimited" />
-		<property name="plugins.datatype-dicom" value="${extensions}/datatype-dicom" />
 		<property name="plugins.datatype-edi" value="${extensions}/datatype-edi" />
 		<property name="plugins.datatype-hl7v2" value="${extensions}/datatype-hl7v2" />
 		<property name="plugins.datatype-hl7v3" value="${extensions}/datatype-hl7v3" />
@@ -45,7 +43,6 @@
 		<property name="plugins.directoryresource" value="${extensions}/directoryresource" />
 		<property name="plugins.dashboardstatus" value="${extensions}/dashboardstatus" />
 		<property name="plugins.destinationsetfilter" value="${extensions}/destinationsetfilter" />
-		<property name="plugins.dicomviewer" value="${extensions}/dicomviewer" />
 		<property name="plugins.httpauth" value="${extensions}/httpauth" />
 		<property name="plugins.imageviewer" value="${extensions}/imageviewer" />
 		<property name="plugins.javascriptrule" value="${extensions}/javascriptrule" />
@@ -74,6 +71,9 @@
 		<delete dir="${dist}" />
 		<delete dir="${build}" />
 		<delete dir="${docs.javadocs}" />
+
+		<!-- Clean external plugins -->
+		<ant antfile="${basedir}/../plugins/build.xml" target="clean" inheritAll="false" />
 	</target>
 
 	<target name="compile" depends="clean, init, create-javadocs">
@@ -107,13 +107,12 @@
 			<!-- A: No idea, but if a normal directory or ** is used, it skips BasicModeProvider.java -->
 			<include name="com/mirth/connect/connectors/**/*.java" />
 			<include name="com/mirth/connect/plugins/*/**/*.java" />
-			<include name="com/mirth/connect/server/util/DICOMMessageUtil.java" />
-			<include name="com/mirth/connect/server/userutil/DICOMUtil.java" />
-			<include name="com/mirth/connect/model/converters/DICOMConverter.java" />
-			<include name="com/mirth/connect/server/attachments/dicom/*.java" />
-			<include name="org/dcm4che2/" />
 			<include name="com/mirth/connect/server/userutil/HTTPUtil.java" />
 			<include name="com/mirth/connect/server/userutil/DatabaseConnectionFactory.java" />
+			<!-- Exclude plugins that have their own build -->
+			<exclude name="com/mirth/connect/connectors/dimse/" />
+			<exclude name="com/mirth/connect/plugins/datatypes/dicom/" />
+			<!-- dcm4che is built by dicom, as well -->
 		</javac>
 
 		<!-- create version.properties file -->
@@ -163,38 +162,8 @@
 
 	<target name="create-connectors" depends="create-client-core">
 
-		<!-- connectors.dicom -->
-		<mkdir dir="${connectors.dicom}" />
-		<copy todir="${connectors.dicom}">
-			<fileset dir="${src}/com/mirth/connect/connectors/dimse">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${connectors.dicom}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/dimse" />
-		</copy>
-		<jar destfile="${connectors.dicom}/dicom-shared.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/connectors/dimse/DICOMReceiverProperties.class" />
-			<include name="com/mirth/connect/connectors/dimse/DICOMDispatcherProperties.class" />
-			<include name="com/mirth/connect/model/converters/DICOMConverter.class" />
-		</jar>
-		<jar destfile="${connectors.dicom}/dicom-server.jar">
-			<fileset dir="${classes.plugins}">
-				<include name="com/mirth/connect/connectors/dimse/**" />
-				<include name="org/dcm4che2/**" />
-				<include name="com/mirth/connect/server/userutil/DICOMUtil.class" />
-				<include name="com/mirth/connect/server/util/DICOMMessageUtil.class" />
-				<include name="com/mirth/connect/server/attachments/dicom/DICOMAttachmentHandler.class" />
-				<include name="com/mirth/connect/server/attachments/dicom/DICOMAttachmentHandlerProvider.class" />
-				<exclude name="com/mirth/connect/connectors/dimse/DICOMReceiverProperties.class" />
-				<exclude name="com/mirth/connect/connectors/dimse/DICOMDispatcherProperties.class" />
-				<exclude name="com/mirth/connect/model/converters/DICOMConverter.class" />
-			</fileset>
-		</jar>
-		<mkdir dir="${connectors.dicom}/src" />
-		<jar destfile="${connectors.dicom}/src/dicom-userutil-sources.jar" basedir="${src}">
-			<include name="com/mirth/connect/server/userutil/DICOMUtil.java" />
-		</jar>
+		<!-- Build all external plugins -->
+		<ant antfile="${basedir}/../plugins/build.xml" target="build" inheritAll="false" />
 
 		<!-- connectors.doc -->
 		<mkdir dir="${connectors.doc}" />
@@ -507,25 +476,6 @@
 			<include name="com/mirth/connect/plugins/datatypes/delimited/DelimitedBatchReader.class" />
 		</jar>
 		
-		<!-- plugins.datatype-dicom -->
-		<mkdir dir="${plugins.datatype-dicom}" />
-		<copy todir="${plugins.datatype-dicom}">
-			<fileset dir="${src}/com/mirth/connect/plugins/datatypes/dicom">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${plugins.datatype-dicom}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/datatypes/dicom" />
-		</copy>
-		<jar destfile="${plugins.datatype-dicom}/datatype-dicom-shared.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/datatypes/dicom/**" />
-			<exclude name="com/mirth/connect/plugins/datatypes/dicom/DICOMDataTypeServerPlugin.class" />
-		</jar>
-		<jar destfile="${plugins.datatype-dicom}/datatype-dicom-server.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/datatypes/dicom/DICOMDataTypeServerPlugin.class" />
-		</jar>
-		
-		
 		<!-- plugins.datatype-edi -->
 		<mkdir dir="${plugins.datatype-edi}" />
 		<copy todir="${plugins.datatype-edi}">
@@ -713,17 +663,6 @@
 			<include name="com/mirth/connect/plugins/destinationsetfilter/DestinationSetFilterStep$Behavior.class" />
 			<include name="com/mirth/connect/plugins/destinationsetfilter/DestinationSetFilterStep$Condition.class" />
 		</jar>
-
-		<!-- plugins.dicomviewer -->
-		<mkdir dir="${plugins.dicomviewer}" />
-		<copy todir="${plugins.dicomviewer}">
-			<fileset dir="${src}/com/mirth/connect/plugins/dicomviewer">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${plugins.dicomviewer}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/dicomviewer" />
-		</copy>
 		
 		<!-- plugins.globalmapviewer -->
 		<mkdir dir="${plugins.globalmapviewer}" />
@@ -1205,9 +1144,10 @@
 		<delete dir="${dist.extensions}" />
 		<mkdir dir="${dist.extensions}" />
 
+		<ant antfile="${basedir}/../plugins/build.xml" target="create-extension-zips" inheritAll="false" />
+
 		<zip destfile="${dist.extensions}/jms-${version}.zip" basedir="${extensions}" includes="jms/**/*" />
 		<zip destfile="${dist.extensions}/jdbc-${version}.zip" basedir="${extensions}" includes="jdbc/**/*" />
-		<zip destfile="${dist.extensions}/dicom-${version}.zip" basedir="${extensions}" includes="dicom/**/*" />
 		<zip destfile="${dist.extensions}/http-${version}.zip" basedir="${extensions}" includes="http/**/*" />
 		<zip destfile="${dist.extensions}/doc-${version}.zip" basedir="${extensions}" includes="doc/**/*" />
 		<zip destfile="${dist.extensions}/smtp-${version}.zip" basedir="${extensions}" includes="smtp/**/*" />
@@ -1218,7 +1158,6 @@
 		<zip destfile="${dist.extensions}/vm-${version}.zip" basedir="${extensions}" includes="vm/**/*" />
 		
 		<zip destfile="${dist.extensions}/datatype-delimited-${version}.zip" basedir="${extensions}" includes="datatype-delimited/**/*" />
-		<zip destfile="${dist.extensions}/datatype-dicom-${version}.zip" basedir="${extensions}" includes="datatype-dicom/**/*" />
 		<zip destfile="${dist.extensions}/datatype-edi-${version}.zip" basedir="${extensions}" includes="datatype-edi/**/*" />
 		<zip destfile="${dist.extensions}/datatype-hl7v2-${version}.zip" basedir="${extensions}" includes="datatype-hl7v2/**/*" />
 		<zip destfile="${dist.extensions}/datatype-hl7v3-${version}.zip" basedir="${extensions}" includes="datatype-hl7v3/**/*" />
@@ -1238,7 +1177,6 @@
 		<zip destfile="${dist.extensions}/scriptfilestep-${version}.zip" basedir="${extensions}" includes="scriptfilestep/**/*" />
 		<zip destfile="${dist.extensions}/rulebuilder-${version}.zip" basedir="${extensions}" includes="rulebuilder/**/*" />
 		<zip destfile="${dist.extensions}/javascriptrule-${version}.zip" basedir="${extensions}" includes="javascriptrule/**/*" />
-		<zip destfile="${dist.extensions}/dicomviewer-${version}.zip" basedir="${extensions}" includes="dicomviewer/**/*" />
 		<zip destfile="${dist.extensions}/pdfviewer-${version}.zip" basedir="${extensions}" includes="pdfviewer/**/*" />
 		<zip destfile="${dist.extensions}/textviewer-${version}.zip" basedir="${extensions}" includes="textviewer/**/*" />
 		<zip destfile="${dist.extensions}/httpauth-${version}.zip" basedir="${extensions}" includes="httpauth/**/*" />

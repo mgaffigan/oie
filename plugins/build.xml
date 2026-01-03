@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<project name="plugins" basedir="." default="build">
+
+	<!-- 
+		Aggregate build file for all plugins.
+		Each subdirectory with a build.xml is considered a plugin.
+	-->
+
+	<!-- Get absolute path to this directory -->
+	<dirname property="plugins.dir" file="${ant.file.plugins}"/>
+
+	<!-- Find all plugin build files (excluding this one) -->
+	<fileset id="plugin.buildfiles" dir="${plugins.dir}">
+		<include name="*/build.xml" />
+	</fileset>
+
+	<target name="clean">
+		<subant target="clean" inheritall="false">
+			<fileset refid="plugin.buildfiles" />
+		</subant>
+	</target>
+
+	<target name="build">
+		<subant target="build" inheritall="false">
+			<fileset refid="plugin.buildfiles" />
+		</subant>
+	</target>
+
+	<target name="create-extension-zips">
+		<subant target="create-zip" inheritall="false">
+			<fileset refid="plugin.buildfiles" />
+		</subant>
+	</target>
+
+</project>
