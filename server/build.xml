@@ -20,13 +20,11 @@
 		<!-- connectors -->
 		<property name="connectors.jms" value="${extensions}/jms" />
 		<property name="connectors.jdbc" value="${extensions}/jdbc" />
-		<property name="connectors.http" value="${extensions}/http" />
 		<property name="connectors.doc" value="${extensions}/doc" />
 		<property name="connectors.smtp" value="${extensions}/smtp" />
 		<property name="connectors.tcp" value="${extensions}/tcp" />
 		<property name="connectors.file" value="${extensions}/file" />
 		<property name="connectors.js" value="${extensions}/js" />
-		<property name="connectors.ws" value="${extensions}/ws" />
 		<property name="connectors.vm" value="${extensions}/vm" />
 
 		<!-- datatypes -->
@@ -43,7 +41,6 @@
 		<property name="plugins.directoryresource" value="${extensions}/directoryresource" />
 		<property name="plugins.dashboardstatus" value="${extensions}/dashboardstatus" />
 		<property name="plugins.destinationsetfilter" value="${extensions}/destinationsetfilter" />
-		<property name="plugins.httpauth" value="${extensions}/httpauth" />
 		<property name="plugins.imageviewer" value="${extensions}/imageviewer" />
 		<property name="plugins.javascriptrule" value="${extensions}/javascriptrule" />
 		<property name="plugins.javascriptstep" value="${extensions}/javascriptstep" />
@@ -113,6 +110,9 @@
 			<exclude name="com/mirth/connect/connectors/dimse/" />
 			<exclude name="com/mirth/connect/plugins/datatypes/dicom/" />
 			<!-- dcm4che is built by dicom, as well -->
+			<exclude name="com/mirth/connect/connectors/http/" />
+			<exclude name="com/mirth/connect/plugins/httpauth/" />
+			<exclude name="com/mirth/connect/connectors/ws/" />
 		</javac>
 
 		<!-- create version.properties file -->
@@ -227,39 +227,6 @@
 				<exclude name="com/mirth/connect/connectors/file/FileAction.class" />
 				<exclude name="com/mirth/connect/connectors/file/FileConnectorServletInterface.class" />
 			</fileset>
-		</jar>
-
-		<!-- connectors.http -->
-		<mkdir dir="${connectors.http}" />
-		<copy todir="${connectors.http}">
-			<fileset dir="${src}/com/mirth/connect/connectors/http">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${connectors.http}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/http" />
-		</copy>
-		<jar destfile="${connectors.http}/http-shared.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/connectors/http/HttpReceiverProperties.class" />
-			<include name="com/mirth/connect/connectors/http/HttpDispatcherProperties.class" />
-			<include name="com/mirth/connect/connectors/http/HttpStaticResource.class" />
-			<include name="com/mirth/connect/connectors/http/HttpStaticResource$ResourceType.class" />
-			<include name="com/mirth/connect/connectors/http/HttpConnectorServletInterface.class" />
-		</jar>
-		<jar destfile="${connectors.http}/http-server.jar">
-			<fileset dir="${classes.plugins}">
-				<include name="com/mirth/connect/connectors/http/**" />
-				<include name="com/mirth/connect/server/userutil/HTTPUtil.class" />
-				<exclude name="com/mirth/connect/connectors/http/HttpReceiverProperties.class" />
-				<exclude name="com/mirth/connect/connectors/http/HttpDispatcherProperties.class" />
-				<exclude name="com/mirth/connect/connectors/http/HttpStaticResource.class" />
-				<exclude name="com/mirth/connect/connectors/http/HttpStaticResource$ResourceType.class" />
-				<exclude name="com/mirth/connect/connectors/http/HttpConnectorServletInterface.class" />
-			</fileset>
-		</jar>
-		<mkdir dir="${connectors.http}/src" />
-		<jar destfile="${connectors.http}/src/http-userutil-sources.jar" basedir="${src}">
-			<include name="com/mirth/connect/server/userutil/HTTPUtil.java" />
 		</jar>
 
 		<!-- connectors.jdbc -->
@@ -412,38 +379,6 @@
 				<include name="com/mirth/connect/connectors/vm/**" />
 				<exclude name="com/mirth/connect/connectors/vm/VmReceiverProperties.class" />
 				<exclude name="com/mirth/connect/connectors/vm/VmDispatcherProperties.class" />
-			</fileset>
-		</jar>
-
-		<!-- connectors.ws -->
-		<mkdir dir="${connectors.ws}" />
-		<copy todir="${connectors.ws}">
-			<fileset dir="${src}/com/mirth/connect/connectors/ws">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${connectors.ws}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/ws" />
-		</copy>
-		<jar destfile="${connectors.ws}/ws-shared.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/connectors/ws/Binding.class" />
-			<include name="com/mirth/connect/connectors/ws/WebServiceReceiverProperties.class" />
-			<include name="com/mirth/connect/connectors/ws/WebServiceDispatcherProperties.class" />
-			<include name="com/mirth/connect/connectors/ws/DefinitionServiceMap.class" />
-			<include name="com/mirth/connect/connectors/ws/DefinitionServiceMap$DefinitionPortMap.class" />
-			<include name="com/mirth/connect/connectors/ws/DefinitionServiceMap$PortInformation.class" />
-			<include name="com/mirth/connect/connectors/ws/WebServiceConnectorServletInterface.class" />
-		</jar>
-		<jar destfile="${connectors.ws}/ws-server.jar">
-			<fileset dir="${classes.plugins}">
-				<include name="com/mirth/connect/connectors/ws/**" />
-				<exclude name="com/mirth/connect/connectors/ws/Binding.class" />
-				<exclude name="com/mirth/connect/connectors/ws/WebServiceReceiverProperties.class" />
-				<exclude name="com/mirth/connect/connectors/ws/WebServiceDispatcherProperties.class" />
-				<exclude name="com/mirth/connect/connectors/ws/DefinitionServiceMap.class" />
-				<exclude name="com/mirth/connect/connectors/ws/DefinitionServiceMap$DefinitionPortMap.class" />
-				<exclude name="com/mirth/connect/connectors/ws/DefinitionServiceMap$PortInformation.class" />
-				<exclude name="com/mirth/connect/connectors/ws/WebServiceConnectorServletInterface.class" />
 			</fileset>
 		</jar>
 
@@ -680,47 +615,6 @@
 		<jar destfile="${plugins.globalmapviewer}/globalmapviewer-server.jar" basedir="${classes.plugins}">
 			<include name="com/mirth/connect/plugins/globalmapviewer/**" />
 			<exclude name="com/mirth/connect/plugins/globalmapviewer/GlobalMapServletInterface.class" />
-		</jar>
-		
-		<!-- plugins.httpauth -->
-		<mkdir dir="${plugins.httpauth}" />
-		<copy todir="${plugins.httpauth}">
-			<fileset dir="${src}/com/mirth/connect/plugins/httpauth">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${plugins.httpauth}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/httpauth" />
-		</copy>
-		<jar destfile="${plugins.httpauth}/httpauth-shared.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/httpauth/HttpAuthConnectorPluginProperties.class" />
-			<include name="com/mirth/connect/plugins/httpauth/HttpAuthConnectorPluginProperties$AuthType.class" />
-			<include name="com/mirth/connect/plugins/httpauth/NoneHttpAuthProperties.class" />
-			<include name="com/mirth/connect/plugins/httpauth/basic/BasicHttpAuthProperties.class" />
-			<include name="com/mirth/connect/plugins/httpauth/digest/DigestHttpAuthProperties.class" />
-			<include name="com/mirth/connect/plugins/httpauth/digest/DigestHttpAuthProperties$Algorithm.class" />
-			<include name="com/mirth/connect/plugins/httpauth/digest/DigestHttpAuthProperties$QOPMode.class" />				
-			<include name="com/mirth/connect/plugins/httpauth/custom/CustomHttpAuthProperties.class" />
-			<include name="com/mirth/connect/plugins/httpauth/javascript/JavaScriptHttpAuthProperties.class" />
-			<include name="com/mirth/connect/plugins/httpauth/oauth2/OAuth2HttpAuthProperties.class" />
-			<include name="com/mirth/connect/plugins/httpauth/oauth2/OAuth2HttpAuthProperties$TokenLocation.class" />
-		</jar>
-		<jar destfile="${plugins.httpauth}/httpauth-server.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/httpauth/**" />
-			<exclude name="com/mirth/connect/plugins/httpauth/HttpAuthConnectorPluginProperties.class" />
-			<exclude name="com/mirth/connect/plugins/httpauth/HttpAuthConnectorPluginProperties$AuthType.class" />
-			<exclude name="com/mirth/connect/plugins/httpauth/NoneHttpAuthProperties.class" />
-			<exclude name="com/mirth/connect/plugins/httpauth/basic/BasicHttpAuthProperties.class" />
-			<exclude name="com/mirth/connect/plugins/httpauth/digest/DigestHttpAuthProperties.class" />
-			<exclude name="com/mirth/connect/plugins/httpauth/digest/DigestHttpAuthProperties$Algorithm.class" />
-			<exclude name="com/mirth/connect/plugins/httpauth/digest/DigestHttpAuthProperties$QOPMode.class" />
-			<exclude name="com/mirth/connect/plugins/httpauth/custom/CustomHttpAuthProperties.class" />
-			<exclude name="com/mirth/connect/plugins/httpauth/javascript/JavaScriptHttpAuthProperties.class" />
-			<exclude name="com/mirth/connect/plugins/httpauth/oauth2/OAuth2HttpAuthProperties.class" />
-			<exclude name="com/mirth/connect/plugins/httpauth/oauth2/OAuth2HttpAuthProperties$TokenLocation.class" />
-		</jar>
-		<jar destfile="${plugins.httpauth}/src/httpauth-userutil-sources.jar" basedir="${src}">
-			<include name="com/mirth/connect/plugins/httpauth/userutil/**" />
 		</jar>
 
 		<!-- plugins.imageviewer -->
@@ -1148,13 +1042,11 @@
 
 		<zip destfile="${dist.extensions}/jms-${version}.zip" basedir="${extensions}" includes="jms/**/*" />
 		<zip destfile="${dist.extensions}/jdbc-${version}.zip" basedir="${extensions}" includes="jdbc/**/*" />
-		<zip destfile="${dist.extensions}/http-${version}.zip" basedir="${extensions}" includes="http/**/*" />
 		<zip destfile="${dist.extensions}/doc-${version}.zip" basedir="${extensions}" includes="doc/**/*" />
 		<zip destfile="${dist.extensions}/smtp-${version}.zip" basedir="${extensions}" includes="smtp/**/*" />
 		<zip destfile="${dist.extensions}/tcp-${version}.zip" basedir="${extensions}" includes="tcp/**/*" />
 		<zip destfile="${dist.extensions}/file-${version}.zip" basedir="${extensions}" includes="file/**/*" />
 		<zip destfile="${dist.extensions}/js-${version}.zip" basedir="${extensions}" includes="js/**/*" />
-		<zip destfile="${dist.extensions}/ws-${version}.zip" basedir="${extensions}" includes="ws/**/*" />
 		<zip destfile="${dist.extensions}/vm-${version}.zip" basedir="${extensions}" includes="vm/**/*" />
 		
 		<zip destfile="${dist.extensions}/datatype-delimited-${version}.zip" basedir="${extensions}" includes="datatype-delimited/**/*" />
@@ -1179,7 +1071,6 @@
 		<zip destfile="${dist.extensions}/javascriptrule-${version}.zip" basedir="${extensions}" includes="javascriptrule/**/*" />
 		<zip destfile="${dist.extensions}/pdfviewer-${version}.zip" basedir="${extensions}" includes="pdfviewer/**/*" />
 		<zip destfile="${dist.extensions}/textviewer-${version}.zip" basedir="${extensions}" includes="textviewer/**/*" />
-		<zip destfile="${dist.extensions}/httpauth-${version}.zip" basedir="${extensions}" includes="httpauth/**/*" />
 		<zip destfile="${dist.extensions}/imageviewer-${version}.zip" basedir="${extensions}" includes="imageviewer/**/*" />
 		<zip destfile="${dist.extensions}/globalmapviewer-${version}.zip" basedir="${extensions}" includes="globalmapviewer/**/*" />
 	</target>
