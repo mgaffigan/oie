@@ -10,6 +10,7 @@
 	<sharedClassName>com.mirth.connect.connectors.http.HttpReceiverProperties</sharedClassName>
 	<templateClassName>com.mirth.connect.connectors.http.HttpListenerCodeTemplatePlugin</templateClassName>
 	<library type="CLIENT" path="http-client.jar" />
+	<library type="CLIENT" path="src/http-userutil-sources.jar" />
 	<library type="SHARED" path="http-shared.jar" />
 	<library type="SERVER" path="http-server.jar" />
 	<transformers></transformers>

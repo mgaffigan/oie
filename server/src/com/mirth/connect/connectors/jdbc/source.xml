@@ -9,6 +9,7 @@
 	<serverClassName>com.mirth.connect.connectors.jdbc.DatabaseReceiver</serverClassName>
 	<sharedClassName>com.mirth.connect.connectors.jdbc.DatabaseReceiverProperties</sharedClassName>
 	<library type="CLIENT" path="jdbc-client.jar" />
+	<library type="CLIENT" path="src/jdbc-userutil-sources.jar" />
 	<library type="SHARED" path="jdbc-shared.jar" />
 	<library type="SERVER" path="jdbc-server.jar" />
 	<apiProvider type="SERVLET_INTERFACE" name="com.mirth.connect.connectors.jdbc.DatabaseConnectorServletInterface"/>

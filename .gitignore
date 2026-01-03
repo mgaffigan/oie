@@ -442,6 +442,7 @@ donkey/donkey-test
 /server/mirthdb
 /server/logs
 /server/classes
+/server/classes-plugins
 /server/setup
 /server/bin
 /server/derby.log
