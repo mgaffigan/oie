@@ -20,7 +20,6 @@
 		<!-- connectors -->
 		<property name="connectors.jms" value="${extensions}/jms" />
 		<property name="connectors.doc" value="${extensions}/doc" />
-		<property name="connectors.smtp" value="${extensions}/smtp" />
 		<property name="connectors.tcp" value="${extensions}/tcp" />
 		<property name="connectors.js" value="${extensions}/js" />
 		<property name="connectors.vm" value="${extensions}/vm" />
@@ -105,6 +104,7 @@
 			<exclude name="com/mirth/connect/connectors/dimse/" />
 			<exclude name="com/mirth/connect/connectors/jdbc/" />
 			<exclude name="com/mirth/connect/connectors/file/" />
+			<exclude name="com/mirth/connect/connectors/smtp/" />
 			<exclude name="com/mirth/connect/plugins/datatypes/delimited/" />
 			<exclude name="com/mirth/connect/plugins/datatypes/dicom/" />
 			<exclude name="com/mirth/connect/plugins/datatypes/edi/" />
@@ -236,30 +236,6 @@
 				<include name="com/mirth/connect/connectors/js/**" />
 				<exclude name="com/mirth/connect/connectors/js/JavaScriptReceiverProperties.class" />
 				<exclude name="com/mirth/connect/connectors/js/JavaScriptDispatcherProperties.class" />
-			</fileset>
-		</jar>
-
-		<!-- connectors.smtp -->
-		<mkdir dir="${connectors.smtp}" />
-		<copy todir="${connectors.smtp}">
-			<fileset dir="${src}/com/mirth/connect/connectors/smtp">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${connectors.smtp}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/smtp" />
-		</copy>
-		<jar destfile="${connectors.smtp}/smtp-shared.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/connectors/smtp/SmtpDispatcherProperties.class" />
-			<include name="com/mirth/connect/connectors/smtp/SmtpConnectorServletInterface.class" />
-			<include name="com/mirth/connect/connectors/smtp/Attachment.class" />
-		</jar>
-		<jar destfile="${connectors.smtp}/smtp-server.jar">
-			<fileset dir="${classes.plugins}">
-				<include name="com/mirth/connect/connectors/smtp/**" />
-				<exclude name="com/mirth/connect/connectors/smtp/SmtpDispatcherProperties.class" />
-				<exclude name="com/mirth/connect/connectors/smtp/SmtpConnectorServletInterface.class" />
-				<exclude name="com/mirth/connect/connectors/smtp/Attachment.class" />
 			</fileset>
 		</jar>
 
@@ -907,7 +883,6 @@
 
 		<zip destfile="${dist.extensions}/jms-${version}.zip" basedir="${extensions}" includes="jms/**/*" />
 		<zip destfile="${dist.extensions}/doc-${version}.zip" basedir="${extensions}" includes="doc/**/*" />
-		<zip destfile="${dist.extensions}/smtp-${version}.zip" basedir="${extensions}" includes="smtp/**/*" />
 		<zip destfile="${dist.extensions}/tcp-${version}.zip" basedir="${extensions}" includes="tcp/**/*" />
 		<zip destfile="${dist.extensions}/js-${version}.zip" basedir="${extensions}" includes="js/**/*" />
 		<zip destfile="${dist.extensions}/vm-${version}.zip" basedir="${extensions}" includes="vm/**/*" />
