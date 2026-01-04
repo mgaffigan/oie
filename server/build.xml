@@ -18,7 +18,6 @@
 		</path>
 
 		<!-- connectors -->
-		<property name="connectors.tcp" value="${extensions}/tcp" />
 		<property name="connectors.js" value="${extensions}/js" />
 		<property name="connectors.vm" value="${extensions}/vm" />
 
@@ -100,6 +99,7 @@
 			<!-- Exclude plugins that have their own build -->
 			<exclude name="com/mirth/connect/connectors/dimse/" />
 			<exclude name="com/mirth/connect/connectors/doc/" />
+			<exclude name="com/mirth/connect/connectors/tcp/" />
 			<exclude name="com/mirth/connect/connectors/jdbc/" />
 			<exclude name="com/mirth/connect/connectors/jms/" />
 			<exclude name="com/mirth/connect/connectors/file/" />
@@ -184,30 +184,6 @@
 				<include name="com/mirth/connect/connectors/js/**" />
 				<exclude name="com/mirth/connect/connectors/js/JavaScriptReceiverProperties.class" />
 				<exclude name="com/mirth/connect/connectors/js/JavaScriptDispatcherProperties.class" />
-			</fileset>
-		</jar>
-
-		<!-- connectors.tcp -->
-		<mkdir dir="${connectors.tcp}" />
-		<copy todir="${connectors.tcp}">
-			<fileset dir="${src}/com/mirth/connect/connectors/tcp">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${connectors.tcp}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/tcp" />
-		</copy>
-		<jar destfile="${connectors.tcp}/tcp-shared.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/connectors/tcp/TcpReceiverProperties.class" />
-			<include name="com/mirth/connect/connectors/tcp/TcpDispatcherProperties.class" />
-			<include name="com/mirth/connect/connectors/tcp/TcpConnectorServletInterface.class" />
-		</jar>
-		<jar destfile="${connectors.tcp}/tcp-server.jar">
-			<fileset dir="${classes.plugins}">
-				<include name="com/mirth/connect/connectors/tcp/**" />
-				<exclude name="com/mirth/connect/connectors/tcp/TcpReceiverProperties.class" />
-				<exclude name="com/mirth/connect/connectors/tcp/TcpDispatcherProperties.class" />
-				<exclude name="com/mirth/connect/connectors/tcp/TcpConnectorServletInterface.class" />
 			</fileset>
 		</jar>
 
@@ -811,7 +787,6 @@
 
 		<ant antfile="${basedir}/../plugins/build.xml" target="create-extension-zips" inheritAll="false" />
 
-		<zip destfile="${dist.extensions}/tcp-${version}.zip" basedir="${extensions}" includes="tcp/**/*" />
 		<zip destfile="${dist.extensions}/js-${version}.zip" basedir="${extensions}" includes="js/**/*" />
 		<zip destfile="${dist.extensions}/vm-${version}.zip" basedir="${extensions}" includes="vm/**/*" />
 		
