@@ -17,9 +17,6 @@
 			<fileset dir="${lib}" includes="**/*.jar" />
 		</path>
 
-		<!-- datatypes -->
-		<property name="plugins.datatype-raw" value="${extensions}/datatype-raw" />
-		
 		<!-- plugins -->
 		<property name="plugins.directoryresource" value="${extensions}/directoryresource" />
 		<property name="plugins.dashboardstatus" value="${extensions}/dashboardstatus" />
@@ -107,6 +104,7 @@
 			<exclude name="com/mirth/connect/plugins/datatypes/ncpdp/" />
 			<exclude name="com/mirth/connect/plugins/datatypes/xml/" />
 			<exclude name="com/mirth/connect/plugins/datatypes/json/" />
+			<exclude name="com/mirth/connect/plugins/datatypes/raw/" />
 			<!-- dcm4che is built by dicom, as well -->
 			<exclude name="com/mirth/connect/connectors/http/" />
 			<exclude name="com/mirth/connect/plugins/httpauth/" />
@@ -170,24 +168,6 @@
 	</target>
 
 	<target name="create-plugins" depends="create-connectors">
-		<!-- plugins.datatype-raw -->
-		<mkdir dir="${plugins.datatype-raw}" />
-		<copy todir="${plugins.datatype-raw}">
-			<fileset dir="${src}/com/mirth/connect/plugins/datatypes/raw">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${plugins.datatype-raw}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/datatypes/raw" />
-		</copy>
-		<jar destfile="${plugins.datatype-raw}/datatype-raw-shared.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/datatypes/raw/**" />
-			<exclude name="com/mirth/connect/plugins/datatypes/raw/RawDataTypeServerPlugin.class" />
-		</jar>
-		<jar destfile="${plugins.datatype-raw}/datatype-raw-server.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/datatypes/raw/RawDataTypeServerPlugin.class" />
-		</jar>
-		
 		<!-- plugins.directoryresource -->
 		<mkdir dir="${plugins.directoryresource}" />
 		<copy todir="${plugins.directoryresource}">
@@ -684,8 +664,6 @@
 		<mkdir dir="${dist.extensions}" />
 
 		<ant antfile="${basedir}/../plugins/build.xml" target="create-extension-zips" inheritAll="false" />
-
-		<zip destfile="${dist.extensions}/datatype-raw-${version}.zip" basedir="${extensions}" includes="datatype-raw/**/*" />
 
 		<zip destfile="${dist.extensions}/directoryresource-${version}.zip" basedir="${extensions}" includes="directoryresource/**/*" />
 		<zip destfile="${dist.extensions}/dashboardstatus-${version}.zip" basedir="${extensions}" includes="dashboardstatus/**/*" />
