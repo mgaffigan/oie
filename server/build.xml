@@ -18,7 +18,6 @@
 		</path>
 
 		<!-- connectors -->
-		<property name="connectors.doc" value="${extensions}/doc" />
 		<property name="connectors.tcp" value="${extensions}/tcp" />
 		<property name="connectors.js" value="${extensions}/js" />
 		<property name="connectors.vm" value="${extensions}/vm" />
@@ -101,6 +100,7 @@
 			<include name="com/mirth/connect/server/userutil/DatabaseConnectionFactory.java" />
 			<!-- Exclude plugins that have their own build -->
 			<exclude name="com/mirth/connect/connectors/dimse/" />
+			<exclude name="com/mirth/connect/connectors/doc/" />
 			<exclude name="com/mirth/connect/connectors/jdbc/" />
 			<exclude name="com/mirth/connect/connectors/jms/" />
 			<exclude name="com/mirth/connect/connectors/file/" />
@@ -164,32 +164,6 @@
 
 		<!-- Build all external plugins -->
 		<ant antfile="${basedir}/../plugins/build.xml" target="build" inheritAll="false" />
-
-		<!-- connectors.doc -->
-		<mkdir dir="${connectors.doc}" />
-		<copy todir="${connectors.doc}">
-			<fileset dir="${src}/com/mirth/connect/connectors/doc">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${connectors.doc}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/doc" />
-		</copy>
-		<jar destfile="${connectors.doc}/doc-shared.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/connectors/doc/DocumentDispatcherProperties.class" />
-			<include name="com/mirth/connect/connectors/doc/DocumentConnectorServletInterface.class" />
-			<include name="com/mirth/connect/connectors/doc/PageSize.class" />
-			<include name="com/mirth/connect/connectors/doc/Unit.class" />
-		</jar>
-		<jar destfile="${connectors.doc}/doc-server.jar">
-			<fileset dir="${classes.plugins}">
-				<include name="com/mirth/connect/connectors/doc/**" />
-				<exclude name="com/mirth/connect/connectors/doc/DocumentDispatcherProperties.class" />
-				<exclude name="com/mirth/connect/connectors/doc/DocumentConnectorServletInterface.class" />
-				<exclude name="com/mirth/connect/connectors/doc/PageSize.class" />
-				<exclude name="com/mirth/connect/connectors/doc/Unit.class" />
-			</fileset>
-		</jar>
 
 		<!-- connectors.js -->
 		<mkdir dir="${connectors.js}" />
@@ -855,7 +829,6 @@
 
 		<ant antfile="${basedir}/../plugins/build.xml" target="create-extension-zips" inheritAll="false" />
 
-		<zip destfile="${dist.extensions}/doc-${version}.zip" basedir="${extensions}" includes="doc/**/*" />
 		<zip destfile="${dist.extensions}/tcp-${version}.zip" basedir="${extensions}" includes="tcp/**/*" />
 		<zip destfile="${dist.extensions}/js-${version}.zip" basedir="${extensions}" includes="js/**/*" />
 		<zip destfile="${dist.extensions}/vm-${version}.zip" basedir="${extensions}" includes="vm/**/*" />
