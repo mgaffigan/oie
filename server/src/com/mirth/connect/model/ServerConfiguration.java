@@ -24,7 +24,6 @@ import java.util.UUID;
 
 import javax.swing.text.DateFormatter;
 
-import com.mirth.connect.client.core.BrandingConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -37,7 +36,6 @@ import com.mirth.connect.donkey.util.xstream.SerializerException;
 import com.mirth.connect.model.alert.AlertModel;
 import com.mirth.connect.model.codetemplates.CodeTemplateLibrary;
 import com.mirth.connect.model.converters.ObjectXMLSerializer;
-import com.mirth.connect.plugins.directoryresource.DirectoryResourceProperties;
 import com.mirth.connect.util.ColorUtil;
 import com.mirth.connect.util.ConfigurationProperty;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -213,17 +211,8 @@ public class ServerConfiguration implements Serializable, Migratable, Auditable 
 
     @Override
     public void migrate3_2_0(DonkeyElement element) {
-        ResourcePropertiesList list = new ResourcePropertiesList();
-        DirectoryResourceProperties defaultResource = new DirectoryResourceProperties();
-        defaultResource.setId(ResourceProperties.DEFAULT_RESOURCE_ID);
-        defaultResource.setName(ResourceProperties.DEFAULT_RESOURCE_NAME);
-        defaultResource.setDescription(String.format("Loads libraries from the custom-lib folder in the %s home directory.", BrandingConstants.PRODUCT_NAME));
-        defaultResource.setIncludeWithGlobalScripts(true);
-        defaultResource.setDirectory("custom-lib");
-        list.getList().add(defaultResource);
-
         try {
-            DonkeyElement resourcePropertiesElement = element.addChildElementFromXml(ObjectXMLSerializer.getInstance().serialize(list));
+            DonkeyElement resourcePropertiesElement = element.addChildElementFromXml(ResourceProperties.createDefaultResourcePropertiesElement());
             resourcePropertiesElement.setNodeName("resourceProperties");
         } catch (DonkeyElementException e) {
             throw new SerializerException("Failed to migrate server configuration.", e);
@@ -424,4 +413,5 @@ public class ServerConfiguration implements Serializable, Migratable, Auditable 
     
     @Override
     public void migrate3_12_0(DonkeyElement element) {}
-}
+}
+
