@@ -18,7 +18,6 @@
 		</path>
 
 		<!-- datatypes -->
-		<property name="plugins.datatype-xml" value="${extensions}/datatype-xml" />
 		<property name="plugins.datatype-raw" value="${extensions}/datatype-raw" />
 		<property name="plugins.datatype-json" value="${extensions}/datatype-json" />
 		
@@ -107,6 +106,7 @@
 			<exclude name="com/mirth/connect/plugins/datatypes/hl7v2/" />
 			<exclude name="com/mirth/connect/plugins/datatypes/hl7v3/" />
 			<exclude name="com/mirth/connect/plugins/datatypes/ncpdp/" />
+			<exclude name="com/mirth/connect/plugins/datatypes/xml/" />
 			<!-- dcm4che is built by dicom, as well -->
 			<exclude name="com/mirth/connect/connectors/http/" />
 			<exclude name="com/mirth/connect/plugins/httpauth/" />
@@ -170,24 +170,6 @@
 	</target>
 
 	<target name="create-plugins" depends="create-connectors">
-		<!-- plugins.datatype-xml -->
-		<mkdir dir="${plugins.datatype-xml}" />
-		<copy todir="${plugins.datatype-xml}">
-			<fileset dir="${src}/com/mirth/connect/plugins/datatypes/xml">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${plugins.datatype-xml}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/datatypes/xml" />
-		</copy>
-		<jar destfile="${plugins.datatype-xml}/datatype-xml-shared.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/datatypes/xml/**" />
-			<exclude name="com/mirth/connect/plugins/datatypes/xml/XMLDataTypeServerPlugin.class" />
-		</jar>
-		<jar destfile="${plugins.datatype-xml}/datatype-xml-server.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/datatypes/xml/XMLDataTypeServerPlugin.class" />
-		</jar>
-		
 		<!-- plugins.datatype-raw -->
 		<mkdir dir="${plugins.datatype-raw}" />
 		<copy todir="${plugins.datatype-raw}">
@@ -721,7 +703,6 @@
 
 		<ant antfile="${basedir}/../plugins/build.xml" target="create-extension-zips" inheritAll="false" />
 
-		<zip destfile="${dist.extensions}/datatype-xml-${version}.zip" basedir="${extensions}" includes="datatype-xml/**/*" />
 		<zip destfile="${dist.extensions}/datatype-raw-${version}.zip" basedir="${extensions}" includes="datatype-raw/**/*" />
 		<zip destfile="${dist.extensions}/datatype-json-${version}.zip" basedir="${extensions}" includes="datatype-json/**/*" />
 
