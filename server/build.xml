@@ -16,14 +16,6 @@
 		<path id="classpath">
 			<fileset dir="${lib}" includes="**/*.jar" />
 		</path>
-
-		<!-- plugins -->
-		<property name="plugins.directoryresource" value="${extensions}/directoryresource" />
-		<property name="plugins.dashboardstatus" value="${extensions}/dashboardstatus" />
-		<property name="plugins.destinationsetfilter" value="${extensions}/destinationsetfilter" />
-		<property name="plugins.globalmapviewer" value="${extensions}/globalmapviewer" />
-		<property name="plugins.mllpmode" value="${extensions}/mllpmode" />
-		<property name="plugins.serverlog" value="${extensions}/serverlog" />
 	</target>
 
 	<target name="clean" depends="init">
@@ -102,6 +94,12 @@
 			<exclude name="com/mirth/connect/plugins/mapper/" />
 			<exclude name="com/mirth/connect/plugins/messagebuilder/" />
 			<exclude name="com/mirth/connect/plugins/rulebuilder/" />
+			<exclude name="com/mirth/connect/plugins/directoryresource/" />
+			<exclude name="com/mirth/connect/plugins/dashboardstatus/" />
+			<exclude name="com/mirth/connect/plugins/destinationsetfilter/" />
+			<exclude name="com/mirth/connect/plugins/globalmapviewer/" />
+			<exclude name="com/mirth/connect/plugins/mllpmode/" />
+			<exclude name="com/mirth/connect/plugins/serverlog/" />
 			<!-- dcm4che is built by dicom, as well -->
 			<exclude name="com/mirth/connect/connectors/http/" />
 			<exclude name="com/mirth/connect/plugins/httpauth/" />
@@ -165,118 +163,6 @@
 	</target>
 
 	<target name="create-plugins" depends="create-connectors">
-		<!-- plugins.directoryresource -->
-		<mkdir dir="${plugins.directoryresource}" />
-		<copy todir="${plugins.directoryresource}">
-			<fileset dir="${src}/com/mirth/connect/plugins/directoryresource">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${plugins.directoryresource}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/directoryresource" />
-		</copy>
-		<jar destfile="${plugins.directoryresource}/directoryresource-shared.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/directoryresource/DirectoryResourceProperties.class" />
-			<include name="com/mirth/connect/plugins/directoryresource/DirectoryResourceServletInterface.class" />
-		</jar>
-		<jar destfile="${plugins.directoryresource}/directoryresource-server.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/directoryresource/**" />
-			<exclude name="com/mirth/connect/plugins/directoryresource/DirectoryResourceProperties.class" />
-			<exclude name="com/mirth/connect/plugins/directoryresource/DirectoryResourceServletInterface.class" />
-		</jar>
-		
-		<!-- plugins.dashboardstatus -->
-		<mkdir dir="${plugins.dashboardstatus}" />
-		<copy todir="${plugins.dashboardstatus}">
-			<fileset dir="${src}/com/mirth/connect/plugins/dashboardstatus">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${plugins.dashboardstatus}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/dashboardstatus" />
-		</copy>
-		<jar destfile="${plugins.dashboardstatus}/dashboardstatus-shared.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/dashboardstatus/ConnectionLogItem.class" />
-			<include name="com/mirth/connect/plugins/dashboardstatus/DashboardConnectorStatusServletInterface.class" />
-		</jar>
-		<jar destfile="${plugins.dashboardstatus}/dashboardstatus-server.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/dashboardstatus/**" />
-			<exclude name="com/mirth/connect/plugins/dashboardstatus/ConnectionLogItem.class" />
-			<exclude name="com/mirth/connect/plugins/dashboardstatus/DashboardConnectorStatusServletInterface.class" />
-		</jar>
-		
-		<!-- plugins.destinationsetfilter -->
-		<mkdir dir="${plugins.destinationsetfilter}" />
-		<copy todir="${plugins.destinationsetfilter}">
-			<fileset dir="${src}/com/mirth/connect/plugins/destinationsetfilter">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${plugins.destinationsetfilter}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/destinationsetfilter" />
-		</copy>
-		<jar destfile="${plugins.destinationsetfilter}/destinationsetfilter-shared.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/destinationsetfilter/DestinationSetFilterStep.class" />
-			<include name="com/mirth/connect/plugins/destinationsetfilter/DestinationSetFilterStep$Behavior.class" />
-			<include name="com/mirth/connect/plugins/destinationsetfilter/DestinationSetFilterStep$Condition.class" />
-		</jar>
-		
-		<!-- plugins.globalmapviewer -->
-		<mkdir dir="${plugins.globalmapviewer}" />
-		<copy todir="${plugins.globalmapviewer}">
-			<fileset dir="${src}/com/mirth/connect/plugins/globalmapviewer">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${plugins.globalmapviewer}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/globalmapviewer" />
-		</copy>
-		<jar destfile="${plugins.globalmapviewer}/globalmapviewer-shared.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/globalmapviewer/GlobalMapServletInterface.class" />
-		</jar>
-		<jar destfile="${plugins.globalmapviewer}/globalmapviewer-server.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/globalmapviewer/**" />
-			<exclude name="com/mirth/connect/plugins/globalmapviewer/GlobalMapServletInterface.class" />
-		</jar>
-
-		<!-- plugins.mllpmode -->
-		<mkdir dir="${plugins.mllpmode}" />
-		<copy todir="${plugins.mllpmode}">
-			<fileset dir="${src}/com/mirth/connect/plugins/mllpmode">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${plugins.mllpmode}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/mllpmode" />
-		</copy>
-		<jar destfile="${plugins.mllpmode}/mllpmode-shared.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/mllpmode/MLLPModeProperties.class" />
-		</jar>
-		<jar destfile="${plugins.mllpmode}/mllpmode-server.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/mllpmode/**" />
-			<exclude name="com/mirth/connect/plugins/mllpmode/MLLPModeProperties.class" />
-		</jar>
-
-		<!-- plugins.serverlog -->
-		<mkdir dir="${plugins.serverlog}" />
-		<copy todir="${plugins.serverlog}">
-			<fileset dir="${src}/com/mirth/connect/plugins/serverlog">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${plugins.serverlog}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/serverlog" />
-		</copy>
-		<jar destfile="${plugins.serverlog}/serverlog-shared.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/serverlog/ServerLogItem.class" />
-			<include name="com/mirth/connect/plugins/serverlog/ServerLogServletInterface.class" />
-		</jar>
-		<jar destfile="${plugins.serverlog}/serverlog-server.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/serverlog/**" />
-			<exclude name="com/mirth/connect/plugins/serverlog/ServerLogItem.class" />
-			<exclude name="com/mirth/connect/plugins/serverlog/ServerLogServletInterface.class" />
-		</jar>
-
 		<!-- set the version on all plugins -->
 		<replace dir="${extensions}" token="@mirthversion" value="${version}">
 			<include name="**/*.xml" />
@@ -496,12 +382,6 @@
 		<mkdir dir="${dist.extensions}" />
 
 		<ant antfile="${basedir}/../plugins/build.xml" target="create-extension-zips" inheritAll="false" />
-
-		<zip destfile="${dist.extensions}/directoryresource-${version}.zip" basedir="${extensions}" includes="directoryresource/**/*" />
-		<zip destfile="${dist.extensions}/dashboardstatus-${version}.zip" basedir="${extensions}" includes="dashboardstatus/**/*" />
-		<zip destfile="${dist.extensions}/destinationsetfilter-${version}.zip" basedir="${extensions}" includes="destinationsetfilter/**/*" />
-		<zip destfile="${dist.extensions}/serverlog-${version}.zip" basedir="${extensions}" includes="serverlog/**/*" />
-		<zip destfile="${dist.extensions}/globalmapviewer-${version}.zip" basedir="${extensions}" includes="globalmapviewer/**/*" />
 	</target>
 
 	<target name="create-dist" depends="create-extension-zips">
