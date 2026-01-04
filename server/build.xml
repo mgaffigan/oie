@@ -393,6 +393,10 @@
 		<path id="testclasspath">
 			<fileset dir="testlib" includes="**/*.jar" />
 			<dirset dir="${classes}"/>
+			<!-- Plugin classes compiled by plugins/build.xml -->
+			<dirset dir="../plugins">
+				<include name="*/classes" />
+			</dirset>
 			<path refid="classpath" />
 		</path>
 	</target>
