@@ -22,7 +22,6 @@
 		<property name="connectors.vm" value="${extensions}/vm" />
 
 		<!-- datatypes -->
-		<property name="plugins.datatype-hl7v2" value="${extensions}/datatype-hl7v2" />
 		<property name="plugins.datatype-xml" value="${extensions}/datatype-xml" />
 		<property name="plugins.datatype-raw" value="${extensions}/datatype-raw" />
 		<property name="plugins.datatype-json" value="${extensions}/datatype-json" />
@@ -107,6 +106,7 @@
 			<exclude name="com/mirth/connect/plugins/datatypes/delimited/" />
 			<exclude name="com/mirth/connect/plugins/datatypes/dicom/" />
 			<exclude name="com/mirth/connect/plugins/datatypes/edi/" />
+			<exclude name="com/mirth/connect/plugins/datatypes/hl7v2/" />
 			<exclude name="com/mirth/connect/plugins/datatypes/hl7v3/" />
 			<exclude name="com/mirth/connect/plugins/datatypes/ncpdp/" />
 			<!-- dcm4che is built by dicom, as well -->
@@ -216,26 +216,6 @@
 	</target>
 
 	<target name="create-plugins" depends="create-connectors">
-		<!-- plugins.datatype-hl7v2 -->
-		<mkdir dir="${plugins.datatype-hl7v2}" />
-		<copy todir="${plugins.datatype-hl7v2}">
-			<fileset dir="${src}/com/mirth/connect/plugins/datatypes/hl7v2">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${plugins.datatype-hl7v2}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/datatypes/hl7v2" />
-		</copy>
-		<jar destfile="${plugins.datatype-hl7v2}/datatype-hl7v2-shared.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/datatypes/hl7v2/**" />
-			<exclude name="com/mirth/connect/plugins/datatypes/hl7v2/HL7v2DataTypeServerPlugin.class" />
-			<exclude name="com/mirth/connect/plugins/datatypes/hl7v2/HL7v2BatchAdaptor.class" />
-		</jar>
-		<jar destfile="${plugins.datatype-hl7v2}/datatype-hl7v2-server.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/datatypes/hl7v2/HL7v2DataTypeServerPlugin.class" />
-			<include name="com/mirth/connect/plugins/datatypes/hl7v2/HL7v2BatchAdaptor.class" />
-		</jar>
-		
 		<!-- plugins.datatype-xml -->
 		<mkdir dir="${plugins.datatype-xml}" />
 		<copy todir="${plugins.datatype-xml}">
@@ -790,7 +770,6 @@
 		<zip destfile="${dist.extensions}/js-${version}.zip" basedir="${extensions}" includes="js/**/*" />
 		<zip destfile="${dist.extensions}/vm-${version}.zip" basedir="${extensions}" includes="vm/**/*" />
 		
-		<zip destfile="${dist.extensions}/datatype-hl7v2-${version}.zip" basedir="${extensions}" includes="datatype-hl7v2/**/*" />
 		<zip destfile="${dist.extensions}/datatype-xml-${version}.zip" basedir="${extensions}" includes="datatype-xml/**/*" />
 		<zip destfile="${dist.extensions}/datatype-raw-${version}.zip" basedir="${extensions}" includes="datatype-raw/**/*" />
 		<zip destfile="${dist.extensions}/datatype-json-${version}.zip" basedir="${extensions}" includes="datatype-json/**/*" />
