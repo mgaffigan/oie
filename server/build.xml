@@ -19,7 +19,6 @@
 
 		<!-- datatypes -->
 		<property name="plugins.datatype-raw" value="${extensions}/datatype-raw" />
-		<property name="plugins.datatype-json" value="${extensions}/datatype-json" />
 		
 		<!-- plugins -->
 		<property name="plugins.directoryresource" value="${extensions}/directoryresource" />
@@ -107,6 +106,7 @@
 			<exclude name="com/mirth/connect/plugins/datatypes/hl7v3/" />
 			<exclude name="com/mirth/connect/plugins/datatypes/ncpdp/" />
 			<exclude name="com/mirth/connect/plugins/datatypes/xml/" />
+			<exclude name="com/mirth/connect/plugins/datatypes/json/" />
 			<!-- dcm4che is built by dicom, as well -->
 			<exclude name="com/mirth/connect/connectors/http/" />
 			<exclude name="com/mirth/connect/plugins/httpauth/" />
@@ -186,24 +186,6 @@
 		</jar>
 		<jar destfile="${plugins.datatype-raw}/datatype-raw-server.jar" basedir="${classes.plugins}">
 			<include name="com/mirth/connect/plugins/datatypes/raw/RawDataTypeServerPlugin.class" />
-		</jar>
-		
-		<!-- plugins.datatype-json -->
-		<mkdir dir="${plugins.datatype-json}" />
-		<copy todir="${plugins.datatype-json}">
-			<fileset dir="${src}/com/mirth/connect/plugins/datatypes/json">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${plugins.datatype-json}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/datatypes/json" />
-		</copy>
-		<jar destfile="${plugins.datatype-json}/datatype-json-shared.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/datatypes/json/**" />
-			<exclude name="com/mirth/connect/plugins/datatypes/json/JSONDataTypeServerPlugin.class" />
-		</jar>
-		<jar destfile="${plugins.datatype-json}/datatype-json-server.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/datatypes/json/JSONDataTypeServerPlugin.class" />
 		</jar>
 		
 		<!-- plugins.directoryresource -->
@@ -704,7 +686,6 @@
 		<ant antfile="${basedir}/../plugins/build.xml" target="create-extension-zips" inheritAll="false" />
 
 		<zip destfile="${dist.extensions}/datatype-raw-${version}.zip" basedir="${extensions}" includes="datatype-raw/**/*" />
-		<zip destfile="${dist.extensions}/datatype-json-${version}.zip" basedir="${extensions}" includes="datatype-json/**/*" />
 
 		<zip destfile="${dist.extensions}/directoryresource-${version}.zip" basedir="${extensions}" includes="directoryresource/**/*" />
 		<zip destfile="${dist.extensions}/dashboardstatus-${version}.zip" basedir="${extensions}" includes="dashboardstatus/**/*" />
