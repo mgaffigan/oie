@@ -21,11 +21,8 @@
 		<property name="plugins.directoryresource" value="${extensions}/directoryresource" />
 		<property name="plugins.dashboardstatus" value="${extensions}/dashboardstatus" />
 		<property name="plugins.destinationsetfilter" value="${extensions}/destinationsetfilter" />
-		<property name="plugins.mapper" value="${extensions}/mapper" />
-		<property name="plugins.messagebuilder" value="${extensions}/messagebuilder" />
 		<property name="plugins.globalmapviewer" value="${extensions}/globalmapviewer" />
 		<property name="plugins.mllpmode" value="${extensions}/mllpmode" />
-		<property name="plugins.rulebuilder" value="${extensions}/rulebuilder" />
 		<property name="plugins.serverlog" value="${extensions}/serverlog" />
 	</target>
 
@@ -102,6 +99,9 @@
 			<exclude name="com/mirth/connect/plugins/javascriptstep/" />
 			<exclude name="com/mirth/connect/plugins/scriptfilerule/" />
 			<exclude name="com/mirth/connect/plugins/scriptfilestep/" />
+			<exclude name="com/mirth/connect/plugins/mapper/" />
+			<exclude name="com/mirth/connect/plugins/messagebuilder/" />
+			<exclude name="com/mirth/connect/plugins/rulebuilder/" />
 			<!-- dcm4che is built by dicom, as well -->
 			<exclude name="com/mirth/connect/connectors/http/" />
 			<exclude name="com/mirth/connect/plugins/httpauth/" />
@@ -239,35 +239,6 @@
 			<exclude name="com/mirth/connect/plugins/globalmapviewer/GlobalMapServletInterface.class" />
 		</jar>
 
-		<!-- plugins.mapper -->
-		<mkdir dir="${plugins.mapper}" />
-		<copy todir="${plugins.mapper}">
-			<fileset dir="${src}/com/mirth/connect/plugins/mapper">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${plugins.mapper}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/mapper" />
-		</copy>
-		<jar destfile="${plugins.mapper}/mapper-shared.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/mapper/MapperStep.class" />
-			<include name="com/mirth/connect/plugins/mapper/MapperStep$Scope.class" />
-		</jar>
-
-		<!-- plugins.messagebuilder -->
-		<mkdir dir="${plugins.messagebuilder}" />
-		<copy todir="${plugins.messagebuilder}">
-			<fileset dir="${src}/com/mirth/connect/plugins/messagebuilder">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${plugins.messagebuilder}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/messagebuilder" />
-		</copy>
-		<jar destfile="${plugins.messagebuilder}/messagebuilder-shared.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/messagebuilder/MessageBuilderStep.class" />
-		</jar>
-
 		<!-- plugins.mllpmode -->
 		<mkdir dir="${plugins.mllpmode}" />
 		<copy todir="${plugins.mllpmode}">
@@ -284,21 +255,6 @@
 		<jar destfile="${plugins.mllpmode}/mllpmode-server.jar" basedir="${classes.plugins}">
 			<include name="com/mirth/connect/plugins/mllpmode/**" />
 			<exclude name="com/mirth/connect/plugins/mllpmode/MLLPModeProperties.class" />
-		</jar>
-
-		<!-- plugins.rulebuilder -->
-		<mkdir dir="${plugins.rulebuilder}" />
-		<copy todir="${plugins.rulebuilder}">
-			<fileset dir="${src}/com/mirth/connect/plugins/rulebuilder">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${plugins.rulebuilder}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/rulebuilder" />
-		</copy>
-		<jar destfile="${plugins.rulebuilder}/rulebuilder-shared.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/rulebuilder/RuleBuilderRule.class" />
-			<include name="com/mirth/connect/plugins/rulebuilder/RuleBuilderRule$Condition.class" />
 		</jar>
 
 		<!-- plugins.serverlog -->
@@ -545,9 +501,6 @@
 		<zip destfile="${dist.extensions}/dashboardstatus-${version}.zip" basedir="${extensions}" includes="dashboardstatus/**/*" />
 		<zip destfile="${dist.extensions}/destinationsetfilter-${version}.zip" basedir="${extensions}" includes="destinationsetfilter/**/*" />
 		<zip destfile="${dist.extensions}/serverlog-${version}.zip" basedir="${extensions}" includes="serverlog/**/*" />
-		<zip destfile="${dist.extensions}/mapper-${version}.zip" basedir="${extensions}" includes="mapper/**/*" />
-		<zip destfile="${dist.extensions}/messagebuilder-${version}.zip" basedir="${extensions}" includes="messagebuilder/**/*" />
-		<zip destfile="${dist.extensions}/rulebuilder-${version}.zip" basedir="${extensions}" includes="rulebuilder/**/*" />
 		<zip destfile="${dist.extensions}/globalmapviewer-${version}.zip" basedir="${extensions}" includes="globalmapviewer/**/*" />
 	</target>
 
