@@ -17,9 +17,6 @@
 			<fileset dir="${lib}" includes="**/*.jar" />
 		</path>
 
-		<!-- connectors -->
-		<property name="connectors.vm" value="${extensions}/vm" />
-
 		<!-- datatypes -->
 		<property name="plugins.datatype-xml" value="${extensions}/datatype-xml" />
 		<property name="plugins.datatype-raw" value="${extensions}/datatype-raw" />
@@ -97,6 +94,7 @@
 			<!-- Exclude plugins that have their own build -->
 			<exclude name="com/mirth/connect/connectors/dimse/" />
 			<exclude name="com/mirth/connect/connectors/doc/" />
+			<exclude name="com/mirth/connect/connectors/vm/" />
 			<exclude name="com/mirth/connect/connectors/js/" />
 			<exclude name="com/mirth/connect/connectors/tcp/" />
 			<exclude name="com/mirth/connect/connectors/jdbc/" />
@@ -164,28 +162,6 @@
 
 		<!-- Build all external plugins -->
 		<ant antfile="${basedir}/../plugins/build.xml" target="build" inheritAll="false" />
-
-		<!-- connectors.vm -->
-		<mkdir dir="${connectors.vm}" />
-		<copy todir="${connectors.vm}">
-			<fileset dir="${src}/com/mirth/connect/connectors/vm">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${connectors.vm}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/vm" />
-		</copy>
-		<jar destfile="${connectors.vm}/vm-shared.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/connectors/vm/VmReceiverProperties.class" />
-			<include name="com/mirth/connect/connectors/vm/VmDispatcherProperties.class" />
-		</jar>
-		<jar destfile="${connectors.vm}/vm-server.jar">
-			<fileset dir="${classes.plugins}">
-				<include name="com/mirth/connect/connectors/vm/**" />
-				<exclude name="com/mirth/connect/connectors/vm/VmReceiverProperties.class" />
-				<exclude name="com/mirth/connect/connectors/vm/VmDispatcherProperties.class" />
-			</fileset>
-		</jar>
 
 		<!-- set the version on all connectors -->
 		<replace dir="${extensions}" token="@mirthversion" value="${version}">
@@ -745,8 +721,6 @@
 
 		<ant antfile="${basedir}/../plugins/build.xml" target="create-extension-zips" inheritAll="false" />
 
-		<zip destfile="${dist.extensions}/vm-${version}.zip" basedir="${extensions}" includes="vm/**/*" />
-		
 		<zip destfile="${dist.extensions}/datatype-xml-${version}.zip" basedir="${extensions}" includes="datatype-xml/**/*" />
 		<zip destfile="${dist.extensions}/datatype-raw-${version}.zip" basedir="${extensions}" includes="datatype-raw/**/*" />
 		<zip destfile="${dist.extensions}/datatype-json-${version}.zip" basedir="${extensions}" includes="datatype-json/**/*" />
