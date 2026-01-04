@@ -19,7 +19,6 @@
 
 		<!-- connectors -->
 		<property name="connectors.jms" value="${extensions}/jms" />
-		<property name="connectors.jdbc" value="${extensions}/jdbc" />
 		<property name="connectors.doc" value="${extensions}/doc" />
 		<property name="connectors.smtp" value="${extensions}/smtp" />
 		<property name="connectors.tcp" value="${extensions}/tcp" />
@@ -104,6 +103,7 @@
 			<include name="com/mirth/connect/server/userutil/DatabaseConnectionFactory.java" />
 			<!-- Exclude plugins that have their own build -->
 			<exclude name="com/mirth/connect/connectors/dimse/" />
+			<exclude name="com/mirth/connect/connectors/jdbc/" />
 			<exclude name="com/mirth/connect/connectors/file/" />
 			<exclude name="com/mirth/connect/plugins/datatypes/delimited/" />
 			<exclude name="com/mirth/connect/plugins/datatypes/dicom/" />
@@ -189,41 +189,6 @@
 				<exclude name="com/mirth/connect/connectors/doc/PageSize.class" />
 				<exclude name="com/mirth/connect/connectors/doc/Unit.class" />
 			</fileset>
-		</jar>
-
-		<!-- connectors.jdbc -->
-		<mkdir dir="${connectors.jdbc}" />
-		<copy todir="${connectors.jdbc}">
-			<fileset dir="${src}/com/mirth/connect/connectors/jdbc">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${connectors.jdbc}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/jdbc" />
-		</copy>
-		<jar destfile="${connectors.jdbc}/jdbc-shared.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/connectors/jdbc/DatabaseReceiverProperties.class" />
-			<include name="com/mirth/connect/connectors/jdbc/DatabaseDispatcherProperties.class" />
-			<include name="com/mirth/connect/connectors/jdbc/DatabaseConnectionInfo.class" />
-			<include name="com/mirth/connect/connectors/jdbc/Table.class" />
-			<include name="com/mirth/connect/connectors/jdbc/Column.class" />
-			<include name="com/mirth/connect/connectors/jdbc/DatabaseConnectorServletInterface.class" />
-		</jar>
-		<jar destfile="${connectors.jdbc}/jdbc-server.jar">
-			<fileset dir="${classes.plugins}">
-				<include name="com/mirth/connect/connectors/jdbc/**" />
-				<include name="com/mirth/connect/server/userutil/DatabaseConnectionFactory*.class" />
-				<exclude name="com/mirth/connect/connectors/jdbc/DatabaseReceiverProperties.class" />
-				<exclude name="com/mirth/connect/connectors/jdbc/DatabaseDispatcherProperties.class" />
-				<exclude name="com/mirth/connect/connectors/jdbc/DatabaseConnectionInfo.class" />
-				<exclude name="com/mirth/connect/connectors/jdbc/Table.class" />
-				<exclude name="com/mirth/connect/connectors/jdbc/Column.class" />
-				<exclude name="com/mirth/connect/connectors/jdbc/DatabaseConnectorServletInterface.class" />
-			</fileset>
-		</jar>
-		<mkdir dir="${connectors.jdbc}/src" />
-		<jar destfile="${connectors.jdbc}/src/jdbc-userutil-sources.jar" basedir="${src}">
-			<include name="com/mirth/connect/server/userutil/DatabaseConnectionFactory.java" />
 		</jar>
 
 		<!-- connectors.jms -->
@@ -941,7 +906,6 @@
 		<ant antfile="${basedir}/../plugins/build.xml" target="create-extension-zips" inheritAll="false" />
 
 		<zip destfile="${dist.extensions}/jms-${version}.zip" basedir="${extensions}" includes="jms/**/*" />
-		<zip destfile="${dist.extensions}/jdbc-${version}.zip" basedir="${extensions}" includes="jdbc/**/*" />
 		<zip destfile="${dist.extensions}/doc-${version}.zip" basedir="${extensions}" includes="doc/**/*" />
 		<zip destfile="${dist.extensions}/smtp-${version}.zip" basedir="${extensions}" includes="smtp/**/*" />
 		<zip destfile="${dist.extensions}/tcp-${version}.zip" basedir="${extensions}" includes="tcp/**/*" />

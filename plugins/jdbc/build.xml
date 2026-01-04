@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<project name="jdbc-connector" basedir="." default="build">
+
+	<!-- Load shared plugin properties -->
+	<dirname property="plugin.dir" file="${ant.file.jdbc-connector}"/>
+	<property file="${plugin.dir}/../build.properties" />
+
+	<!-- Local properties -->
+	<property name="classes" value="${basedir}/classes" />
+	<property name="src.connector" value="${server.src}/com/mirth/connect/connectors/jdbc" />
+	<property name="lib" value="${server.lib.extensions}/jdbc" />
+	<property name="dist" value="${server.extensions}/jdbc" />
+
+	<path id="classpath">
+		<fileset dir="${server.lib}" includes="**/*.jar" />
+		<pathelement location="${server.classes}" />
+	</path>
+
+	<target name="clean">
+		<delete dir="${classes}" />
+	</target>
+
+	<target name="init">
+		<mkdir dir="${classes}" />
+		<mkdir dir="${dist}" />
+	</target>
+
+	<target name="compile" depends="init">
+		<javac srcdir="${server.src}" destdir="${classes}" debug="on" includeAntRuntime="false">
+			<include name="com/mirth/connect/connectors/jdbc/" />
+			<include name="com/mirth/connect/server/userutil/DatabaseConnectionFactory.java" />
+			<classpath refid="classpath" />
+		</javac>
+	</target>
+
+	<target name="build" depends="compile">
+		<!-- Copy plugin metadata XML files -->
+		<copy todir="${dist}">
+			<fileset dir="${src.connector}">
+				<include name="*.xml" />
+			</fileset>
+		</copy>
+
+		<!-- Copy extension libraries -->
+		<copy todir="${dist}/lib" failonerror="false" quiet="true">
+			<fileset dir="${lib}" />
+		</copy>
+
+		<!-- Create shared jar (classes needed by client) -->
+		<jar destfile="${dist}/jdbc-shared.jar" basedir="${classes}">
+			<include name="com/mirth/connect/connectors/jdbc/DatabaseReceiverProperties.class" />
+			<include name="com/mirth/connect/connectors/jdbc/DatabaseDispatcherProperties.class" />
+			<include name="com/mirth/connect/connectors/jdbc/DatabaseConnectionInfo.class" />
+			<include name="com/mirth/connect/connectors/jdbc/Table.class" />
+			<include name="com/mirth/connect/connectors/jdbc/Column.class" />
+			<include name="com/mirth/connect/connectors/jdbc/DatabaseConnectorServletInterface.class" />
+		</jar>
+
+		<!-- Create server jar -->
+		<jar destfile="${dist}/jdbc-server.jar" basedir="${classes}">
+			<include name="com/mirth/connect/connectors/jdbc/**" />
+			<include name="com/mirth/connect/server/userutil/DatabaseConnectionFactory*.class" />
+			<exclude name="com/mirth/connect/connectors/jdbc/DatabaseReceiverProperties.class" />
+			<exclude name="com/mirth/connect/connectors/jdbc/DatabaseDispatcherProperties.class" />
+			<exclude name="com/mirth/connect/connectors/jdbc/DatabaseConnectionInfo.class" />
+			<exclude name="com/mirth/connect/connectors/jdbc/Table.class" />
+			<exclude name="com/mirth/connect/connectors/jdbc/Column.class" />
+			<exclude name="com/mirth/connect/connectors/jdbc/DatabaseConnectorServletInterface.class" />
+		</jar>
+		<mkdir dir="${dist}/src" />
+		<jar destfile="${dist}/src/jdbc-userutil-sources.jar" basedir="${server.src}">
+			<include name="com/mirth/connect/server/userutil/DatabaseConnectionFactory.java" />
+		</jar>
+	</target>
+
+	<target name="create-zip">
+		<zip destfile="${server.dist.extensions}/jdbc-${version}.zip" basedir="${server.extensions}" includes="jdbc/**/*" />
+	</target>
+
+</project>
