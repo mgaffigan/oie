@@ -23,7 +23,6 @@
 		<mkdir dir="${logs}" />
 
 		<delete dir="${classes}" />
-		<delete dir="${classes.plugins}" />
 		<delete dir="${setup}" />
 		<delete dir="${dist}" />
 		<delete dir="${build}" />
@@ -51,59 +50,6 @@
 			<exclude name="org/dcm4che2/" />
 			<exclude name="com/mirth/connect/server/userutil/HTTPUtil.java" />
 			<exclude name="com/mirth/connect/server/userutil/DatabaseConnectionFactory.java" />
-		</javac>
-
-		<!-- compile plugins against compiled core + server classes -->
-		<mkdir dir="${classes.plugins}" />
-		<javac srcdir="${src}" destdir="${classes.plugins}" debug="on" includeAntRuntime="false" sourcepath="">
-			<classpath>
-				<path refid="classpath" />
-				<pathelement location="${classes}" />
-			</classpath>
-			<!-- Q: Why do I need to filter by *.java -->
-			<!-- A: No idea, but if a normal directory or ** is used, it skips BasicModeProvider.java -->
-			<include name="com/mirth/connect/connectors/**/*.java" />
-			<include name="com/mirth/connect/plugins/*/**/*.java" />
-			<include name="com/mirth/connect/server/userutil/HTTPUtil.java" />
-			<include name="com/mirth/connect/server/userutil/DatabaseConnectionFactory.java" />
-			<!-- Exclude plugins that have their own build -->
-			<exclude name="com/mirth/connect/connectors/dimse/" />
-			<exclude name="com/mirth/connect/connectors/doc/" />
-			<exclude name="com/mirth/connect/connectors/vm/" />
-			<exclude name="com/mirth/connect/connectors/js/" />
-			<exclude name="com/mirth/connect/connectors/tcp/" />
-			<exclude name="com/mirth/connect/connectors/jdbc/" />
-			<exclude name="com/mirth/connect/connectors/jms/" />
-			<exclude name="com/mirth/connect/connectors/file/" />
-			<exclude name="com/mirth/connect/connectors/smtp/" />
-			<exclude name="com/mirth/connect/plugins/datatypes/delimited/" />
-			<exclude name="com/mirth/connect/plugins/datatypes/dicom/" />
-			<exclude name="com/mirth/connect/plugins/datatypes/edi/" />
-			<exclude name="com/mirth/connect/plugins/datatypes/hl7v2/" />
-			<exclude name="com/mirth/connect/plugins/datatypes/hl7v3/" />
-			<exclude name="com/mirth/connect/plugins/datatypes/ncpdp/" />
-			<exclude name="com/mirth/connect/plugins/datatypes/xml/" />
-			<exclude name="com/mirth/connect/plugins/datatypes/json/" />
-			<exclude name="com/mirth/connect/plugins/datatypes/raw/" />
-			<exclude name="com/mirth/connect/plugins/xsltstep/" />
-			<exclude name="com/mirth/connect/plugins/datapruner/" />
-			<exclude name="com/mirth/connect/plugins/javascriptrule/" />
-			<exclude name="com/mirth/connect/plugins/javascriptstep/" />
-			<exclude name="com/mirth/connect/plugins/scriptfilerule/" />
-			<exclude name="com/mirth/connect/plugins/scriptfilestep/" />
-			<exclude name="com/mirth/connect/plugins/mapper/" />
-			<exclude name="com/mirth/connect/plugins/messagebuilder/" />
-			<exclude name="com/mirth/connect/plugins/rulebuilder/" />
-			<exclude name="com/mirth/connect/plugins/directoryresource/" />
-			<exclude name="com/mirth/connect/plugins/dashboardstatus/" />
-			<exclude name="com/mirth/connect/plugins/destinationsetfilter/" />
-			<exclude name="com/mirth/connect/plugins/globalmapviewer/" />
-			<exclude name="com/mirth/connect/plugins/mllpmode/" />
-			<exclude name="com/mirth/connect/plugins/serverlog/" />
-			<!-- dcm4che is built by dicom, as well -->
-			<exclude name="com/mirth/connect/connectors/http/" />
-			<exclude name="com/mirth/connect/plugins/httpauth/" />
-			<exclude name="com/mirth/connect/connectors/ws/" />
 		</javac>
 
 		<!-- create version.properties file -->
