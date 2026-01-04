@@ -13,6 +13,8 @@
 			<fileset dir="${server}/lib/extensions" includes="**/*.jar" />
 			<!-- HACK: include from pdfviewer since this still builds the client portion -->
 			<fileset dir="${basedir}/../plugins/pdfviewer" includes="**/*.jar" />
+			<!-- HACK: include from dicom since this still builds the client portion -->
+			<fileset dir="${basedir}/../plugins/dicom" includes="*/lib/**/*.jar" />
 		</path>
 
 		<mkdir dir="${logs}" />
