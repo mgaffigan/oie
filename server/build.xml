@@ -26,7 +26,6 @@
 		<property name="plugins.javascriptstep" value="${extensions}/javascriptstep" />
 		<property name="plugins.mapper" value="${extensions}/mapper" />
 		<property name="plugins.messagebuilder" value="${extensions}/messagebuilder" />
-		<property name="plugins.datapruner" value="${extensions}/datapruner" />
 		<property name="plugins.globalmapviewer" value="${extensions}/globalmapviewer" />
 		<property name="plugins.mllpmode" value="${extensions}/mllpmode" />
 		<property name="plugins.pdfviewer" value="${extensions}/pdfviewer" />
@@ -105,6 +104,7 @@
 			<exclude name="com/mirth/connect/plugins/datatypes/json/" />
 			<exclude name="com/mirth/connect/plugins/datatypes/raw/" />
 			<exclude name="com/mirth/connect/plugins/xsltstep/" />
+			<exclude name="com/mirth/connect/plugins/datapruner/" />
 			<!-- dcm4che is built by dicom, as well -->
 			<exclude name="com/mirth/connect/connectors/http/" />
 			<exclude name="com/mirth/connect/plugins/httpauth/" />
@@ -308,24 +308,6 @@
 		</copy>
 		<jar destfile="${plugins.messagebuilder}/messagebuilder-shared.jar" basedir="${classes.plugins}">
 			<include name="com/mirth/connect/plugins/messagebuilder/MessageBuilderStep.class" />
-		</jar>
-
-		<!-- plugins.datapruner -->
-		<mkdir dir="${plugins.datapruner}" />
-		<copy todir="${plugins.datapruner}">
-			<fileset dir="${src}/com/mirth/connect/plugins/datapruner">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${plugins.datapruner}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/datapruner" />
-		</copy>
-		<jar destfile="${plugins.datapruner}/datapruner-shared.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/datapruner/DataPrunerServletInterface.class" />
-		</jar>
-		<jar destfile="${plugins.datapruner}/datapruner-server.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/datapruner/**" />
-			<exclude name="com/mirth/connect/plugins/datapruner/DataPrunerServletInterface.class" />
 		</jar>
 
 		<!-- plugins.mllpmode -->
@@ -655,7 +637,6 @@
 		<zip destfile="${dist.extensions}/dashboardstatus-${version}.zip" basedir="${extensions}" includes="dashboardstatus/**/*" />
 		<zip destfile="${dist.extensions}/destinationsetfilter-${version}.zip" basedir="${extensions}" includes="destinationsetfilter/**/*" />
 		<zip destfile="${dist.extensions}/serverlog-${version}.zip" basedir="${extensions}" includes="serverlog/**/*" />
-		<zip destfile="${dist.extensions}/datapruner-${version}.zip" basedir="${extensions}" includes="datapruner/**/*" />
 		<zip destfile="${dist.extensions}/javascriptstep-${version}.zip" basedir="${extensions}" includes="javascriptstep/**/*" />
 		<zip destfile="${dist.extensions}/mapper-${version}.zip" basedir="${extensions}" includes="mapper/**/*" />
 		<zip destfile="${dist.extensions}/messagebuilder-${version}.zip" basedir="${extensions}" includes="messagebuilder/**/*" />

@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<project name="datapruner-plugin" basedir="." default="build">
+
+	<!-- Load shared plugin properties -->
+	<dirname property="plugin.dir" file="${ant.file.datapruner-plugin}"/>
+	<property file="${plugin.dir}/../build.properties" />
+
+	<!-- Local properties -->
+	<property name="classes" value="${basedir}/classes" />
+	<property name="src.plugin" value="${server.src}/com/mirth/connect/plugins/datapruner" />
+	<property name="dist" value="${server.extensions}/datapruner" />
+
+	<path id="classpath">
+		<fileset dir="${server.lib}" includes="**/*.jar" />
+		<pathelement location="${server.classes}" />
+	</path>
+
+	<target name="clean">
+		<delete dir="${classes}" />
+	</target>
+
+	<target name="init">
+		<mkdir dir="${classes}" />
+		<mkdir dir="${dist}" />
+	</target>
+
+	<target name="compile" depends="init">
+		<javac srcdir="${server.src}" destdir="${classes}" debug="on" includeAntRuntime="false">
+			<include name="com/mirth/connect/plugins/datapruner/" />
+			<classpath refid="classpath" />
+		</javac>
+	</target>
+
+	<target name="build" depends="compile">
+		<!-- Copy plugin metadata XML files -->
+		<copy todir="${dist}">
+			<fileset dir="${src.plugin}">
+				<include name="*.xml" />
+			</fileset>
+		</copy>
+
+		<!-- Create shared jar (classes needed by client) -->
+		<jar destfile="${dist}/datapruner-shared.jar" basedir="${classes}">
+			<include name="com/mirth/connect/plugins/datapruner/DataPrunerServletInterface.class" />
+		</jar>
+
+		<!-- Create server jar -->
+		<jar destfile="${dist}/datapruner-server.jar" basedir="${classes}">
+			<include name="com/mirth/connect/plugins/datapruner/**" />
+			<exclude name="com/mirth/connect/plugins/datapruner/DataPrunerServletInterface.class" />
+		</jar>
+	</target>
+
+	<target name="create-zip">
+		<zip destfile="${server.dist.extensions}/datapruner-${version}.zip" basedir="${server.extensions}" includes="datapruner/" />
+	</target>
+
+</project>
