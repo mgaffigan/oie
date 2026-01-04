@@ -21,13 +21,10 @@
 		<property name="plugins.directoryresource" value="${extensions}/directoryresource" />
 		<property name="plugins.dashboardstatus" value="${extensions}/dashboardstatus" />
 		<property name="plugins.destinationsetfilter" value="${extensions}/destinationsetfilter" />
-		<property name="plugins.imageviewer" value="${extensions}/imageviewer" />
 		<property name="plugins.mapper" value="${extensions}/mapper" />
 		<property name="plugins.messagebuilder" value="${extensions}/messagebuilder" />
 		<property name="plugins.globalmapviewer" value="${extensions}/globalmapviewer" />
 		<property name="plugins.mllpmode" value="${extensions}/mllpmode" />
-		<property name="plugins.pdfviewer" value="${extensions}/pdfviewer" />
-		<property name="plugins.textviewer" value="${extensions}/textviewer" />
 		<property name="plugins.rulebuilder" value="${extensions}/rulebuilder" />
 		<property name="plugins.serverlog" value="${extensions}/serverlog" />
 	</target>
@@ -242,17 +239,6 @@
 			<exclude name="com/mirth/connect/plugins/globalmapviewer/GlobalMapServletInterface.class" />
 		</jar>
 
-		<!-- plugins.imageviewer -->
-		<mkdir dir="${plugins.imageviewer}" />
-		<copy todir="${plugins.imageviewer}">
-			<fileset dir="${src}/com/mirth/connect/plugins/imageviewer">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${plugins.imageviewer}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/imageviewer" />
-		</copy>
-
 		<!-- plugins.mapper -->
 		<mkdir dir="${plugins.mapper}" />
 		<copy todir="${plugins.mapper}">
@@ -299,28 +285,6 @@
 			<include name="com/mirth/connect/plugins/mllpmode/**" />
 			<exclude name="com/mirth/connect/plugins/mllpmode/MLLPModeProperties.class" />
 		</jar>
-
-		<!-- plugins.pdfviewer -->
-		<mkdir dir="${plugins.pdfviewer}" />
-		<copy todir="${plugins.pdfviewer}">
-			<fileset dir="${src}/com/mirth/connect/plugins/pdfviewer">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${plugins.pdfviewer}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/pdfviewer" />
-		</copy>
-
-		<!-- plugins.textviewer -->
-		<mkdir dir="${plugins.textviewer}" />
-		<copy todir="${plugins.textviewer}">
-			<fileset dir="${src}/com/mirth/connect/plugins/textviewer">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${plugins.textviewer}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/textviewer" />
-		</copy>
 
 		<!-- plugins.rulebuilder -->
 		<mkdir dir="${plugins.rulebuilder}" />
@@ -584,9 +548,6 @@
 		<zip destfile="${dist.extensions}/mapper-${version}.zip" basedir="${extensions}" includes="mapper/**/*" />
 		<zip destfile="${dist.extensions}/messagebuilder-${version}.zip" basedir="${extensions}" includes="messagebuilder/**/*" />
 		<zip destfile="${dist.extensions}/rulebuilder-${version}.zip" basedir="${extensions}" includes="rulebuilder/**/*" />
-		<zip destfile="${dist.extensions}/pdfviewer-${version}.zip" basedir="${extensions}" includes="pdfviewer/**/*" />
-		<zip destfile="${dist.extensions}/textviewer-${version}.zip" basedir="${extensions}" includes="textviewer/**/*" />
-		<zip destfile="${dist.extensions}/imageviewer-${version}.zip" basedir="${extensions}" includes="imageviewer/**/*" />
 		<zip destfile="${dist.extensions}/globalmapviewer-${version}.zip" basedir="${extensions}" includes="globalmapviewer/**/*" />
 	</target>
 
