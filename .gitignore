@@ -119,7 +119,6 @@ donkey/donkey-test
 
 # /client/
 /client/logs
-/client/classes
 /client/dist
 /client/about.txt
 /client/bin
@@ -279,7 +278,6 @@ donkey/donkey-test
 # /command/src/com/mirth/connect/cli/launcher/
 
 # /donkey/
-/donkey/classes
 /donkey/setup
 /donkey/bin
 /donkey/build
@@ -369,7 +367,6 @@ donkey/donkey-test
 # /generator/
 /generator/.settings
 /generator/bin
-/generator/classes
 /generator/dist
 /generator/model
 /generator/vocab
@@ -413,7 +410,6 @@ donkey/donkey-test
 /manager/MANIFEST.MF
 /manager/bin
 /manager/build
-/manager/classes
 /manager/dist
 /manager/logs
 /manager/build.xml
@@ -443,7 +439,6 @@ donkey/donkey-test
 # /server/
 /server/mirthdb
 /server/logs
-/server/classes
 /server/classes-plugins
 /server/setup
 /server/bin
