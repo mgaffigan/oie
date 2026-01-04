@@ -22,8 +22,6 @@
 		<property name="plugins.dashboardstatus" value="${extensions}/dashboardstatus" />
 		<property name="plugins.destinationsetfilter" value="${extensions}/destinationsetfilter" />
 		<property name="plugins.imageviewer" value="${extensions}/imageviewer" />
-		<property name="plugins.javascriptrule" value="${extensions}/javascriptrule" />
-		<property name="plugins.javascriptstep" value="${extensions}/javascriptstep" />
 		<property name="plugins.mapper" value="${extensions}/mapper" />
 		<property name="plugins.messagebuilder" value="${extensions}/messagebuilder" />
 		<property name="plugins.globalmapviewer" value="${extensions}/globalmapviewer" />
@@ -32,8 +30,6 @@
 		<property name="plugins.textviewer" value="${extensions}/textviewer" />
 		<property name="plugins.rulebuilder" value="${extensions}/rulebuilder" />
 		<property name="plugins.serverlog" value="${extensions}/serverlog" />
-		<property name="plugins.scriptfilerule" value="${extensions}/scriptfilerule" />
-		<property name="plugins.scriptfilestep" value="${extensions}/scriptfilestep" />
 	</target>
 
 	<target name="clean" depends="init">
@@ -105,6 +101,10 @@
 			<exclude name="com/mirth/connect/plugins/datatypes/raw/" />
 			<exclude name="com/mirth/connect/plugins/xsltstep/" />
 			<exclude name="com/mirth/connect/plugins/datapruner/" />
+			<exclude name="com/mirth/connect/plugins/javascriptrule/" />
+			<exclude name="com/mirth/connect/plugins/javascriptstep/" />
+			<exclude name="com/mirth/connect/plugins/scriptfilerule/" />
+			<exclude name="com/mirth/connect/plugins/scriptfilestep/" />
 			<!-- dcm4che is built by dicom, as well -->
 			<exclude name="com/mirth/connect/connectors/http/" />
 			<exclude name="com/mirth/connect/plugins/httpauth/" />
@@ -253,34 +253,6 @@
 			<fileset dir="${lib.extensions}/imageviewer" />
 		</copy>
 
-		<!-- plugins.javascriptrule -->
-		<mkdir dir="${plugins.javascriptrule}" />
-		<copy todir="${plugins.javascriptrule}">
-			<fileset dir="${src}/com/mirth/connect/plugins/javascriptrule">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${plugins.javascriptrule}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/javascriptrule" />
-		</copy>
-		<jar destfile="${plugins.javascriptrule}/javascriptrule-shared.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/javascriptrule/JavaScriptRule.class" />
-		</jar>
-
-		<!-- plugins.javascriptstep -->
-		<mkdir dir="${plugins.javascriptstep}" />
-		<copy todir="${plugins.javascriptstep}">
-			<fileset dir="${src}/com/mirth/connect/plugins/javascriptstep">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${plugins.javascriptstep}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/javascriptstep" />
-		</copy>
-		<jar destfile="${plugins.javascriptstep}/javascriptstep-shared.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/javascriptstep/JavaScriptStep.class" />
-		</jar>
-
 		<!-- plugins.mapper -->
 		<mkdir dir="${plugins.mapper}" />
 		<copy todir="${plugins.mapper}">
@@ -383,34 +355,6 @@
 			<include name="com/mirth/connect/plugins/serverlog/**" />
 			<exclude name="com/mirth/connect/plugins/serverlog/ServerLogItem.class" />
 			<exclude name="com/mirth/connect/plugins/serverlog/ServerLogServletInterface.class" />
-		</jar>
-
-		<!-- plugins.scriptfilerule -->
-		<mkdir dir="${plugins.scriptfilerule}" />
-		<copy todir="${plugins.scriptfilerule}">
-			<fileset dir="${src}/com/mirth/connect/plugins/scriptfilerule">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${plugins.scriptfilerule}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/scriptfilerule" />
-		</copy>
-		<jar destfile="${plugins.scriptfilerule}/scriptfilerule-shared.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/scriptfilerule/ExternalScriptRule.class" />
-		</jar>
-
-		<!-- plugins.scriptfilestep -->
-		<mkdir dir="${plugins.scriptfilestep}" />
-		<copy todir="${plugins.scriptfilestep}">
-			<fileset dir="${src}/com/mirth/connect/plugins/scriptfilestep">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${plugins.scriptfilestep}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/scriptfilestep" />
-		</copy>
-		<jar destfile="${plugins.scriptfilestep}/scriptfilestep-shared.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/scriptfilestep/ExternalScriptStep.class" />
 		</jar>
 
 		<!-- set the version on all plugins -->
@@ -637,12 +581,9 @@
 		<zip destfile="${dist.extensions}/dashboardstatus-${version}.zip" basedir="${extensions}" includes="dashboardstatus/**/*" />
 		<zip destfile="${dist.extensions}/destinationsetfilter-${version}.zip" basedir="${extensions}" includes="destinationsetfilter/**/*" />
 		<zip destfile="${dist.extensions}/serverlog-${version}.zip" basedir="${extensions}" includes="serverlog/**/*" />
-		<zip destfile="${dist.extensions}/javascriptstep-${version}.zip" basedir="${extensions}" includes="javascriptstep/**/*" />
 		<zip destfile="${dist.extensions}/mapper-${version}.zip" basedir="${extensions}" includes="mapper/**/*" />
 		<zip destfile="${dist.extensions}/messagebuilder-${version}.zip" basedir="${extensions}" includes="messagebuilder/**/*" />
-		<zip destfile="${dist.extensions}/scriptfilestep-${version}.zip" basedir="${extensions}" includes="scriptfilestep/**/*" />
 		<zip destfile="${dist.extensions}/rulebuilder-${version}.zip" basedir="${extensions}" includes="rulebuilder/**/*" />
-		<zip destfile="${dist.extensions}/javascriptrule-${version}.zip" basedir="${extensions}" includes="javascriptrule/**/*" />
 		<zip destfile="${dist.extensions}/pdfviewer-${version}.zip" basedir="${extensions}" includes="pdfviewer/**/*" />
 		<zip destfile="${dist.extensions}/textviewer-${version}.zip" basedir="${extensions}" includes="textviewer/**/*" />
 		<zip destfile="${dist.extensions}/imageviewer-${version}.zip" basedir="${extensions}" includes="imageviewer/**/*" />
