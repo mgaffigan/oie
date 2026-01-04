@@ -35,7 +35,6 @@
 		<property name="plugins.serverlog" value="${extensions}/serverlog" />
 		<property name="plugins.scriptfilerule" value="${extensions}/scriptfilerule" />
 		<property name="plugins.scriptfilestep" value="${extensions}/scriptfilestep" />
-		<property name="plugins.xsltstep" value="${extensions}/xsltstep" />
 	</target>
 
 	<target name="clean" depends="init">
@@ -105,6 +104,7 @@
 			<exclude name="com/mirth/connect/plugins/datatypes/xml/" />
 			<exclude name="com/mirth/connect/plugins/datatypes/json/" />
 			<exclude name="com/mirth/connect/plugins/datatypes/raw/" />
+			<exclude name="com/mirth/connect/plugins/xsltstep/" />
 			<!-- dcm4che is built by dicom, as well -->
 			<exclude name="com/mirth/connect/connectors/http/" />
 			<exclude name="com/mirth/connect/plugins/httpauth/" />
@@ -429,20 +429,6 @@
 		</copy>
 		<jar destfile="${plugins.scriptfilestep}/scriptfilestep-shared.jar" basedir="${classes.plugins}">
 			<include name="com/mirth/connect/plugins/scriptfilestep/ExternalScriptStep.class" />
-		</jar>
-
-		<!-- plugins.xsltstep -->
-		<mkdir dir="${plugins.xsltstep}" />
-		<copy todir="${plugins.xsltstep}">
-			<fileset dir="${src}/com/mirth/connect/plugins/xsltstep">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${plugins.xsltstep}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/xsltstep" />
-		</copy>
-		<jar destfile="${plugins.xsltstep}/xsltstep-shared.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/xsltstep/XsltStep.class" />
 		</jar>
 
 		<!-- set the version on all plugins -->
