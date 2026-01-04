@@ -28,7 +28,6 @@
 		<property name="connectors.vm" value="${extensions}/vm" />
 
 		<!-- datatypes -->
-		<property name="plugins.datatype-delimited" value="${extensions}/datatype-delimited" />
 		<property name="plugins.datatype-hl7v2" value="${extensions}/datatype-hl7v2" />
 		<property name="plugins.datatype-hl7v3" value="${extensions}/datatype-hl7v3" />
 		<property name="plugins.datatype-xml" value="${extensions}/datatype-xml" />
@@ -106,6 +105,7 @@
 			<include name="com/mirth/connect/server/userutil/DatabaseConnectionFactory.java" />
 			<!-- Exclude plugins that have their own build -->
 			<exclude name="com/mirth/connect/connectors/dimse/" />
+			<exclude name="com/mirth/connect/plugins/datatypes/delimited/" />
 			<exclude name="com/mirth/connect/plugins/datatypes/dicom/" />
 			<exclude name="com/mirth/connect/plugins/datatypes/edi/" />
 			<exclude name="com/mirth/connect/plugins/datatypes/ncpdp/" />
@@ -389,28 +389,6 @@
 	</target>
 
 	<target name="create-plugins" depends="create-connectors">
-		<!-- plugins.datatype-delimited -->
-		<mkdir dir="${plugins.datatype-delimited}" />
-		<copy todir="${plugins.datatype-delimited}">
-			<fileset dir="${src}/com/mirth/connect/plugins/datatypes/delimited">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${plugins.datatype-delimited}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/datatypes/delimited" />
-		</copy>
-		<jar destfile="${plugins.datatype-delimited}/datatype-delimited-shared.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/datatypes/delimited/**" />
-			<exclude name="com/mirth/connect/plugins/datatypes/delimited/DelimitedDataTypeServerPlugin.class" />
-			<exclude name="com/mirth/connect/plugins/datatypes/delimited/DelimitedBatchAdaptor.class" />
-			<exclude name="com/mirth/connect/plugins/datatypes/delimited/DelimitedBatchReader.class" />
-		</jar>
-		<jar destfile="${plugins.datatype-delimited}/datatype-delimited-server.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/datatypes/delimited/DelimitedDataTypeServerPlugin.class" />
-			<include name="com/mirth/connect/plugins/datatypes/delimited/DelimitedBatchAdaptor.class" />
-			<include name="com/mirth/connect/plugins/datatypes/delimited/DelimitedBatchReader.class" />
-		</jar>
-		
 		<!-- plugins.datatype-hl7v2 -->
 		<mkdir dir="${plugins.datatype-hl7v2}" />
 		<copy todir="${plugins.datatype-hl7v2}">
@@ -1009,7 +987,6 @@
 		<zip destfile="${dist.extensions}/js-${version}.zip" basedir="${extensions}" includes="js/**/*" />
 		<zip destfile="${dist.extensions}/vm-${version}.zip" basedir="${extensions}" includes="vm/**/*" />
 		
-		<zip destfile="${dist.extensions}/datatype-delimited-${version}.zip" basedir="${extensions}" includes="datatype-delimited/**/*" />
 		<zip destfile="${dist.extensions}/datatype-hl7v2-${version}.zip" basedir="${extensions}" includes="datatype-hl7v2/**/*" />
 		<zip destfile="${dist.extensions}/datatype-hl7v3-${version}.zip" basedir="${extensions}" includes="datatype-hl7v3/**/*" />
 		<zip destfile="${dist.extensions}/datatype-xml-${version}.zip" basedir="${extensions}" includes="datatype-xml/**/*" />
