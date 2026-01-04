@@ -9,6 +9,7 @@
 
 package com.mirth.connect.server.util.javascript;
 
+import java.lang.reflect.Constructor;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,6 @@ import com.mirth.connect.server.transformers.InvalidTransformedDataException;
 import com.mirth.connect.server.userutil.AlertSender;
 import com.mirth.connect.server.userutil.Attachment;
 import com.mirth.connect.server.userutil.ChannelMap;
-import com.mirth.connect.server.userutil.DatabaseConnectionFactory;
 import com.mirth.connect.server.userutil.DestinationSet;
 import com.mirth.connect.server.userutil.ImmutableResponse;
 import com.mirth.connect.server.userutil.SourceMap;
@@ -55,6 +55,7 @@ import com.mirth.connect.util.PropertyLoader;
 public class JavaScriptScopeUtil {
     private static Logger logger = LogManager.getLogger(JavaScriptScopeUtil.class);
     private static Integer rhinoOptimizationLevel = null;
+    private static Constructor<?> databaseConnectionFactoryConstructor = null;
 
     static {
         /*
@@ -69,6 +70,14 @@ public class JavaScriptScopeUtil {
         } else {
             logger.debug("using default Rhino context optimization level (-1)");
             rhinoOptimizationLevel = -1;
+        }
+
+        // Cache DatabaseConnectionFactory constructor if available
+        try {
+            Class<?> clazz = Class.forName("com.mirth.connect.server.userutil.DatabaseConnectionFactory");
+            databaseConnectionFactoryConstructor = clazz.getConstructor(MirthContextFactory.class);
+        } catch (Exception e) {
+            // nop
         }
     }
 
@@ -189,7 +198,14 @@ public class JavaScriptScopeUtil {
 
     // DatabaseConnectionFactory builder
     private static void addDatabaseConnectionFactory(Scriptable scope, Context context) {
-        add("DatabaseConnectionFactory", scope, new DatabaseConnectionFactory((MirthContextFactory) ((MirthContext) context).getFactory()));
+        if (databaseConnectionFactoryConstructor == null) return;
+        try {
+            Object instance = databaseConnectionFactoryConstructor
+                    .newInstance((MirthContextFactory) ((MirthContext) context).getFactory());
+            add("DatabaseConnectionFactory", scope, instance);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static void addContextFactory(Scriptable scope, Context context) {
