@@ -18,7 +18,6 @@
 		</path>
 
 		<!-- connectors -->
-		<property name="connectors.js" value="${extensions}/js" />
 		<property name="connectors.vm" value="${extensions}/vm" />
 
 		<!-- datatypes -->
@@ -98,6 +97,7 @@
 			<!-- Exclude plugins that have their own build -->
 			<exclude name="com/mirth/connect/connectors/dimse/" />
 			<exclude name="com/mirth/connect/connectors/doc/" />
+			<exclude name="com/mirth/connect/connectors/js/" />
 			<exclude name="com/mirth/connect/connectors/tcp/" />
 			<exclude name="com/mirth/connect/connectors/jdbc/" />
 			<exclude name="com/mirth/connect/connectors/jms/" />
@@ -164,28 +164,6 @@
 
 		<!-- Build all external plugins -->
 		<ant antfile="${basedir}/../plugins/build.xml" target="build" inheritAll="false" />
-
-		<!-- connectors.js -->
-		<mkdir dir="${connectors.js}" />
-		<copy todir="${connectors.js}">
-			<fileset dir="${src}/com/mirth/connect/connectors/js">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${connectors.js}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.extensions}/js" />
-		</copy>
-		<jar destfile="${connectors.js}/js-shared.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/connectors/js/JavaScriptReceiverProperties.class" />
-			<include name="com/mirth/connect/connectors/js/JavaScriptDispatcherProperties.class" />
-		</jar>
-		<jar destfile="${connectors.js}/js-server.jar">
-			<fileset dir="${classes.plugins}">
-				<include name="com/mirth/connect/connectors/js/**" />
-				<exclude name="com/mirth/connect/connectors/js/JavaScriptReceiverProperties.class" />
-				<exclude name="com/mirth/connect/connectors/js/JavaScriptDispatcherProperties.class" />
-			</fileset>
-		</jar>
 
 		<!-- connectors.vm -->
 		<mkdir dir="${connectors.vm}" />
@@ -767,7 +745,6 @@
 
 		<ant antfile="${basedir}/../plugins/build.xml" target="create-extension-zips" inheritAll="false" />
 
-		<zip destfile="${dist.extensions}/js-${version}.zip" basedir="${extensions}" includes="js/**/*" />
 		<zip destfile="${dist.extensions}/vm-${version}.zip" basedir="${extensions}" includes="vm/**/*" />
 		
 		<zip destfile="${dist.extensions}/datatype-xml-${version}.zip" basedir="${extensions}" includes="datatype-xml/**/*" />
