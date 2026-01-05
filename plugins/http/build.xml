@@ -1,150 +1,26 @@
 <?xml version="1.0"?>
-<project name="http-connector" basedir="." default="build">
+<project name="http-plugins" basedir="." default="build">
 
-	<!-- Load shared plugin properties -->
-	<dirname property="plugin.dir" file="${ant.file.http-connector}"/>
-	<property file="${plugin.dir}/../build.properties" />
+	<!-- Build order: httpauth first (http and ws depend on it). -->
 
-	<!-- Local properties -->
-	<property name="classes" value="${basedir}/classes" />
-	<property name="src.http" value="${server.src}/com/mirth/connect/connectors/http" />
-	<property name="src.httpauth" value="${server.src}/com/mirth/connect/plugins/httpauth" />
-	<property name="src.ws" value="${server.src}/com/mirth/connect/connectors/ws" />
-	<property name="lib.http" value="${server.lib.extensions}/http" />
-	<property name="lib.ws" value="${server.lib.extensions}/ws" />
-	<property name="dist.http" value="${server.extensions}/http" />
-	<property name="dist.httpauth" value="${server.extensions}/httpauth" />
-	<property name="dist.ws" value="${server.extensions}/ws" />
-
-	<path id="classpath">
-		<fileset dir="${server.lib}" includes="**/*.jar" />
-		<pathelement location="${server.classes}" />
-	</path>
+	<dirname property="http.plugins.dir" file="${ant.file.http-plugins}"/>
 
 	<target name="clean">
-		<delete dir="${classes}" />
+		<ant antfile="${http.plugins.dir}/httpauth/build.xml" target="clean" inheritall="false" />
+		<ant antfile="${http.plugins.dir}/http/build.xml" target="clean" inheritall="false" />
+		<ant antfile="${http.plugins.dir}/ws/build.xml" target="clean" inheritall="false" />
 	</target>
 
-	<target name="init">
-		<mkdir dir="${classes}" />
-		<mkdir dir="${dist.http}" />
-		<mkdir dir="${dist.httpauth}" />
-		<mkdir dir="${dist.ws}" />
-	</target>
-
-	<target name="compile" depends="init">
-		<!-- Compile http, httpauth, and ws together (http and httpauth have cyclic dependency, ws depends on httpauth) -->
-		<javac srcdir="${server.src}" destdir="${classes}" debug="on" includeAntRuntime="false">
-			<include name="com/mirth/connect/connectors/http/**" />
-			<include name="com/mirth/connect/server/userutil/HTTPUtil.java" />
-			<include name="com/mirth/connect/plugins/httpauth/**" />
-			<include name="com/mirth/connect/connectors/ws/**" />
-			<classpath refid="classpath" />
-		</javac>
-	</target>
-
-	<target name="build" depends="compile">
-		<!-- ========== HTTP Connector ========== -->
-		<copy todir="${dist.http}">
-			<fileset dir="${src.http}">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${dist.http}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.http}" />
-		</copy>
-		<jar destfile="${dist.http}/http-shared.jar" basedir="${classes}">
-			<include name="com/mirth/connect/connectors/http/HttpReceiverProperties.class" />
-			<include name="com/mirth/connect/connectors/http/HttpDispatcherProperties.class" />
-			<include name="com/mirth/connect/connectors/http/HttpStaticResource.class" />
-			<include name="com/mirth/connect/connectors/http/HttpStaticResource$ResourceType.class" />
-			<include name="com/mirth/connect/connectors/http/HttpConnectorServletInterface.class" />
-		</jar>
-		<jar destfile="${dist.http}/http-server.jar" basedir="${classes}">
-			<include name="com/mirth/connect/connectors/http/**" />
-			<include name="com/mirth/connect/server/userutil/HTTPUtil.class" />
-			<exclude name="com/mirth/connect/connectors/http/HttpReceiverProperties.class" />
-			<exclude name="com/mirth/connect/connectors/http/HttpDispatcherProperties.class" />
-			<exclude name="com/mirth/connect/connectors/http/HttpStaticResource.class" />
-			<exclude name="com/mirth/connect/connectors/http/HttpStaticResource$ResourceType.class" />
-			<exclude name="com/mirth/connect/connectors/http/HttpConnectorServletInterface.class" />
-		</jar>
-		<mkdir dir="${dist.http}/src" />
-		<jar destfile="${dist.http}/src/http-userutil-sources.jar" basedir="${server.src}">
-			<include name="com/mirth/connect/server/userutil/HTTPUtil.java" />
-		</jar>
-
-		<!-- ========== HTTPAuth Plugin ========== -->
-		<copy todir="${dist.httpauth}">
-			<fileset dir="${src.httpauth}">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<jar destfile="${dist.httpauth}/httpauth-shared.jar" basedir="${classes}">
-			<include name="com/mirth/connect/plugins/httpauth/HttpAuthConnectorPluginProperties.class" />
-			<include name="com/mirth/connect/plugins/httpauth/HttpAuthConnectorPluginProperties$AuthType.class" />
-			<include name="com/mirth/connect/plugins/httpauth/NoneHttpAuthProperties.class" />
-			<include name="com/mirth/connect/plugins/httpauth/basic/BasicHttpAuthProperties.class" />
-			<include name="com/mirth/connect/plugins/httpauth/digest/DigestHttpAuthProperties.class" />
-			<include name="com/mirth/connect/plugins/httpauth/digest/DigestHttpAuthProperties$Algorithm.class" />
-			<include name="com/mirth/connect/plugins/httpauth/digest/DigestHttpAuthProperties$QOPMode.class" />
-			<include name="com/mirth/connect/plugins/httpauth/custom/CustomHttpAuthProperties.class" />
-			<include name="com/mirth/connect/plugins/httpauth/javascript/JavaScriptHttpAuthProperties.class" />
-			<include name="com/mirth/connect/plugins/httpauth/oauth2/OAuth2HttpAuthProperties.class" />
-			<include name="com/mirth/connect/plugins/httpauth/oauth2/OAuth2HttpAuthProperties$TokenLocation.class" />
-		</jar>
-		<jar destfile="${dist.httpauth}/httpauth-server.jar" basedir="${classes}">
-			<include name="com/mirth/connect/plugins/httpauth/**" />
-			<exclude name="com/mirth/connect/plugins/httpauth/HttpAuthConnectorPluginProperties.class" />
-			<exclude name="com/mirth/connect/plugins/httpauth/HttpAuthConnectorPluginProperties$AuthType.class" />
-			<exclude name="com/mirth/connect/plugins/httpauth/NoneHttpAuthProperties.class" />
-			<exclude name="com/mirth/connect/plugins/httpauth/basic/BasicHttpAuthProperties.class" />
-			<exclude name="com/mirth/connect/plugins/httpauth/digest/DigestHttpAuthProperties.class" />
-			<exclude name="com/mirth/connect/plugins/httpauth/digest/DigestHttpAuthProperties$Algorithm.class" />
-			<exclude name="com/mirth/connect/plugins/httpauth/digest/DigestHttpAuthProperties$QOPMode.class" />
-			<exclude name="com/mirth/connect/plugins/httpauth/custom/CustomHttpAuthProperties.class" />
-			<exclude name="com/mirth/connect/plugins/httpauth/javascript/JavaScriptHttpAuthProperties.class" />
-			<exclude name="com/mirth/connect/plugins/httpauth/oauth2/OAuth2HttpAuthProperties.class" />
-			<exclude name="com/mirth/connect/plugins/httpauth/oauth2/OAuth2HttpAuthProperties$TokenLocation.class" />
-		</jar>
-		<jar destfile="${dist.httpauth}/src/httpauth-userutil-sources.jar" basedir="${server.src}">
-			<include name="com/mirth/connect/plugins/httpauth/userutil/**" />
-		</jar>
-
-		<!-- ========== WS Connector ========== -->
-		<copy todir="${dist.ws}">
-			<fileset dir="${src.ws}">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-		<copy todir="${dist.ws}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.ws}" />
-		</copy>
-		<jar destfile="${dist.ws}/ws-shared.jar" basedir="${classes}">
-			<include name="com/mirth/connect/connectors/ws/Binding.class" />
-			<include name="com/mirth/connect/connectors/ws/WebServiceReceiverProperties.class" />
-			<include name="com/mirth/connect/connectors/ws/WebServiceDispatcherProperties.class" />
-			<include name="com/mirth/connect/connectors/ws/DefinitionServiceMap.class" />
-			<include name="com/mirth/connect/connectors/ws/DefinitionServiceMap$DefinitionPortMap.class" />
-			<include name="com/mirth/connect/connectors/ws/DefinitionServiceMap$PortInformation.class" />
-			<include name="com/mirth/connect/connectors/ws/WebServiceConnectorServletInterface.class" />
-		</jar>
-		<jar destfile="${dist.ws}/ws-server.jar" basedir="${classes}">
-			<include name="com/mirth/connect/connectors/ws/**" />
-			<exclude name="com/mirth/connect/connectors/ws/Binding.class" />
-			<exclude name="com/mirth/connect/connectors/ws/WebServiceReceiverProperties.class" />
-			<exclude name="com/mirth/connect/connectors/ws/WebServiceDispatcherProperties.class" />
-			<exclude name="com/mirth/connect/connectors/ws/DefinitionServiceMap.class" />
-			<exclude name="com/mirth/connect/connectors/ws/DefinitionServiceMap$DefinitionPortMap.class" />
-			<exclude name="com/mirth/connect/connectors/ws/DefinitionServiceMap$PortInformation.class" />
-			<exclude name="com/mirth/connect/connectors/ws/WebServiceConnectorServletInterface.class" />
-		</jar>
+	<target name="build">
+		<ant antfile="${http.plugins.dir}/httpauth/build.xml" target="build" inheritall="false" />
+		<ant antfile="${http.plugins.dir}/http/build.xml" target="build" inheritall="false" />
+		<ant antfile="${http.plugins.dir}/ws/build.xml" target="build" inheritall="false" />
 	</target>
 
 	<target name="create-zip">
-		<zip destfile="${server.dist.extensions}/http-${version}.zip" basedir="${server.extensions}" includes="http/**/*" />
-		<zip destfile="${server.dist.extensions}/httpauth-${version}.zip" basedir="${server.extensions}" includes="httpauth/**/*" />
-		<zip destfile="${server.dist.extensions}/ws-${version}.zip" basedir="${server.extensions}" includes="ws/**/*" />
+		<ant antfile="${http.plugins.dir}/httpauth/build.xml" target="create-zip" inheritall="false" />
+		<ant antfile="${http.plugins.dir}/http/build.xml" target="create-zip" inheritall="false" />
+		<ant antfile="${http.plugins.dir}/ws/build.xml" target="create-zip" inheritall="false" />
 	</target>
 
 </project>

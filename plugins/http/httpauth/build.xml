@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<project name="httpauth-plugin" basedir="." default="build">
+
+	<dirname property="plugin.dir" file="${ant.file.httpauth-plugin}/.."/>
+	<property file="${plugin.dir}/../build.properties" />
+
+	<!-- Local properties -->
+	<property name="shared.classes" value="${basedir}/shared/classes" />
+	<property name="server.classes.local" value="${basedir}/server/classes" />
+	<property name="src.shared" value="${basedir}/shared/src" />
+	<property name="src.server" value="${basedir}/server/src" />
+	<property name="dist" value="${server.extensions}/httpauth" />
+
+	<!-- HTTP sources compiled here to resolve cyclic dependency -->
+	<property name="http.src.shared" value="${plugin.dir}/http/shared/src" />
+	<property name="http.src.server" value="${plugin.dir}/http/server/src" />
+
+	<path id="classpath">
+		<fileset dir="${server.lib}" includes="**/*.jar" />
+		<pathelement location="${server.classes}" />
+	</path>
+
+	<target name="clean">
+		<delete dir="${shared.classes}" />
+		<delete dir="${server.classes.local}" />
+	</target>
+
+	<target name="compile">
+		<mkdir dir="${shared.classes}" />
+		<javac srcdir="${src.shared}" destdir="${shared.classes}" debug="on" includeAntRuntime="false">
+			<classpath refid="classpath" />
+		</javac>
+
+		<mkdir dir="${server.classes.local}" />
+		<javac destdir="${server.classes.local}" debug="on" includeAntRuntime="false">
+			<src path="${src.server}" />
+			<src path="${http.src.shared}" />
+			<src path="${http.src.server}" />
+			<classpath refid="classpath" />
+			<classpath location="${shared.classes}" />
+		</javac>
+	</target>
+
+	<target name="build" depends="compile">
+		<mkdir dir="${dist}" />
+		<mkdir dir="${dist}/src" />
+		<copy todir="${dist}" file="${src.server}/plugin.xml" />
+        
+		<jar destfile="${dist}/httpauth-shared.jar" basedir="${shared.classes}" />
+		<!-- Create server jar (exclude http classes compiled for dependency resolution) -->
+		<jar destfile="${dist}/httpauth-server.jar" basedir="${server.classes.local}">
+			<exclude name="com/mirth/connect/connectors/http/**" />
+			<exclude name="com/mirth/connect/server/userutil/HTTPUtil.class" />
+		</jar>
+		<jar destfile="${dist}/src/httpauth-userutil-sources.jar" basedir="${src.server}">
+			<include name="com/mirth/connect/plugins/httpauth/userutil/**" />
+		</jar>
+	</target>
+
+	<target name="create-zip">
+		<zip destfile="${server.dist.extensions}/httpauth-${version}.zip" basedir="${server.extensions}" includes="httpauth/**/*" />
+	</target>
+
+</project>

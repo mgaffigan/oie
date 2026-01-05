@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<project name="ws-connector" basedir="." default="build">
+
+	<dirname property="plugin.dir" file="${ant.file.ws-connector}/.."/>
+	<property file="${plugin.dir}/../build.properties" />
+
+	<!-- Local properties -->
+	<property name="shared.classes" value="${basedir}/shared/classes" />
+	<property name="server.classes.local" value="${basedir}/server/classes" />
+	<property name="src.shared" value="${basedir}/shared/src" />
+	<property name="src.server" value="${basedir}/server/src" />
+	<property name="lib" value="${basedir}/server/lib" />
+	<property name="dist" value="${server.extensions}/ws" />
+
+	<!-- Classes from httpauth (already compiled) -->
+	<property name="httpauth.shared.classes" value="${plugin.dir}/httpauth/shared/classes" />
+	<property name="httpauth.server.classes" value="${plugin.dir}/httpauth/server/classes" />
+
+	<path id="classpath">
+		<fileset dir="${server.lib}" includes="**/*.jar" />
+        <fileset dir="${lib}" includes="**/*.jar" />
+		<pathelement location="${server.classes}" />
+		<pathelement location="${httpauth.shared.classes}" />
+		<pathelement location="${httpauth.server.classes}" />
+	</path>
+
+	<target name="clean">
+		<delete dir="${shared.classes}" />
+		<delete dir="${server.classes.local}" />
+	</target>
+
+	<target name="compile">
+		<mkdir dir="${shared.classes}" />
+		<javac srcdir="${src.shared}" destdir="${shared.classes}" debug="on" includeAntRuntime="false">
+			<classpath refid="classpath" />
+		</javac>
+
+		<mkdir dir="${server.classes.local}" />
+		<javac srcdir="${src.server}" destdir="${server.classes.local}" debug="on" includeAntRuntime="false">
+			<classpath refid="classpath" />
+			<classpath location="${shared.classes}" />
+		</javac>
+	</target>
+
+	<target name="build" depends="compile">
+		<mkdir dir="${dist}" />
+		<copy todir="${dist}" file="${src.server}/source.xml" />
+		<copy todir="${dist}" file="${src.server}/destination.xml" />
+		<copy todir="${dist}/lib" failonerror="false" quiet="true">
+			<fileset dir="${lib}" />
+		</copy>
+        
+		<jar destfile="${dist}/ws-shared.jar" basedir="${shared.classes}" />
+		<jar destfile="${dist}/ws-server.jar" basedir="${server.classes.local}" />
+	</target>
+
+	<target name="create-zip">
+		<zip destfile="${server.dist.extensions}/ws-${version}.zip" basedir="${server.extensions}" includes="ws/**/*" />
+	</target>
+
+</project>
