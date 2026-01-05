@@ -1,11 +1,9 @@
 <?xml version="1.0"?>
 <project name="datatype-raw" basedir="." default="build">
 
-	<!-- Load shared plugin properties -->
 	<dirname property="plugin.dir" file="${ant.file.datatype-raw}"/>
 	<property file="${plugin.dir}/../build.properties" />
 
-	<!-- Local properties -->
 	<property name="classes" value="${basedir}/classes" />
 	<property name="src" value="${basedir}/src" />
 	<property name="dist" value="${server.extensions}/datatype-raw" />
