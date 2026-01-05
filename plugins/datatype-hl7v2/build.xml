@@ -1,13 +1,11 @@
 <?xml version="1.0"?>
 <project name="datatype-hl7v2" basedir="." default="build">
 
-	<!-- Load shared plugin properties -->
 	<dirname property="plugin.dir" file="${ant.file.datatype-hl7v2}"/>
 	<property file="${plugin.dir}/../build.properties" />
 
-	<!-- Local properties -->
+	<property name="src" value="${basedir}/src" />
 	<property name="classes" value="${basedir}/classes" />
-	<property name="src.plugin" value="${server.src}/com/mirth/connect/plugins/datatypes/hl7v2" />
 	<property name="dist" value="${server.extensions}/datatype-hl7v2" />
 
 	<path id="classpath">
@@ -19,34 +17,21 @@
 		<delete dir="${classes}" />
 	</target>
 
-	<target name="init">
+	<target name="compile">
 		<mkdir dir="${classes}" />
-		<mkdir dir="${dist}" />
-	</target>
-
-	<target name="compile" depends="init">
-		<javac srcdir="${server.src}" destdir="${classes}" debug="on" includeAntRuntime="false">
-			<include name="com/mirth/connect/plugins/datatypes/hl7v2/" />
+		<javac srcdir="${src}" destdir="${classes}" debug="on" includeAntRuntime="false">
 			<classpath refid="classpath" />
 		</javac>
 	</target>
 
 	<target name="build" depends="compile">
-		<!-- Copy plugin metadata XML files -->
-		<copy todir="${dist}">
-			<fileset dir="${src.plugin}">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-
-		<!-- Create shared jar (classes needed by client) -->
+		<mkdir dir="${dist}" />
+		<copy todir="${dist}" file="${src}/plugin.xml" />
 		<jar destfile="${dist}/datatype-hl7v2-shared.jar" basedir="${classes}">
 			<include name="com/mirth/connect/plugins/datatypes/hl7v2/**" />
 			<exclude name="com/mirth/connect/plugins/datatypes/hl7v2/HL7v2DataTypeServerPlugin.class" />
 			<exclude name="com/mirth/connect/plugins/datatypes/hl7v2/HL7v2BatchAdaptor.class" />
 		</jar>
-
-		<!-- Create server jar -->
 		<jar destfile="${dist}/datatype-hl7v2-server.jar" basedir="${classes}">
 			<include name="com/mirth/connect/plugins/datatypes/hl7v2/HL7v2DataTypeServerPlugin.class" />
 			<include name="com/mirth/connect/plugins/datatypes/hl7v2/HL7v2BatchAdaptor.class" />
