@@ -1,18 +1,17 @@
 <?xml version="1.0"?>
 <project name="doc-connector" basedir="." default="build">
 
-	<!-- Load shared plugin properties -->
 	<dirname property="plugin.dir" file="${ant.file.doc-connector}"/>
 	<property file="${plugin.dir}/../build.properties" />
 
-	<!-- Local properties -->
 	<property name="classes" value="${basedir}/classes" />
-	<property name="src.connector" value="${server.src}/com/mirth/connect/connectors/doc" />
-	<property name="lib" value="${server.lib.extensions}/doc" />
+	<property name="src" value="${basedir}/src" />
+	<property name="lib" value="${basedir}/lib" />
 	<property name="dist" value="${server.extensions}/doc" />
 
 	<path id="classpath">
 		<fileset dir="${server.lib}" includes="**/*.jar" />
+		<fileset dir="${lib}" includes="**/*.jar" />
 		<pathelement location="${server.classes}" />
 	</path>
 
@@ -20,42 +19,26 @@
 		<delete dir="${classes}" />
 	</target>
 
-	<target name="init">
+	<target name="compile">
 		<mkdir dir="${classes}" />
-		<mkdir dir="${dist}" />
-	</target>
-
-	<target name="compile" depends="init">
-		<javac srcdir="${server.src}" destdir="${classes}" debug="on" includeAntRuntime="false">
-			<include name="com/mirth/connect/connectors/doc/" />
+		<javac srcdir="${src}" destdir="${classes}" debug="on" includeAntRuntime="false">
 			<classpath refid="classpath" />
 		</javac>
 	</target>
 
 	<target name="build" depends="compile">
-		<!-- Copy plugin metadata XML files -->
-		<copy todir="${dist}">
-			<fileset dir="${src.connector}">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-
-		<!-- Copy extension libraries -->
+		<mkdir dir="${dist}" />
+		<copy todir="${dist}" file="${src}/destination.xml" />
 		<copy todir="${dist}/lib" failonerror="false" quiet="true">
 			<fileset dir="${lib}" />
 		</copy>
-
-		<!-- Create shared jar (classes needed by client) -->
 		<jar destfile="${dist}/doc-shared.jar" basedir="${classes}">
 			<include name="com/mirth/connect/connectors/doc/DocumentDispatcherProperties.class" />
 			<include name="com/mirth/connect/connectors/doc/DocumentConnectorServletInterface.class" />
 			<include name="com/mirth/connect/connectors/doc/PageSize.class" />
 			<include name="com/mirth/connect/connectors/doc/Unit.class" />
 		</jar>
-
-		<!-- Create server jar -->
 		<jar destfile="${dist}/doc-server.jar" basedir="${classes}">
-			<include name="com/mirth/connect/connectors/doc/" />
 			<exclude name="com/mirth/connect/connectors/doc/DocumentDispatcherProperties.class" />
 			<exclude name="com/mirth/connect/connectors/doc/DocumentConnectorServletInterface.class" />
 			<exclude name="com/mirth/connect/connectors/doc/PageSize.class" />
