@@ -1,18 +1,17 @@
 <?xml version="1.0"?>
 <project name="file-connector" basedir="." default="build">
 
-	<!-- Load shared plugin properties -->
 	<dirname property="plugin.dir" file="${ant.file.file-connector}"/>
 	<property file="${plugin.dir}/../build.properties" />
 
-	<!-- Local properties -->
 	<property name="classes" value="${basedir}/classes" />
-	<property name="src.connector" value="${server.src}/com/mirth/connect/connectors/file" />
-	<property name="lib" value="${server.lib.extensions}/file" />
+	<property name="src" value="${basedir}/src" />
+	<property name="lib" value="${basedir}/lib" />
 	<property name="dist" value="${server.extensions}/file" />
 
 	<path id="classpath">
 		<fileset dir="${server.lib}" includes="**/*.jar" />
+		<fileset dir="${lib}" includes="**/*.jar" />
 		<pathelement location="${server.classes}" />
 	</path>
 
@@ -20,32 +19,20 @@
 		<delete dir="${classes}" />
 	</target>
 
-	<target name="init">
+	<target name="compile">
 		<mkdir dir="${classes}" />
-		<mkdir dir="${dist}" />
-	</target>
-
-	<target name="compile" depends="init">
-		<javac srcdir="${server.src}" destdir="${classes}" debug="on" includeAntRuntime="false">
-			<include name="com/mirth/connect/connectors/file/" />
+		<javac srcdir="${src}" destdir="${classes}" debug="on" includeAntRuntime="false">
 			<classpath refid="classpath" />
 		</javac>
 	</target>
 
 	<target name="build" depends="compile">
-		<!-- Copy plugin metadata XML files -->
-		<copy todir="${dist}">
-			<fileset dir="${src.connector}">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-
-		<!-- Copy extension libraries -->
+		<mkdir dir="${dist}" />
+		<copy todir="${dist}" file="${src}/source.xml" />
+		<copy todir="${dist}" file="${src}/destination.xml" />
 		<copy todir="${dist}/lib" failonerror="false" quiet="true">
 			<fileset dir="${lib}" />
 		</copy>
-
-		<!-- Create shared jar (classes needed by client) -->
 		<jar destfile="${dist}/file-shared.jar" basedir="${classes}">
 			<include name="com/mirth/connect/connectors/file/SchemeProperties.class" />
 			<include name="com/mirth/connect/connectors/file/FTPSchemeProperties.class" />
@@ -59,10 +46,7 @@
 			<include name="com/mirth/connect/connectors/file/FileAction.class" />
 			<include name="com/mirth/connect/connectors/file/FileConnectorServletInterface.class" />
 		</jar>
-
-		<!-- Create server jar -->
 		<jar destfile="${dist}/file-server.jar" basedir="${classes}">
-			<include name="com/mirth/connect/connectors/file/**" />
 			<exclude name="com/mirth/connect/connectors/file/SchemeProperties.class" />
 			<exclude name="com/mirth/connect/connectors/file/FTPSchemeProperties.class" />
             <!-- 
