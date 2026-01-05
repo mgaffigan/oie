@@ -1,14 +1,11 @@
 <?xml version="1.0"?>
 <project name="datatype-edi" basedir="." default="build">
 
-	<!-- Load shared plugin properties -->
 	<dirname property="plugin.dir" file="${ant.file.datatype-edi}"/>
 	<property file="${plugin.dir}/../build.properties" />
 
-	<!-- Local properties -->
 	<property name="classes" value="${basedir}/classes" />
-	<property name="src.plugin" value="${server.src}/com/mirth/connect/plugins/datatypes/edi" />
-	<property name="lib" value="${server.lib.extensions}/datatypes/edi" />
+	<property name="src" value="${basedir}/src" />
 	<property name="dist" value="${server.extensions}/datatype-edi" />
 
 	<path id="classpath">
@@ -20,43 +17,23 @@
 		<delete dir="${classes}" />
 	</target>
 
-	<target name="init">
+	<target name="compile">
 		<mkdir dir="${classes}" />
-		<mkdir dir="${dist}" />
-	</target>
-
-	<target name="compile" depends="init">
-		<javac srcdir="${server.src}" destdir="${classes}" debug="on" includeAntRuntime="false">
-			<include name="com/mirth/connect/plugins/datatypes/edi/**" />
+		<javac srcdir="${src}" destdir="${classes}" debug="on" includeAntRuntime="false">
 			<classpath refid="classpath" />
 		</javac>
 	</target>
 
 	<target name="build" depends="compile">
-		<!-- Copy plugin metadata XML files -->
-		<copy todir="${dist}">
-			<fileset dir="${src.plugin}">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-
-		<!-- Copy extension libraries -->
-		<copy todir="${dist}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib}" />
-		</copy>
-
-		<!-- Copy the xml resource files so they will be included in jar -->
+		<mkdir dir="${dist}" />
+		<copy todir="${dist}" file="${src}/plugin.xml" />
+		<copy todir="${dist}" file="${src}/edi-to-xml-mapping.xml" />
 		<copy todir="${classes}/com/mirth/connect/plugins/datatypes/edi/xml">
-			<fileset dir="${src.plugin}/xml" />
+			<fileset dir="${src}/com/mirth/connect/plugins/datatypes/edi/xml" />
 		</copy>
-
-		<!-- Create shared jar (classes needed by client) -->
 		<jar destfile="${dist}/datatype-edi-shared.jar" basedir="${classes}">
-			<include name="com/mirth/connect/plugins/datatypes/edi/**" />
 			<exclude name="com/mirth/connect/plugins/datatypes/edi/EDIDataTypeServerPlugin.class" />
 		</jar>
-
-		<!-- Create server jar -->
 		<jar destfile="${dist}/datatype-edi-server.jar" basedir="${classes}">
 			<include name="com/mirth/connect/plugins/datatypes/edi/EDIDataTypeServerPlugin.class" />
 		</jar>
