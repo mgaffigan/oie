@@ -1,14 +1,11 @@
 <?xml version="1.0"?>
 <project name="tcp-connector" basedir="." default="build">
 
-	<!-- Load shared plugin properties -->
 	<dirname property="plugin.dir" file="${ant.file.tcp-connector}"/>
 	<property file="${plugin.dir}/../build.properties" />
 
-	<!-- Local properties -->
+	<property name="src" value="${basedir}/src" />
 	<property name="classes" value="${basedir}/classes" />
-	<property name="src.connector" value="${server.src}/com/mirth/connect/connectors/tcp" />
-	<property name="lib" value="${server.lib.extensions}/tcp" />
 	<property name="dist" value="${server.extensions}/tcp" />
 
 	<path id="classpath">
@@ -20,41 +17,24 @@
 		<delete dir="${classes}" />
 	</target>
 
-	<target name="init">
+	<target name="compile">
 		<mkdir dir="${classes}" />
-		<mkdir dir="${dist}" />
-	</target>
-
-	<target name="compile" depends="init">
-		<javac srcdir="${server.src}" destdir="${classes}" debug="on" includeAntRuntime="false">
-			<include name="com/mirth/connect/connectors/tcp/" />
+		<javac srcdir="${src}" destdir="${classes}" debug="on" includeAntRuntime="false">
 			<classpath refid="classpath" />
 		</javac>
 	</target>
 
 	<target name="build" depends="compile">
-		<!-- Copy plugin metadata XML files -->
-		<copy todir="${dist}">
-			<fileset dir="${src.connector}">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-
-		<!-- Copy extension libraries -->
-		<copy todir="${dist}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib}" />
-		</copy>
-
-		<!-- Create shared jar (classes needed by client) -->
+		<mkdir dir="${dist}" />
+		<copy todir="${dist}" file="${src}/source.xml" />
+		<copy todir="${dist}" file="${src}/destination.xml" />
+		<copy todir="${dist}" file="${src}/plugin.xml" />
 		<jar destfile="${dist}/tcp-shared.jar" basedir="${classes}">
 			<include name="com/mirth/connect/connectors/tcp/TcpReceiverProperties.class" />
 			<include name="com/mirth/connect/connectors/tcp/TcpDispatcherProperties.class" />
 			<include name="com/mirth/connect/connectors/tcp/TcpConnectorServletInterface.class" />
 		</jar>
-
-		<!-- Create server jar -->
 		<jar destfile="${dist}/tcp-server.jar" basedir="${classes}">
-			<include name="com/mirth/connect/connectors/tcp/" />
 			<exclude name="com/mirth/connect/connectors/tcp/TcpReceiverProperties.class" />
 			<exclude name="com/mirth/connect/connectors/tcp/TcpDispatcherProperties.class" />
 			<exclude name="com/mirth/connect/connectors/tcp/TcpConnectorServletInterface.class" />
