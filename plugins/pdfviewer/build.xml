@@ -1,33 +1,23 @@
 <?xml version="1.0"?>
 <project name="pdfviewer" basedir="." default="build">
 
-	<!-- Load shared plugin properties -->
 	<dirname property="plugin.dir" file="${ant.file.pdfviewer}"/>
 	<property file="${plugin.dir}/../build.properties" />
 
-	<!-- Local properties -->
-	<property name="src.plugin" value="${server.src}/com/mirth/connect/plugins/pdfviewer" />
-	<property name="lib" value="${server.lib.extensions}/pdfviewer" />
+	<property name="src" value="${basedir}/src" />
+	<property name="lib" value="${basedir}/lib" />
 	<property name="dist" value="${server.extensions}/pdfviewer" />
 
 	<target name="clean">
-		<!-- No compiled classes to clean -->
 	</target>
 
 	<target name="init">
-		<mkdir dir="${dist}" />
 	</target>
 
 	<target name="build" depends="init">
-		<!-- Copy plugin metadata XML files -->
-		<copy todir="${dist}">
-			<fileset dir="${src.plugin}">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-
-		<!-- Copy extension libraries -->
-		<copy todir="${dist}/lib" failonerror="false" quiet="true">
+		<mkdir dir="${dist}" />
+		<copy todir="${dist}" file="${src}/plugin.xml" />
+		<copy todir="${dist}/lib" quiet="true">
 			<fileset dir="${lib}" />
 		</copy>
 	</target>

@@ -9,8 +9,6 @@
 
 		<path id="classpath">
 			<fileset dir="${lib}" includes="**/*.jar" />
-			<!-- include the extensions libs in case they have jars required for the client -->
-			<fileset dir="${server}/lib/extensions" includes="**/*.jar" />
 			<!-- HACK: include from pdfviewer since this still builds the client portion -->
 			<fileset dir="${basedir}/../plugins/pdfviewer" includes="**/*.jar" />
 			<!-- HACK: include from dicom since this still builds the client portion -->

@@ -1,35 +1,18 @@
 <?xml version="1.0"?>
 <project name="imageviewer" basedir="." default="build">
 
-	<!-- Load shared plugin properties -->
 	<dirname property="plugin.dir" file="${ant.file.imageviewer}"/>
 	<property file="${plugin.dir}/../build.properties" />
 
-	<!-- Local properties -->
-	<property name="src.plugin" value="${server.src}/com/mirth/connect/plugins/imageviewer" />
-	<property name="lib" value="${server.lib.extensions}/imageviewer" />
+	<property name="src" value="${basedir}/src" />
 	<property name="dist" value="${server.extensions}/imageviewer" />
 
 	<target name="clean">
-		<!-- No compiled classes to clean -->
 	</target>
 
-	<target name="init">
+	<target name="build">
 		<mkdir dir="${dist}" />
-	</target>
-
-	<target name="build" depends="init">
-		<!-- Copy plugin metadata XML files -->
-		<copy todir="${dist}">
-			<fileset dir="${src.plugin}">
-				<include name="*.xml" />
-			</fileset>
-		</copy>
-
-		<!-- Copy extension libraries -->
-		<copy todir="${dist}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib}" />
-		</copy>
+		<copy todir="${dist}" file="${src}/plugin.xml" />
 	</target>
 
 	<target name="create-zip">
