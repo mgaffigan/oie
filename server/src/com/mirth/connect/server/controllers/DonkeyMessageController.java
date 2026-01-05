@@ -60,7 +60,7 @@ import com.mirth.connect.server.ExtensionLoader;
 import com.mirth.connect.server.channel.ErrorTaskHandler;
 import com.mirth.connect.server.mybatis.MessageSearchResult;
 import com.mirth.connect.server.mybatis.MessageTextResult;
-import com.mirth.connect.server.util.DICOMMessageUtil;
+import com.mirth.connect.server.util.MessageAttachmentUtil;
 import com.mirth.connect.server.util.ListRangeIterator;
 import com.mirth.connect.server.util.ListRangeIterator.ListRangeItem;
 import com.mirth.connect.server.util.SqlConfig;
@@ -417,7 +417,7 @@ public class DonkeyMessageController extends MessageController {
                     RawMessage rawMessage = null;
 
                     if (isBinary) {
-                        rawMessage = new RawMessage(DICOMMessageUtil.getDICOMRawBytes(connectorMessage));
+                        rawMessage = new RawMessage(MessageAttachmentUtil.getDICOMRawBytes(connectorMessage));
                     } else {
                         rawMessage = new RawMessage(org.apache.commons.codec.binary.StringUtils.newString(attachmentHandlerProvider.reAttachMessage(rawContent.getContent(), connectorMessage, Constants.ATTACHMENT_CHARSET, false, true, true, remainingAttachments), Constants.ATTACHMENT_CHARSET));
                     }

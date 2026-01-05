@@ -87,6 +87,10 @@
 			<!-- A: No idea, but if a normal directory or ** is used, it skips BasicModeProvider.java -->
 			<exclude name="com/mirth/connect/connectors/**/*.java" />
 			<exclude name="com/mirth/connect/plugins/*/**/*.java" />
+			<exclude name="com/mirth/connect/server/util/DICOMMessageUtil.java" />
+			<exclude name="com/mirth/connect/server/userutil/DICOMUtil.java" />
+			<exclude name="com/mirth/connect/model/converters/DICOMConverter.java" />
+			<exclude name="com/mirth/connect/server/attachments/dicom/*.java" />
 			<exclude name="org/dcm4che2/" />
 			<exclude name="com/mirth/connect/server/userutil/HTTPUtil.java" />
 			<exclude name="com/mirth/connect/server/userutil/DatabaseConnectionFactory.java" />
@@ -103,6 +107,10 @@
 			<!-- A: No idea, but if a normal directory or ** is used, it skips BasicModeProvider.java -->
 			<include name="com/mirth/connect/connectors/**/*.java" />
 			<include name="com/mirth/connect/plugins/*/**/*.java" />
+			<include name="com/mirth/connect/server/util/DICOMMessageUtil.java" />
+			<include name="com/mirth/connect/server/userutil/DICOMUtil.java" />
+			<include name="com/mirth/connect/model/converters/DICOMConverter.java" />
+			<include name="com/mirth/connect/server/attachments/dicom/*.java" />
 			<include name="org/dcm4che2/" />
 			<include name="com/mirth/connect/server/userutil/HTTPUtil.java" />
 			<include name="com/mirth/connect/server/userutil/DatabaseConnectionFactory.java" />
@@ -148,6 +156,8 @@
 			<include name="net/lingala/zip4j/unzip/**" />
 
 			<include name="version.properties" />
+
+			<exclude name="com/mirth/connect/model/converters/DICOMConverter.class" />
 		</jar>
 	</target>
 
@@ -166,14 +176,24 @@
 		<jar destfile="${connectors.dicom}/dicom-shared.jar" basedir="${classes.plugins}">
 			<include name="com/mirth/connect/connectors/dimse/DICOMReceiverProperties.class" />
 			<include name="com/mirth/connect/connectors/dimse/DICOMDispatcherProperties.class" />
+			<include name="com/mirth/connect/model/converters/DICOMConverter.class" />
 		</jar>
 		<jar destfile="${connectors.dicom}/dicom-server.jar">
 			<fileset dir="${classes.plugins}">
 				<include name="com/mirth/connect/connectors/dimse/**" />
 				<include name="org/dcm4che2/**" />
+				<include name="com/mirth/connect/server/userutil/DICOMUtil.class" />
+				<include name="com/mirth/connect/server/util/DICOMMessageUtil.class" />
+				<include name="com/mirth/connect/server/attachments/dicom/DICOMAttachmentHandler.class" />
+				<include name="com/mirth/connect/server/attachments/dicom/DICOMAttachmentHandlerProvider.class" />
 				<exclude name="com/mirth/connect/connectors/dimse/DICOMReceiverProperties.class" />
 				<exclude name="com/mirth/connect/connectors/dimse/DICOMDispatcherProperties.class" />
+				<exclude name="com/mirth/connect/model/converters/DICOMConverter.class" />
 			</fileset>
+		</jar>
+		<mkdir dir="${connectors.dicom}/src" />
+		<jar destfile="${connectors.dicom}/src/dicom-userutil-sources.jar" basedir="${src}">
+			<include name="com/mirth/connect/server/userutil/DICOMUtil.java" />
 		</jar>
 
 		<!-- connectors.doc -->
@@ -1053,6 +1073,9 @@
 
 			<exclude name="com/mirth/connect/server/launcher/**" />
 			<exclude name="org/dcm4che2/**" />
+			<exclude name="com/mirth/connect/model/converters/DICOMConverter.class" />
+			<exclude name="com/mirth/connect/server/attachments/dicom/DICOMAttachmentHandler.class" />
+			<exclude name="com/mirth/connect/server/attachments/dicom/DICOMAttachmentHandlerProvider.class" />
 		</jar>
 
 		<!-- create the dbconf jar -->
@@ -1076,6 +1099,7 @@
 			<exclude name="**/package-info.java" />
 			<exclude name="com/mirth/connect/server/userutil/HTTPUtil.java" />
 			<exclude name="com/mirth/connect/server/userutil/DatabaseConnectionFactory.java" />
+			<exclude name="com/mirth/connect/server/userutil/DICOMUtil.java" />
 		</jar>
 
 		<!-- remove svn folders -->
