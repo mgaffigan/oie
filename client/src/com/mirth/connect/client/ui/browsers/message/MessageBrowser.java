@@ -1416,7 +1416,7 @@ public class MessageBrowser extends javax.swing.JPanel {
 
     // Resolve tooltip text for a mapping entry based on key/value
     private String resolveMapValueTooltip(String key, String value) {
-        // Sow channel name when key is sourceChannelId
+        // Show channel name when key is sourceChannelId
         if ("sourceChannelId".equals(key)) {
             return parent.status.stream()
                 .filter(s -> value.equals(s.getChannelId()))
