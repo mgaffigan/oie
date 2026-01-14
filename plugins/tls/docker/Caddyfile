@@ -1,0 +1,25 @@
+{
+    auto_https off
+}
+
+https://valid.crl.caddy {
+    tls /opt/certs/crl/server1.crt /opt/certs/crl/server1.key
+
+    respond "Hai with valid cert" 200
+  }
+
+https://revoked.crl.caddy {
+    tls /opt/certs/crl/server2.crt /opt/certs/crl/server2.key
+
+    respond "Hai with revoked cert" 200
+}
+
+https://mtls.caddy {
+    tls /opt/certs/crl/server1.crt /opt/certs/crl/server1.key {
+        client_auth {
+            mode require
+        }
+    }
+
+    respond "Hai from mtls" 200
+}

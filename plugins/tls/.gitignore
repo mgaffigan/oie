@@ -1,0 +1,15 @@
+.idea/
+target/
+*.iml
+*.zip
+*.json
+plugin.xml
+
+
+docker/certs/
+docker/custom-extensions
+docker/pgdata
+docker/conf
+docker/appdata
+
+tools/cert-revocation/mini-ca

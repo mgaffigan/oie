@@ -1,0 +1,55 @@
+name: tls-manager
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "9080:80/tcp"
+      - "9443:443/tcp"
+    networks:
+      default:
+        aliases:
+          - valid.crl.caddy
+          - revoked.crl.caddy
+          - mtls.caddy
+    volumes:
+      - ../tools/cert-revocation/mini-ca:/opt/certs/crl:ro
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+
+  oie:
+    image: openintegrationengine/engine:latest
+    environment:
+      - DATABASE=postgres
+      - DATABASE_URL=jdbc:postgresql://db:5432/oie
+      - DATABASE_MAX_CONNECTIONS=20
+      - DATABASE_USERNAME=oieuser
+      - DATABASE_PASSWORD=oieuserpw
+      - KEYSTORE_STOREPASS=docker_storepass
+      - KEYSTORE_KEYPASS=docker_keypass
+      - OIE_TLS_PLUGIN_PERSISTENCE_BACKEND=filesystem
+      - OIE_TLS_PLUGIN_FS_STOREPATH=/certs/truststore.p12
+      - OIE_TLS_PLUGIN_FS_STOREPASS=changeit
+    ports:
+      - "8443:8443/tcp"
+      - "5005:5005/tcp"
+      - "6001:6001/tcp"
+    volumes:
+      - ./appdata:/opt/engine/appdata
+      - ./custom-extensions:/opt/engine/custom-extensions
+      - ./conf/log4j2.properties:/opt/engine/conf/log4j2.properties:ro
+      - ./custom.vmoptions:/opt/engine/conf/custom.vmoptions:ro
+      - ./certs:/certs
+    depends_on:
+      - db
+
+  db:
+    image: postgres:17-alpine
+    ports:
+      - "5432:5432/tcp"
+    environment:
+      - POSTGRES_USER=oieuser
+      - POSTGRES_PASSWORD=oieuserpw
+      - POSTGRES_DB=oie
+    volumes:
+      - ${PWD}/pgdata:/var/lib/postgresql/data

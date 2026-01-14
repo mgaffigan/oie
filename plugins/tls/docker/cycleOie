@@ -1,0 +1,5 @@
+#!/bin/sh
+
+docker compose down oie
+docker compose up -d oie
+docker compose logs -f oie

@@ -1,0 +1,36 @@
+@base_address = https://localhost:8443
+@username = admin
+@password = admin
+
+###
+GET {{base_address}}/api/tlsmanager/importedcertificates
+Accept: application/json
+X-Requested-With: IntelliJ
+Authorization: Basic {{username}} {{password}}
+
+###
+GET {{base_address}}/api/tlsmanager/keystore
+Accept: application/octet-stream
+X-Requested-With: IntelliJ
+Authorization: Basic {{username}} {{password}}
+
+>> {{$historyFolder}}/keystore.p12
+
+###
+POST {{base_address}}/api/tlsmanager/truststore
+X-Requested-With: IntelliJ
+Authorization: Basic {{username}} {{password}}
+Content-Type: multipart/form-data; boundary=RequestBoundary
+
+--RequestBoundary
+Content-Disposition: form-data; name="password"
+Content-Type: text/plain
+
+changeit
+--RequestBoundary
+Content-Disposition: form-data; name="file"; filename=truststore.p12
+Content-Type: application/octet-stream
+
+< docker/certs/new_truststore.p12
+--RequestBoundary--
+

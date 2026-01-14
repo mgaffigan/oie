@@ -1,0 +1,16 @@
+root = true
+
+[*]
+end_of_line = lf
+charset = utf-8
+insert_final_newline = true
+indent_style = space
+indent_size = 4
+max_line_length = 200
+
+[*.java]
+ij_continuation_indent_size = 4
+ij_java_class_count_to_use_import_on_demand = 100
+
+[{*.yml,*.yaml,*.sh}]
+indent_size = 2
