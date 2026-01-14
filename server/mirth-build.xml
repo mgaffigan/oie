@@ -33,6 +33,21 @@
 		<copy file="${webadmin}/dist/webadmin.war" todir="${server.setup}/webapps" />
 	-->
 	</target>
+
+	<!-- TLS Manager Plugin -->
+	<target name="build-tls-plugin" depends="init" description="Build the TLS Manager plugin">
+		<property name="plugins.tls" value="${basedir}/../plugins/tls" />
+
+		<!-- Run the TLS plugin build script -->
+		<exec executable="bash" dir="${plugins.tls}" failonerror="true">
+			<arg value="build.sh" />
+		</exec>
+
+		<!-- Copy the built plugin to extensions -->
+		<copy todir="${server.setup}/extensions/tls-manager">
+			<fileset dir="${plugins.tls}/target/tls-manager" />
+		</copy>
+	</target>
 	
 	<!-- Server extensions -->
 	<target name="build-server-extensions" depends="build-donkey">
@@ -126,7 +141,7 @@
 		<antcall target="test-run" />
 	</target>
 
-	<target name="build" depends="build-manager, build-cli, build-webadmin">
+	<target name="build" depends="build-manager, build-cli, build-webadmin, build-tls-plugin">
 		<ant antfile="${server}/build.xml" dir="${server}" target="create-setup">
 			<property name="version" value="${version}" />
 		</ant>
