@@ -4,8 +4,12 @@
 	<dirname property="plugin.dir" file="${ant.file.mllpmode-plugin}"/>
 	<property file="${plugin.dir}/../build.properties" />
 
-	<property name="src" value="${basedir}/src" />
-	<property name="classes" value="${basedir}/classes" />
+	<property name="shared.src" value="${basedir}/shared/src" />
+	<property name="shared.classes" value="${basedir}/shared/classes" />
+	<property name="plugin.server.src" value="${basedir}/server/src" />
+	<property name="plugin.server.classes" value="${basedir}/server/classes" />
+	<property name="plugin.client.src" value="${basedir}/client/src" />
+	<property name="plugin.client.classes" value="${basedir}/client/classes" />
 	<property name="dist" value="${server.extensions}/mllpmode" />
 
 	<path id="classpath">
@@ -13,26 +17,45 @@
 		<pathelement location="${server.classes}" />
 	</path>
 
+	<path id="client.classpath">
+		<path refid="classpath" />
+		<fileset dir="${client.lib}" includes="**/*.jar" />
+		<pathelement location="${client.classes}" />
+		<pathelement location="${shared.classes}" />
+	</path>
+
 	<target name="clean">
-		<delete dir="${classes}" />
+		<delete dir="${shared.classes}" />
+		<delete dir="${plugin.server.classes}" />
+		<delete dir="${plugin.client.classes}" />
 	</target>
 	
 	<target name="compile">
-		<mkdir dir="${classes}" />
-		<javac srcdir="${src}" destdir="${classes}" debug="on" includeAntRuntime="false">
+		<mkdir dir="${shared.classes}" />
+		<javac srcdir="${shared.src}" destdir="${shared.classes}" debug="on" includeAntRuntime="false">
 			<classpath refid="classpath" />
+		</javac>
+
+		<mkdir dir="${plugin.server.classes}" />
+		<javac srcdir="${plugin.server.src}" destdir="${plugin.server.classes}" debug="on" includeAntRuntime="false">
+			<classpath>
+				<path refid="classpath" />
+				<pathelement location="${shared.classes}" />
+			</classpath>
+		</javac>
+
+		<mkdir dir="${plugin.client.classes}" />
+		<javac srcdir="${plugin.client.src}" destdir="${plugin.client.classes}" debug="on" includeAntRuntime="false">
+			<classpath refid="client.classpath" />
 		</javac>
 	</target>
 
 	<target name="build" depends="compile">
 		<mkdir dir="${dist}" />
-		<copy todir="${dist}" file="${src}/plugin.xml" />
-		<jar destfile="${dist}/mllpmode-shared.jar" basedir="${classes}">
-			<include name="com/mirth/connect/plugins/mllpmode/MLLPModeProperties.class" />
-		</jar>
-		<jar destfile="${dist}/mllpmode-server.jar" basedir="${classes}">
-			<exclude name="com/mirth/connect/plugins/mllpmode/MLLPModeProperties.class" />
-		</jar>
+		<copy todir="${dist}" file="${plugin.server.src}/plugin.xml" />
+		<jar destfile="${dist}/mllpmode-shared.jar" basedir="${shared.classes}" />
+		<jar destfile="${dist}/mllpmode-server.jar" basedir="${plugin.server.classes}" />
+		<jar destfile="${dist}/mllpmode-client.jar" basedir="${plugin.client.classes}" />
 	</target>
 
 	<target name="create-zip">

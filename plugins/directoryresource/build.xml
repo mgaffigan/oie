@@ -11,6 +11,8 @@
 	<path id="classpath">
 		<fileset dir="${server.lib}" includes="**/*.jar" />
 		<pathelement location="${server.classes}" />
+		<fileset dir="${client.lib}" includes="**/*.jar" />
+		<pathelement location="${client.classes}" />
 	</path>
 
 	<target name="clean">
@@ -32,8 +34,12 @@
 			<include name="com/mirth/connect/plugins/directoryresource/DirectoryResourceServletInterface.class" />
 		</jar>
 		<jar destfile="${dist}/directoryresource-server.jar" basedir="${classes}">
-			<exclude name="com/mirth/connect/plugins/directoryresource/DirectoryResourceProperties.class" />
-			<exclude name="com/mirth/connect/plugins/directoryresource/DirectoryResourceServletInterface.class" />
+			<include name="com/mirth/connect/plugins/directoryresource/DirectoryResourcePlugin.class" />
+			<include name="com/mirth/connect/plugins/directoryresource/DirectoryResourceServlet.class" />
+		</jar>
+		<jar destfile="${dist}/directoryresource-client.jar" basedir="${classes}">
+			<include name="com/mirth/connect/plugins/directoryresource/DirectoryResourceClientPlugin.class" />
+			<include name="com/mirth/connect/plugins/directoryresource/DirectoryResourcePropertiesPanel*.class" />
 		</jar>
 	</target>
 

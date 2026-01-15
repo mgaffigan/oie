@@ -11,6 +11,8 @@
 	<path id="classpath">
 		<fileset dir="${server.lib}" includes="**/*.jar" />
 		<pathelement location="${server.classes}" />
+		<fileset dir="${client.lib}" includes="**/*.jar" />
+		<pathelement location="${client.classes}" />
 	</path>
 
 	<target name="clean">
@@ -31,7 +33,14 @@
 			<include name="com/mirth/connect/plugins/globalmapviewer/GlobalMapServletInterface.class" />
 		</jar>
 		<jar destfile="${dist}/globalmapviewer-server.jar" basedir="${classes}">
-			<exclude name="com/mirth/connect/plugins/globalmapviewer/GlobalMapServletInterface.class" />
+			<include name="com/mirth/connect/plugins/globalmapviewer/DefaultGlobalMapController.class" />
+			<include name="com/mirth/connect/plugins/globalmapviewer/GlobalMapController.class" />
+			<include name="com/mirth/connect/plugins/globalmapviewer/GlobalMapProvider.class" />
+			<include name="com/mirth/connect/plugins/globalmapviewer/GlobalMapServlet.class" />
+		</jar>
+		<jar destfile="${dist}/globalmapviewer-client.jar" basedir="${classes}">
+			<include name="com/mirth/connect/plugins/globalmapviewer/GlobalMapClient*.class" />
+			<include name="com/mirth/connect/plugins/globalmapviewer/GlobalMapPanel*.class" />
 		</jar>
 	</target>
 

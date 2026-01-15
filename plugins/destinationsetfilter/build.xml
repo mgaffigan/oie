@@ -11,6 +11,8 @@
 	<path id="classpath">
 		<fileset dir="${server.lib}" includes="**/*.jar" />
 		<pathelement location="${server.classes}" />
+		<fileset dir="${client.lib}" includes="**/*.jar" />
+		<pathelement location="${client.classes}" />
 	</path>
 
 	<target name="clean">
@@ -31,6 +33,10 @@
 			<include name="com/mirth/connect/plugins/destinationsetfilter/DestinationSetFilterStep.class" />
 			<include name="com/mirth/connect/plugins/destinationsetfilter/DestinationSetFilterStep$Behavior.class" />
 			<include name="com/mirth/connect/plugins/destinationsetfilter/DestinationSetFilterStep$Condition.class" />
+		</jar>
+		<jar destfile="${dist}/destinationsetfilter-client.jar" basedir="${classes}">
+			<include name="com/mirth/connect/plugins/destinationsetfilter/DestinationSetFilterPlugin.class" />
+			<include name="com/mirth/connect/plugins/destinationsetfilter/DestinationSetFilterPanel*.class" />
 		</jar>
 	</target>
 
