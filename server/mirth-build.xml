@@ -33,17 +33,19 @@
 		<copy file="${webadmin}/dist/webadmin.war" todir="${server.setup}/webapps" />
 	-->
 	</target>
+
+	<!-- Client Plugins -->
+	<target name="build-client-plugins" depends="build-client">
+		<ant antfile="${client}/ant-build.xml" dir="${client}" target="build-plugins" />
+
+		<copy todir="${server.setup}/extensions">
+			<fileset dir="${client}/dist/extensions" />
+		</copy>
+	</target>
 	
 	<!-- Server extensions -->
 	<target name="build-server-extensions" depends="build-donkey">
 		<ant antfile="${server}/build.xml" dir="${server}" target="create-plugins" />
-
-		<!-- copy the shared extension jars to the client lib -->
-		<copy todir="${client}/lib" flatten="true">
-			<fileset dir="${server.build}/extensions/">
-				<include name="**/*-shared.jar" />
-			</fileset>
-		</copy>
 	</target>
 
 	<!-- Client -->
@@ -62,10 +64,6 @@
 				<exclude name="*-shared.jar" />
 				<exclude name="extensions" />
 			</fileset>
-		</copy>
-		
-		<copy todir="${server.setup}/extensions">
-			<fileset dir="${client}/dist/extensions" />
 		</copy>
 	</target>
 
@@ -126,7 +124,7 @@
 		<antcall target="test-run" />
 	</target>
 
-	<target name="build" depends="build-manager, build-cli, build-webadmin">
+	<target name="build" depends="build-manager, build-cli, build-webadmin, build-client-plugins">
 		<ant antfile="${server}/build.xml" dir="${server}" target="create-setup">
 			<property name="version" value="${version}" />
 		</ant>
@@ -142,7 +140,7 @@
 		<antcall target="build-time-tests" />
 	</target>
 
-	<target name="dist" depends="build-manager, build-cli, build-webadmin">
+	<target name="dist" depends="build-manager, build-cli, build-webadmin, build-client-plugins">
 		<echo>Application version: ${version}</echo>
 
 		<ant antfile="${server}/build.xml" dir="${server}" target="create-dist">

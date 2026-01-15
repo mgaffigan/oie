@@ -12,8 +12,6 @@ package com.mirth.connect.plugins;
 import java.util.Calendar;
 
 import com.mirth.connect.client.ui.UIConstants;
-import com.mirth.connect.connectors.vm.VmDispatcherProperties;
-import com.mirth.connect.connectors.vm.VmReceiverProperties;
 import com.mirth.connect.donkey.model.channel.ConnectorProperties;
 import com.mirth.connect.model.Channel;
 import com.mirth.connect.model.Connector;
@@ -22,6 +20,10 @@ import com.mirth.connect.model.Filter;
 import com.mirth.connect.model.Transformer;
 
 public abstract class ChannelWizardPlugin extends ClientPlugin {
+
+    // HACK: Use reflection to avoid compile-time dependency on vm connector classes
+    private static final String VM_RECEIVER_PROPERTIES_CLASS = "com.mirth.connect.connectors.vm.VmReceiverProperties";
+    private static final String VM_DISPATCHER_PROPERTIES_CLASS = "com.mirth.connect.connectors.vm.VmDispatcherProperties";
 
     public ChannelWizardPlugin(String name) {
         super(name);
@@ -43,7 +45,7 @@ public abstract class ChannelWizardPlugin extends ClientPlugin {
         sourceConnector.setTransformer(sourceTransformer);
         sourceConnector.setMode(Mode.SOURCE);
         sourceConnector.setName("sourceConnector");
-        ConnectorProperties sourceConnectorProperties = new VmReceiverProperties();
+        ConnectorProperties sourceConnectorProperties = createConnectorProperties(VM_RECEIVER_PROPERTIES_CLASS);
         sourceConnector.setTransportName(sourceConnectorProperties.getName());
         sourceConnector.setProperties(sourceConnectorProperties);
         channel.setSourceConnector(sourceConnector);
@@ -55,11 +57,19 @@ public abstract class ChannelWizardPlugin extends ClientPlugin {
         destinationConnector.setResponseTransformer(new Transformer());
         destinationConnector.setMode(Mode.DESTINATION);
         destinationConnector.setName("Destination 1");
-        ConnectorProperties destinationConnectorProperties = new VmDispatcherProperties();
+        ConnectorProperties destinationConnectorProperties = createConnectorProperties(VM_DISPATCHER_PROPERTIES_CLASS);
         destinationConnector.setTransportName(destinationConnectorProperties.getName());
         destinationConnector.setProperties(destinationConnectorProperties);
         channel.addDestination(destinationConnector);
 
         return channel;
+    }
+
+    private ConnectorProperties createConnectorProperties(String className) {
+        try {
+            return (ConnectorProperties) Class.forName(className).getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create connector properties: " + className, e);
+        }
     }
 }

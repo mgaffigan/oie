@@ -3,6 +3,8 @@
 ##############################
 .mtj.tmp/
 *.class
+classes/
+classes-plugins/
 # Re-enable after move to MVN or Gradle
 #*.jar
 *.war
