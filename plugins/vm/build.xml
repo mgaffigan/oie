@@ -11,6 +11,8 @@
 	<path id="classpath">
 		<fileset dir="${server.lib}" includes="**/*.jar" />
 		<pathelement location="${server.classes}" />
+		<fileset dir="${client.lib}" includes="**/*.jar" />
+		<pathelement location="${client.classes}" />
 	</path>
 
 	<target name="clean">
@@ -33,8 +35,12 @@
 			<include name="com/mirth/connect/connectors/vm/VmDispatcherProperties.class" />
 		</jar>
 		<jar destfile="${dist}/vm-server.jar" basedir="${classes}">
-			<exclude name="com/mirth/connect/connectors/vm/VmReceiverProperties.class" />
-			<exclude name="com/mirth/connect/connectors/vm/VmDispatcherProperties.class" />
+			<include name="com/mirth/connect/connectors/vm/VmReceiver.class" />
+			<include name="com/mirth/connect/connectors/vm/VmDispatcher.class" />
+		</jar>
+		<jar destfile="${dist}/vm-client.jar" basedir="${classes}">
+			<include name="com/mirth/connect/connectors/vm/ChannelReader*.class" />
+			<include name="com/mirth/connect/connectors/vm/ChannelWriter*.class" />
 		</jar>
 	</target>
 

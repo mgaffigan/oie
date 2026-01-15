@@ -17,9 +17,6 @@
 
 		<property name="extensions" value="${dist}/extensions" />
 
-		<!-- connectors -->
-		<property name="connectors.vm" value="${extensions}/vm" />
-		
 		<!-- datatypes -->
 		<property name="plugins.datatype-xml" value="${extensions}/datatype-xml" />
 		<property name="plugins.datatype-json" value = "${extensions}/datatype-json" />
@@ -117,10 +114,6 @@
 
 	<target name="build-plugins" depends="compile-plugins">
 		<mkdir dir="${dist}" />
-		<mkdir dir="${connectors.vm}" />
-		<jar destfile="${connectors.vm}/vm-client.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/connectors/vm/**" />
-		</jar>
 
 		<!-- plugins -->
 		<mkdir dir="${plugins.datatype-xml}" />
