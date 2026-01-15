@@ -19,7 +19,6 @@
 
 		<!-- connectors -->
 		<property name="connectors.jms" value="${extensions}/jms" />
-		<property name="connectors.jdbc" value="${extensions}/jdbc" />
 		<property name="connectors.doc" value="${extensions}/doc" />
 		<property name="connectors.smtp" value="${extensions}/smtp" />
 		<property name="connectors.tcp" value="${extensions}/tcp" />
@@ -125,11 +124,6 @@
 
 	<target name="build-plugins" depends="compile-plugins">
 		<mkdir dir="${dist}" />
-		<mkdir dir="${connectors.jdbc}" />
-		<jar destfile="${connectors.jdbc}/jdbc-client.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/connectors/jdbc/**" />
-		</jar>
-
 		<mkdir dir="${connectors.jms}" />
 		<jar destfile="${connectors.jms}/jms-client.jar" basedir="${classes.plugins}">
 			<include name="com/mirth/connect/connectors/jms/**" />
