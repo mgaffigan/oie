@@ -63,13 +63,6 @@
 		<!-- Build all external plugins -->
 		<ant antfile="${plugins}/build.xml" dir="${plugins}" target="build" />
 
-		<!-- Build client-side plugin code -->
-		<ant antfile="${client}/ant-build.xml" dir="${client}" target="build-plugins" />
-
-		<copy todir="${server.setup}/extensions">
-			<fileset dir="${client}/dist/extensions" />
-		</copy>
-
 		<!-- set the version on all extensions -->
 		<replace dir="${server.build}/extensions" token="@mirthversion" value="${version}">
 			<include name="**/*.xml" />

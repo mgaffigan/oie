@@ -12,8 +12,6 @@
 		</path>
 
 		<mkdir dir="${logs}" />
-
-		<property name="extensions" value="${dist}/extensions" />
 	</target>
 
 	<target name="clean" depends="init">
@@ -21,17 +19,10 @@
 		<delete dir="${dist}" />
 	</target>
 
-	<target name="clean-plugins" depends="init">
-		<delete dir="${classes.plugins}" />
-	</target>
-
 	<target name="compile" depends="clean, init">
-		<!-- compile core + client (excludes plugin implementations) -->
 		<mkdir dir="${classes}" />
 		<javac srcdir="${src}" destdir="${classes}" debug="on" includeAntRuntime="false" sourcepath="">
 			<classpath refid="classpath" />
-			<exclude name="com/mirth/connect/connectors/**/*.java" />
-			<exclude name="com/mirth/connect/plugins/*/**/*.java" />
 		</javac>
 
 		<copy todir="${classes}" file="${src}/log4j2.properties" />
@@ -58,37 +49,9 @@
 		</copy>
 	</target>
 
-	<target name="compile-plugins" depends="clean-plugins, init">
-		<!-- compile plugins against compiled core + client classes -->
-		<mkdir dir="${classes.plugins}" />
-		<javac srcdir="${src}" destdir="${classes.plugins}" debug="on" includeAntRuntime="false" sourcepath="">
-			<classpath>
-				<path refid="classpath" />
-				<pathelement location="${classes}" />
-				<fileset dir="${server}/build/extensions" includes="**/*-shared.jar" />
-			</classpath>
-			<include name="com/mirth/connect/connectors/**/*.java" />
-			<include name="com/mirth/connect/plugins/*/**/*.java" />
-		</javac>
-	</target>
-
 	<target name="build" depends="compile">
 		<mkdir dir="${dist}" />
-
-		<jar destfile="${dist}/${client.jar}">
-			<fileset dir="${classes}">
-				<exclude name="com/mirth/connect/connectors/**/**" />
-				<exclude name="com/mirth/connect/plugins/*/**/*.class" />
-			</fileset>
-			<fileset dir="${classes}">
-				<include name="com/mirth/connect/connectors/ConnectorClass.class" />
-			</fileset>
-		</jar>
-	</target>
-
-	<target name="build-plugins" depends="compile-plugins">
-		<mkdir dir="${dist}" />
-		<mkdir dir="${extensions}" />
+		<jar destfile="${dist}/${client.jar}" basedir="${classes}" />
 	</target>
 	
 	<target name="test-init" depends="init">
@@ -98,12 +61,14 @@
 			<path refid="classpath" />
 			<fileset dir="${server}/testlib" includes="**/*.jar" />
 			<dirset dir="${classes}"/>
-			<dirset dir="${classes.plugins}"/>
+			<!-- Plugin classes compiled by plugins/build.xml -->
+			<dirset dir="../plugins">
+				<include name="*/classes" />
+			</dirset>
 		</path>
 	</target>
 	
 	<target name="test-compile" depends="test-init">
-		<!-- compile the source -->
 		<mkdir dir="${test_classes}" />
 		
 		<javac srcdir="${test}" destdir="${test_classes}" debug="on" includeAntRuntime="false">
@@ -154,9 +119,7 @@
 	</target>
 	
 	<target name="remove-classes" depends="init">
-		<!-- delete the compiled classes folder -->
 		<delete dir="${classes}" />
-		<delete dir="${classes.plugins}" />
 		<delete dir="${test_classes}" />
 	</target>
 </project>
