@@ -11,6 +11,8 @@
 	<path id="classpath">
 		<fileset dir="${server.lib}" includes="**/*.jar" />
 		<pathelement location="${server.classes}" />
+		<fileset dir="${client.lib}" includes="**/*.jar" />
+		<pathelement location="${client.classes}" />
 	</path>
 
 	<target name="clean">
@@ -27,7 +29,14 @@
 	<target name="build" depends="compile">
 		<mkdir dir="${dist}" />
 		<copy todir="${dist}" file="${src}/plugin.xml" />
-		<jar destfile="${dist}/javascriptrule-shared.jar" basedir="${classes}" />
+		<jar destfile="${dist}/javascriptrule-shared.jar" basedir="${classes}">
+			<include name="com/mirth/connect/plugins/javascriptrule/JavaScriptRule.class" />
+		</jar>
+		<jar destfile="${dist}/javascriptrule-client.jar" basedir="${classes}">
+			<include name="com/mirth/connect/plugins/javascriptrule/JavaScriptRulePlugin.class" />
+			<include name="com/mirth/connect/plugins/javascriptrule/JavaScriptPanel.class" />
+			<include name="com/mirth/connect/plugins/javascriptrule/JavaScriptPanel$*.class" />
+		</jar>
 	</target>
 
 	<target name="create-zip">

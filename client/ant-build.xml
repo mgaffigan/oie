@@ -22,8 +22,6 @@
 		<property name="plugins.dashboardstatus" value="${extensions}/dashboardstatus" />
 		<property name="plugins.destinationsetfilter" value="${extensions}/destinationsetfilter" />
 		<property name="plugins.imageviewer" value="${extensions}/imageviewer" />
-		<property name="plugins.javascriptrule" value="${extensions}/javascriptrule" />
-		<property name="plugins.javascriptstep" value="${extensions}/javascriptstep" />
 		<property name="plugins.mapper" value="${extensions}/mapper" />
 		<property name="plugins.messagebuilder" value="${extensions}/messagebuilder" />
 		<property name="plugins.globalmapviewer" value="${extensions}/globalmapviewer" />
@@ -32,8 +30,6 @@
 		<property name="plugins.textviewer" value="${extensions}/textviewer" />
 		<property name="plugins.rulebuilder" value="${extensions}/rulebuilder" />
 		<property name="plugins.serverlog" value="${extensions}/serverlog" />
-		<property name="plugins.scriptfilerule" value="${extensions}/scriptfilerule" />
-		<property name="plugins.scriptfilestep" value="${extensions}/scriptfilestep" />
 	</target>
 
 	<target name="clean" depends="init">
@@ -135,16 +131,6 @@
 			<include name="com/mirth/connect/plugins/imageviewer/**" />
 		</jar>
 
-		<mkdir dir="${plugins.javascriptrule}" />
-		<jar destfile="${plugins.javascriptrule}/javascriptrule-client.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/javascriptrule/**" />
-		</jar>
-
-		<mkdir dir="${plugins.javascriptstep}" />
-		<jar destfile="${plugins.javascriptstep}/javascriptstep-client.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/javascriptstep/**" />
-		</jar>
-
 		<mkdir dir="${plugins.mapper}" />
 		<jar destfile="${plugins.mapper}/mapper-client.jar" basedir="${classes.plugins}">
 			<include name="com/mirth/connect/plugins/mapper/**" />
@@ -178,16 +164,6 @@
 		<mkdir dir="${plugins.serverlog}" />
 		<jar destfile="${plugins.serverlog}/serverlog-client.jar" basedir="${classes.plugins}">
 			<include name="com/mirth/connect/plugins/serverlog/**" />
-		</jar>
-
-		<mkdir dir="${plugins.scriptfilerule}" />
-		<jar destfile="${plugins.scriptfilerule}/scriptfilerule-client.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/scriptfilerule/**" />
-		</jar>
-
-		<mkdir dir="${plugins.scriptfilestep}" />
-		<jar destfile="${plugins.scriptfilestep}/scriptfilestep-client.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/scriptfilestep/**" />
 		</jar>
 	</target>
 	
