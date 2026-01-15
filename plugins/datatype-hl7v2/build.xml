@@ -11,6 +11,8 @@
 	<path id="classpath">
 		<fileset dir="${server.lib}" includes="**/*.jar" />
 		<pathelement location="${server.classes}" />
+		<fileset dir="${client.lib}" includes="**/*.jar" />
+		<pathelement location="${client.classes}" />
 	</path>
 
 	<target name="clean">
@@ -31,10 +33,16 @@
 			<include name="com/mirth/connect/plugins/datatypes/hl7v2/**" />
 			<exclude name="com/mirth/connect/plugins/datatypes/hl7v2/HL7v2DataTypeServerPlugin.class" />
 			<exclude name="com/mirth/connect/plugins/datatypes/hl7v2/HL7v2BatchAdaptor.class" />
+			<exclude name="com/mirth/connect/plugins/datatypes/hl7v2/HL7v2DataTypeClientPlugin.class" />
+			<exclude name="com/mirth/connect/plugins/datatypes/hl7v2/HL7v2DataTypeCodeTemplatePlugin.class" />
 		</jar>
 		<jar destfile="${dist}/datatype-hl7v2-server.jar" basedir="${classes}">
 			<include name="com/mirth/connect/plugins/datatypes/hl7v2/HL7v2DataTypeServerPlugin.class" />
 			<include name="com/mirth/connect/plugins/datatypes/hl7v2/HL7v2BatchAdaptor.class" />
+		</jar>
+		<jar destfile="${dist}/datatype-hl7v2-client.jar" basedir="${classes}">
+			<include name="com/mirth/connect/plugins/datatypes/hl7v2/HL7v2DataTypeClientPlugin.class" />
+			<include name="com/mirth/connect/plugins/datatypes/hl7v2/HL7v2DataTypeCodeTemplatePlugin.class" />
 		</jar>
 	</target>
 

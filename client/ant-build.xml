@@ -22,7 +22,6 @@
 		<property name="connectors.vm" value="${extensions}/vm" />
 		
 		<!-- datatypes -->
-		<property name="plugins.datatype-hl7v2" value="${extensions}/datatype-hl7v2" />
 		<property name="plugins.datatype-xml" value="${extensions}/datatype-xml" />
 		<property name="plugins.datatype-json" value = "${extensions}/datatype-json" />
 
@@ -130,11 +129,6 @@
 		</jar>
 
 		<!-- plugins -->
-		<mkdir dir="${plugins.datatype-hl7v2}" />
-		<jar destfile="${plugins.datatype-hl7v2}/datatype-hl7v2-client.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/datatypes/hl7v2/**" />
-		</jar>
-		
 		<mkdir dir="${plugins.datatype-xml}" />
 		<jar destfile="${plugins.datatype-xml}/datatype-xml-client.jar" basedir="${classes.plugins}">
 			<include name="com/mirth/connect/plugins/datatypes/xml/**" />
