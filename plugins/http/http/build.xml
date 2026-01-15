@@ -7,14 +7,17 @@
 	<!-- Local properties -->
 	<property name="shared.classes" value="${basedir}/shared/classes" />
 	<property name="server.classes.local" value="${basedir}/server/classes" />
+	<property name="client.classes.local" value="${basedir}/client/classes" />
 	<property name="src.shared" value="${basedir}/shared/src" />
 	<property name="src.server" value="${basedir}/server/src" />
+	<property name="src.client" value="${basedir}/client/src" />
 	<property name="lib" value="${server.lib.extensions}/http" />
 	<property name="dist" value="${server.extensions}/http" />
 
 	<!-- Classes from httpauth (already compiled) -->
 	<property name="httpauth.shared.classes" value="${plugin.dir}/httpauth/shared/classes" />
 	<property name="httpauth.server.classes" value="${plugin.dir}/httpauth/server/classes" />
+	<property name="httpauth.client.classes" value="${plugin.dir}/httpauth/client/classes" />
 
 	<path id="classpath">
 		<fileset dir="${server.lib}" includes="**/*.jar" />
@@ -23,9 +26,17 @@
 		<pathelement location="${httpauth.server.classes}" />
 	</path>
 
+	<path id="classpath.client">
+		<fileset dir="${client.lib}" includes="**/*.jar" />
+		<pathelement location="${client.classes}" />
+		<pathelement location="${httpauth.shared.classes}" />
+		<pathelement location="${httpauth.client.classes}" />
+	</path>
+
 	<target name="clean">
 		<delete dir="${shared.classes}" />
 		<delete dir="${server.classes.local}" />
+		<delete dir="${client.classes.local}" />
 	</target>
 
 	<target name="compile">
@@ -39,6 +50,12 @@
 			<classpath refid="classpath" />
 			<classpath location="${shared.classes}" />
 		</javac>
+
+		<mkdir dir="${client.classes.local}" />
+		<javac srcdir="${src.client}" destdir="${client.classes.local}" debug="on" includeAntRuntime="false">
+			<classpath refid="classpath.client" />
+			<classpath location="${shared.classes}" />
+		</javac>
 	</target>
 
 	<target name="build" depends="compile">
@@ -49,6 +66,7 @@
 
 		<jar destfile="${dist}/http-shared.jar" basedir="${shared.classes}" />
 		<jar destfile="${dist}/http-server.jar" basedir="${server.classes.local}" />
+		<jar destfile="${dist}/http-client.jar" basedir="${client.classes.local}" />
 		<jar destfile="${dist}/src/http-userutil-sources.jar" basedir="${src.server}">
 			<include name="com/mirth/connect/server/userutil/HTTPUtil.java" />
 		</jar>

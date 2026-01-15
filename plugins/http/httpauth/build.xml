@@ -7,8 +7,10 @@
 	<!-- Local properties -->
 	<property name="shared.classes" value="${basedir}/shared/classes" />
 	<property name="server.classes.local" value="${basedir}/server/classes" />
+	<property name="client.classes.local" value="${basedir}/client/classes" />
 	<property name="src.shared" value="${basedir}/shared/src" />
 	<property name="src.server" value="${basedir}/server/src" />
+	<property name="src.client" value="${basedir}/client/src" />
 	<property name="dist" value="${server.extensions}/httpauth" />
 
 	<!-- HTTP sources compiled here to resolve cyclic dependency -->
@@ -20,15 +22,23 @@
 		<pathelement location="${server.classes}" />
 	</path>
 
+	<path id="classpath.client">
+		<fileset dir="${client.lib}" includes="**/*.jar" />
+		<pathelement location="${client.classes}" />
+	</path>
+
 	<target name="clean">
 		<delete dir="${shared.classes}" />
 		<delete dir="${server.classes.local}" />
+		<delete dir="${client.classes.local}" />
 	</target>
 
 	<target name="compile">
 		<mkdir dir="${shared.classes}" />
 		<javac srcdir="${src.shared}" destdir="${shared.classes}" debug="on" includeAntRuntime="false">
 			<classpath refid="classpath" />
+			<!-- HACK: HttpAuthConnectorPropertiesPanel has inverted dep on HttpDispatcherProperties -->
+			<src path="${plugin.dir}/http/shared/src" />
 		</javac>
 
 		<mkdir dir="${server.classes.local}" />
@@ -39,6 +49,12 @@
 			<classpath refid="classpath" />
 			<classpath location="${shared.classes}" />
 		</javac>
+
+		<mkdir dir="${client.classes.local}" />
+		<javac srcdir="${src.client}" destdir="${client.classes.local}" debug="on" includeAntRuntime="false">
+			<classpath refid="classpath.client" />
+			<classpath location="${shared.classes}" />
+		</javac>
 	</target>
 
 	<target name="build" depends="compile">
@@ -46,12 +62,16 @@
 		<mkdir dir="${dist}/src" />
 		<copy todir="${dist}" file="${src.server}/plugin.xml" />
         
-		<jar destfile="${dist}/httpauth-shared.jar" basedir="${shared.classes}" />
+		<jar destfile="${dist}/httpauth-shared.jar" basedir="${shared.classes}">
+			<!-- HACK: HttpAuthConnectorPropertiesPanel has inverted dep -->
+			<exclude name="com/mirth/connect/connectors/http/" />
+		</jar>
 		<!-- Create server jar (exclude http classes compiled for dependency resolution) -->
 		<jar destfile="${dist}/httpauth-server.jar" basedir="${server.classes.local}">
 			<exclude name="com/mirth/connect/connectors/http/**" />
 			<exclude name="com/mirth/connect/server/userutil/HTTPUtil.class" />
 		</jar>
+		<jar destfile="${dist}/httpauth-client.jar" basedir="${client.classes.local}" />
 		<jar destfile="${dist}/src/httpauth-userutil-sources.jar" basedir="${src.server}">
 			<include name="com/mirth/connect/plugins/httpauth/userutil/**" />
 		</jar>

@@ -23,13 +23,11 @@
 		<property name="connectors.jms" value="${extensions}/jms" />
 		<property name="connectors.jdbc" value="${extensions}/jdbc" />
 		<property name="connectors.dicom" value="${extensions}/dicom" />
-		<property name="connectors.http" value="${extensions}/http" />
 		<property name="connectors.doc" value="${extensions}/doc" />
 		<property name="connectors.smtp" value="${extensions}/smtp" />
 		<property name="connectors.tcp" value="${extensions}/tcp" />
 		<property name="connectors.file" value="${extensions}/file" />
 		<property name="connectors.js" value="${extensions}/js" />
-		<property name="connectors.ws" value="${extensions}/ws" />
 		<property name="connectors.vm" value="${extensions}/vm" />
 		
 		<!-- datatypes -->
@@ -48,7 +46,6 @@
 		<property name="plugins.dashboardstatus" value="${extensions}/dashboardstatus" />
 		<property name="plugins.destinationsetfilter" value="${extensions}/destinationsetfilter" />
 		<property name="plugins.dicomviewer" value="${extensions}/dicomviewer" />
-		<property name="plugins.httpauth" value="${extensions}/httpauth" />
 		<property name="plugins.imageviewer" value="${extensions}/imageviewer" />
 		<property name="plugins.javascriptrule" value="${extensions}/javascriptrule" />
 		<property name="plugins.javascriptstep" value="${extensions}/javascriptstep" />
@@ -153,11 +150,6 @@
 			<include name="com/mirth/connect/connectors/jms/**" />
 		</jar>
 
-		<mkdir dir="${connectors.http}" />
-		<jar destfile="${connectors.http}/http-client.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/connectors/http/**" />
-		</jar>
-
 		<mkdir dir="${connectors.doc}" />
 		<jar destfile="${connectors.doc}/doc-client.jar" basedir="${classes.plugins}">
 			<include name="com/mirth/connect/connectors/doc/**" />
@@ -181,11 +173,6 @@
 		<mkdir dir="${connectors.js}" />
 		<jar destfile="${connectors.js}/js-client.jar" basedir="${classes.plugins}">
 			<include name="com/mirth/connect/connectors/js/**" />
-		</jar>
-
-		<mkdir dir="${connectors.ws}" />
-		<jar destfile="${connectors.ws}/ws-client.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/connectors/ws/**" />
 		</jar>
 
 		<mkdir dir="${connectors.vm}" />
@@ -262,11 +249,6 @@
 		<mkdir dir="${plugins.globalmapviewer}" />
 		<jar destfile="${plugins.globalmapviewer}/globalmapviewer-client.jar" basedir="${classes.plugins}">
 			<include name="com/mirth/connect/plugins/globalmapviewer/**" />
-		</jar>
-		
-		<mkdir dir="${plugins.httpauth}" />
-		<jar destfile="${plugins.httpauth}/httpauth-client.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/httpauth/**" />
 		</jar>
 
 		<mkdir dir="${plugins.imageviewer}" />
