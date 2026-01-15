@@ -5,14 +5,36 @@
 	<property file="${plugin.dir}/../build.properties" />
 
 	<property name="src" value="${basedir}/src" />
+	<property name="classes" value="${basedir}/classes" />
 	<property name="dist" value="${server.extensions}/textviewer" />
 
+	<path id="classpath">
+		<fileset dir="${client.lib}" includes="**/*.jar" />
+		<fileset dir="${server.lib}" includes="**/*.jar" />
+		<pathelement location="${server.classes}" />
+		<pathelement location="${client.classes}" />
+	</path>
+
 	<target name="clean">
+		<delete dir="${classes}" />
 	</target>
 
-	<target name="build">
+	<target name="init">
+		<mkdir dir="${classes}" />
+	</target>
+
+	<target name="compile" depends="init">
+		<javac srcdir="${src}" destdir="${classes}" debug="on" includeAntRuntime="false">
+			<classpath refid="classpath" />
+		</javac>
+	</target>
+
+	<target name="build" depends="compile">
 		<mkdir dir="${dist}" />
 		<copy todir="${dist}" file="${src}/plugin.xml" />
+		<jar destfile="${dist}/textviewer-client.jar" basedir="${classes}">
+			<include name="com/mirth/connect/plugins/textviewer/**" />
+		</jar>
 	</target>
 
 	<target name="create-zip">

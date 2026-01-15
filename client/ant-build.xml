@@ -9,8 +9,6 @@
 
 		<path id="classpath">
 			<fileset dir="${lib}" includes="**/*.jar" />
-			<!-- HACK: include from pdfviewer since this still builds the client portion -->
-			<fileset dir="${basedir}/../plugins/pdfviewer" includes="**/*.jar" />
 		</path>
 
 		<mkdir dir="${logs}" />
@@ -21,13 +19,10 @@
 		<property name="plugins.directoryresource" value="${extensions}/directoryresource" />
 		<property name="plugins.dashboardstatus" value="${extensions}/dashboardstatus" />
 		<property name="plugins.destinationsetfilter" value="${extensions}/destinationsetfilter" />
-		<property name="plugins.imageviewer" value="${extensions}/imageviewer" />
 		<property name="plugins.mapper" value="${extensions}/mapper" />
 		<property name="plugins.messagebuilder" value="${extensions}/messagebuilder" />
 		<property name="plugins.globalmapviewer" value="${extensions}/globalmapviewer" />
 		<property name="plugins.mllpmode" value="${extensions}/mllpmode" />
-		<property name="plugins.pdfviewer" value="${extensions}/pdfviewer" />
-		<property name="plugins.textviewer" value="${extensions}/textviewer" />
 		<property name="plugins.rulebuilder" value="${extensions}/rulebuilder" />
 		<property name="plugins.serverlog" value="${extensions}/serverlog" />
 	</target>
@@ -126,11 +121,6 @@
 			<include name="com/mirth/connect/plugins/globalmapviewer/**" />
 		</jar>
 
-		<mkdir dir="${plugins.imageviewer}" />
-		<jar destfile="${plugins.imageviewer}/imageviewer-client.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/imageviewer/**" />
-		</jar>
-
 		<mkdir dir="${plugins.mapper}" />
 		<jar destfile="${plugins.mapper}/mapper-client.jar" basedir="${classes.plugins}">
 			<include name="com/mirth/connect/plugins/mapper/**" />
@@ -144,16 +134,6 @@
 		<mkdir dir="${plugins.mllpmode}" />
 		<jar destfile="${plugins.mllpmode}/mllpmode-client.jar" basedir="${classes.plugins}">
 			<include name="com/mirth/connect/plugins/mllpmode/**" />
-		</jar>
-
-		<mkdir dir="${plugins.pdfviewer}" />
-		<jar destfile="${plugins.pdfviewer}/pdfviewer-client.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/pdfviewer/**" />
-		</jar>
-
-		<mkdir dir="${plugins.textviewer}" />
-		<jar destfile="${plugins.textviewer}/textviewer-client.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/textviewer/**" />
 		</jar>
 
 		<mkdir dir="${plugins.rulebuilder}" />
