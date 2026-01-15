@@ -14,11 +14,6 @@
 		<mkdir dir="${logs}" />
 
 		<property name="extensions" value="${dist}/extensions" />
-
-		<!-- plugins -->
-		<property name="plugins.mapper" value="${extensions}/mapper" />
-		<property name="plugins.messagebuilder" value="${extensions}/messagebuilder" />
-		<property name="plugins.rulebuilder" value="${extensions}/rulebuilder" />
 	</target>
 
 	<target name="clean" depends="init">
@@ -93,22 +88,7 @@
 
 	<target name="build-plugins" depends="compile-plugins">
 		<mkdir dir="${dist}" />
-
-		<!-- plugins -->
-		<mkdir dir="${plugins.mapper}" />
-		<jar destfile="${plugins.mapper}/mapper-client.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/mapper/**" />
-		</jar>
-
-		<mkdir dir="${plugins.messagebuilder}" />
-		<jar destfile="${plugins.messagebuilder}/messagebuilder-client.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/messagebuilder/**" />
-		</jar>
-
-		<mkdir dir="${plugins.rulebuilder}" />
-		<jar destfile="${plugins.rulebuilder}/rulebuilder-client.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/rulebuilder/**" />
-		</jar>
+		<mkdir dir="${extensions}" />
 	</target>
 	
 	<target name="test-init" depends="init">
