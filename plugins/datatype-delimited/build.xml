@@ -11,6 +11,8 @@
 	<path id="classpath">
 		<fileset dir="${server.lib}" includes="**/*.jar" />
 		<pathelement location="${server.classes}" />
+		<fileset dir="${client.lib}" includes="**/*.jar" />
+		<pathelement location="${client.classes}" />
 	</path>
 
 	<target name="clean">
@@ -31,11 +33,17 @@
 			<exclude name="com/mirth/connect/plugins/datatypes/delimited/DelimitedDataTypeServerPlugin.class" />
 			<exclude name="com/mirth/connect/plugins/datatypes/delimited/DelimitedBatchAdaptor.class" />
 			<exclude name="com/mirth/connect/plugins/datatypes/delimited/DelimitedBatchReader.class" />
+			<exclude name="com/mirth/connect/plugins/datatypes/delimited/DelimitedDataTypeClientPlugin.class" />
+			<exclude name="com/mirth/connect/plugins/datatypes/delimited/DelimitedDataTypeCodeTemplatePlugin.class" />
 		</jar>
 		<jar destfile="${dist}/datatype-delimited-server.jar" basedir="${classes}">
 			<include name="com/mirth/connect/plugins/datatypes/delimited/DelimitedDataTypeServerPlugin.class" />
 			<include name="com/mirth/connect/plugins/datatypes/delimited/DelimitedBatchAdaptor.class" />
 			<include name="com/mirth/connect/plugins/datatypes/delimited/DelimitedBatchReader.class" />
+		</jar>
+		<jar destfile="${dist}/datatype-delimited-client.jar" basedir="${classes}">
+			<include name="com/mirth/connect/plugins/datatypes/delimited/DelimitedDataTypeClientPlugin.class" />
+			<include name="com/mirth/connect/plugins/datatypes/delimited/DelimitedDataTypeCodeTemplatePlugin.class" />
 		</jar>
 	</target>
 

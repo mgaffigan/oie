@@ -28,7 +28,6 @@
 		<property name="connectors.vm" value="${extensions}/vm" />
 		
 		<!-- datatypes -->
-		<property name="plugins.datatype-delimited" value="${extensions}/datatype-delimited" />
 		<property name="plugins.datatype-hl7v2" value="${extensions}/datatype-hl7v2" />
 		<property name="plugins.datatype-hl7v3" value="${extensions}/datatype-hl7v3" />
 		<property name="plugins.datatype-xml" value="${extensions}/datatype-xml" />
@@ -168,11 +167,6 @@
 		</jar>
 
 		<!-- plugins -->
-		<mkdir dir="${plugins.datatype-delimited}" />
-		<jar destfile="${plugins.datatype-delimited}/datatype-delimited-client.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/datatypes/delimited/**" />
-		</jar>
-		
 		<mkdir dir="${plugins.datatype-hl7v2}" />
 		<jar destfile="${plugins.datatype-hl7v2}/datatype-hl7v2-client.jar" basedir="${classes.plugins}">
 			<include name="com/mirth/connect/plugins/datatypes/hl7v2/**" />
