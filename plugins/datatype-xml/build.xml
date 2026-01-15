@@ -11,6 +11,8 @@
 	<path id="classpath">
 		<fileset dir="${server.lib}" includes="**/*.jar" />
 		<pathelement location="${server.classes}" />
+		<fileset dir="${client.lib}" includes="**/*.jar" />
+		<pathelement location="${client.classes}" />
 	</path>
 
 	<target name="clean">
@@ -29,9 +31,13 @@
 		<copy todir="${dist}" file="${src}/plugin.xml" />
 		<jar destfile="${dist}/datatype-xml-shared.jar" basedir="${classes}">
 			<exclude name="com/mirth/connect/plugins/datatypes/xml/XMLDataTypeServerPlugin.class" />
+			<exclude name="com/mirth/connect/plugins/datatypes/xml/XMLDataTypeClientPlugin.class" />
 		</jar>
 		<jar destfile="${dist}/datatype-xml-server.jar" basedir="${classes}">
 			<include name="com/mirth/connect/plugins/datatypes/xml/XMLDataTypeServerPlugin.class" />
+		</jar>
+		<jar destfile="${dist}/datatype-xml-client.jar" basedir="${classes}">
+			<include name="com/mirth/connect/plugins/datatypes/xml/XMLDataTypeClientPlugin.class" />
 		</jar>
 	</target>
 

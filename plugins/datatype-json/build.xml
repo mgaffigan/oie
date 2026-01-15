@@ -11,6 +11,8 @@
 	<path id="classpath">
 		<fileset dir="${server.lib}" includes="**/*.jar" />
 		<pathelement location="${server.classes}" />
+		<fileset dir="${client.lib}" includes="**/*.jar" />
+		<pathelement location="${client.classes}" />
 	</path>
 
 	<target name="clean">
@@ -29,9 +31,13 @@
 		<copy todir="${dist}" file="${src}/plugin.xml" />
 		<jar destfile="${dist}/datatype-json-shared.jar" basedir="${classes}">
 			<exclude name="com/mirth/connect/plugins/datatypes/json/JSONDataTypeServerPlugin.class" />
+			<exclude name="com/mirth/connect/plugins/datatypes/json/JSONDataTypeClientPlugin.class" />
 		</jar>
 		<jar destfile="${dist}/datatype-json-server.jar" basedir="${classes}">
 			<include name="com/mirth/connect/plugins/datatypes/json/JSONDataTypeServerPlugin.class" />
+		</jar>
+		<jar destfile="${dist}/datatype-json-client.jar" basedir="${classes}">
+			<include name="com/mirth/connect/plugins/datatypes/json/JSONDataTypeClientPlugin.class" />
 		</jar>
 	</target>
 
