@@ -35,7 +35,6 @@
 		<property name="plugins.serverlog" value="${extensions}/serverlog" />
 		<property name="plugins.scriptfilerule" value="${extensions}/scriptfilerule" />
 		<property name="plugins.scriptfilestep" value="${extensions}/scriptfilestep" />
-		<property name="plugins.xsltstep" value="${extensions}/xsltstep" />
 	</target>
 
 	<target name="clean" depends="init">
@@ -195,11 +194,6 @@
 		<mkdir dir="${plugins.scriptfilestep}" />
 		<jar destfile="${plugins.scriptfilestep}/scriptfilestep-client.jar" basedir="${classes.plugins}">
 			<include name="com/mirth/connect/plugins/scriptfilestep/**" />
-		</jar>
-
-		<mkdir dir="${plugins.xsltstep}" />
-		<jar destfile="${plugins.xsltstep}/xsltstep-client.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/xsltstep/**" />
 		</jar>
 	</target>
 	
