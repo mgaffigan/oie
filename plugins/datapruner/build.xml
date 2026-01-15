@@ -11,6 +11,8 @@
 	<path id="classpath">
 		<fileset dir="${server.lib}" includes="**/*.jar" />
 		<pathelement location="${server.classes}" />
+		<fileset dir="${client.lib}" includes="**/*.jar" />
+		<pathelement location="${client.classes}" />
 	</path>
 
 	<target name="clean">
@@ -32,6 +34,14 @@
 		</jar>
 		<jar destfile="${dist}/datapruner-server.jar" basedir="${classes}">
 			<exclude name="com/mirth/connect/plugins/datapruner/DataPrunerServletInterface.class" />
+			<exclude name="com/mirth/connect/plugins/datapruner/DataPrunerClient.class" />
+			<exclude name="com/mirth/connect/plugins/datapruner/DataPrunerPanel.class" />
+			<exclude name="com/mirth/connect/plugins/datapruner/DataPrunerPanel$*.class" />
+		</jar>
+		<jar destfile="${dist}/datapruner-client.jar" basedir="${classes}">
+			<include name="com/mirth/connect/plugins/datapruner/DataPrunerClient.class" />
+			<include name="com/mirth/connect/plugins/datapruner/DataPrunerPanel.class" />
+			<include name="com/mirth/connect/plugins/datapruner/DataPrunerPanel$*.class" />
 		</jar>
 	</target>
 
