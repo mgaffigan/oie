@@ -11,8 +11,10 @@
 
 	<path id="classpath">
 		<fileset dir="${server.lib}" includes="**/*.jar" />
+		<fileset dir="${client.lib}" includes="**/*.jar" />
 		<fileset dir="${lib}" includes="**/*.jar" />
 		<pathelement location="${server.classes}" />
+		<pathelement location="${client.classes}" />
 	</path>
 
 	<target name="clean">
@@ -43,6 +45,12 @@
 			<exclude name="com/mirth/connect/connectors/doc/DocumentConnectorServletInterface.class" />
 			<exclude name="com/mirth/connect/connectors/doc/PageSize.class" />
 			<exclude name="com/mirth/connect/connectors/doc/Unit.class" />
+			<exclude name="com/mirth/connect/connectors/doc/DocumentWriter.class" />
+			<exclude name="com/mirth/connect/connectors/doc/DocumentWriter$*.class" />
+		</jar>
+		<jar destfile="${dist}/doc-client.jar" basedir="${classes}">
+			<include name="com/mirth/connect/connectors/doc/DocumentWriter.class" />
+			<include name="com/mirth/connect/connectors/doc/DocumentWriter$*.class" />
 		</jar>
 	</target>
 

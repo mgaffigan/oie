@@ -18,7 +18,6 @@
 		<property name="extensions" value="${dist}/extensions" />
 
 		<!-- connectors -->
-		<property name="connectors.doc" value="${extensions}/doc" />
 		<property name="connectors.tcp" value="${extensions}/tcp" />
 		<property name="connectors.js" value="${extensions}/js" />
 		<property name="connectors.vm" value="${extensions}/vm" />
@@ -122,11 +121,6 @@
 
 	<target name="build-plugins" depends="compile-plugins">
 		<mkdir dir="${dist}" />
-		<mkdir dir="${connectors.doc}" />
-		<jar destfile="${connectors.doc}/doc-client.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/connectors/doc/**" />
-		</jar>
-
 		<mkdir dir="${connectors.tcp}" />
 		<jar destfile="${connectors.tcp}/tcp-client.jar" basedir="${classes.plugins}">
 			<include name="com/mirth/connect/connectors/tcp/**" />
