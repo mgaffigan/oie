@@ -20,7 +20,6 @@
 		<!-- connectors -->
 		<property name="connectors.jms" value="${extensions}/jms" />
 		<property name="connectors.doc" value="${extensions}/doc" />
-		<property name="connectors.smtp" value="${extensions}/smtp" />
 		<property name="connectors.tcp" value="${extensions}/tcp" />
 		<property name="connectors.js" value="${extensions}/js" />
 		<property name="connectors.vm" value="${extensions}/vm" />
@@ -132,11 +131,6 @@
 		<mkdir dir="${connectors.doc}" />
 		<jar destfile="${connectors.doc}/doc-client.jar" basedir="${classes.plugins}">
 			<include name="com/mirth/connect/connectors/doc/**" />
-		</jar>
-
-		<mkdir dir="${connectors.smtp}" />
-		<jar destfile="${connectors.smtp}/smtp-client.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/connectors/smtp/**" />
 		</jar>
 
 		<mkdir dir="${connectors.tcp}" />

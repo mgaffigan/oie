@@ -10,7 +10,9 @@
 
 	<path id="classpath">
 		<fileset dir="${server.lib}" includes="**/*.jar" />
+		<fileset dir="${client.lib}" includes="**/*.jar" />
 		<pathelement location="${server.classes}" />
+		<pathelement location="${client.classes}" />
 	</path>
 
 	<target name="clean">
@@ -36,6 +38,12 @@
 			<exclude name="com/mirth/connect/connectors/smtp/SmtpDispatcherProperties.class" />
 			<exclude name="com/mirth/connect/connectors/smtp/SmtpConnectorServletInterface.class" />
 			<exclude name="com/mirth/connect/connectors/smtp/Attachment.class" />
+			<exclude name="com/mirth/connect/connectors/smtp/SmtpSender.class" />
+			<exclude name="com/mirth/connect/connectors/smtp/SmtpSender$*.class" />
+		</jar>
+		<jar destfile="${dist}/smtp-client.jar" basedir="${classes}">
+			<include name="com/mirth/connect/connectors/smtp/SmtpSender.class" />
+			<include name="com/mirth/connect/connectors/smtp/SmtpSender$*.class" />
 		</jar>
 	</target>
 
