@@ -11,6 +11,8 @@
 	<path id="classpath">
 		<fileset dir="${server.lib}" includes="**/*.jar" />
 		<pathelement location="${server.classes}" />
+		<fileset dir="${client.lib}" includes="**/*.jar" />
+		<pathelement location="${client.classes}" />
 	</path>
 
 	<target name="clean">
@@ -33,9 +35,15 @@
 		</copy>
 		<jar destfile="${dist}/datatype-edi-shared.jar" basedir="${classes}">
 			<exclude name="com/mirth/connect/plugins/datatypes/edi/EDIDataTypeServerPlugin.class" />
+			<exclude name="com/mirth/connect/plugins/datatypes/edi/EDIDataTypeClientPlugin.class" />
+			<exclude name="com/mirth/connect/plugins/datatypes/edi/EDIDataTypeCodeTemplatePlugin.class" />
 		</jar>
 		<jar destfile="${dist}/datatype-edi-server.jar" basedir="${classes}">
 			<include name="com/mirth/connect/plugins/datatypes/edi/EDIDataTypeServerPlugin.class" />
+		</jar>
+		<jar destfile="${dist}/datatype-edi-client.jar" basedir="${classes}">
+			<include name="com/mirth/connect/plugins/datatypes/edi/EDIDataTypeClientPlugin.class" />
+			<include name="com/mirth/connect/plugins/datatypes/edi/EDIDataTypeCodeTemplatePlugin.class" />
 		</jar>
 	</target>
 
