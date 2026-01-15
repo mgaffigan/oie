@@ -1,96 +1,26 @@
 <?xml version="1.0"?>
-<project name="dicom-connector" basedir="." default="build">
+<project name="dicom-plugins" basedir="." default="build">
 
-	<dirname property="plugin.dir" file="${ant.file.dicom-connector}"/>
-	<property file="${plugin.dir}/../build.properties" />
+	<!-- Build order: connector-dicom first (datatype-dicom and dicomviewer depend on it). -->
 
-	<property name="classes.dicom" value="${basedir}/connector-dicom/classes" />
-	<property name="classes.datatype-dicom" value="${basedir}/datatype-dicom/classes" />
-	<property name="src.dicom" value="${basedir}/connector-dicom/src" />
-	<property name="src.datatype-dicom" value="${basedir}/datatype-dicom/src" />
-	<property name="src.dicomviewer" value="${basedir}/dicomviewer/src" />
-	<property name="lib" value="${basedir}/connector-dicom/lib" />
-	<property name="lib.dicomviewer" value="${basedir}/dicomviewer/lib" />
-	<property name="dist.dicom" value="${server.extensions}/dicom" />
-	<property name="dist.datatype-dicom" value="${server.extensions}/datatype-dicom" />
-	<property name="dist.dicomviewer" value="${server.extensions}/dicomviewer" />
-
-	<path id="classpath">
-		<fileset dir="${server.lib}" includes="**/*.jar" />
-		<fileset dir="${lib}" includes="**/*.jar" />
-		<fileset dir="${lib.dicomviewer}" includes="**/*.jar" />
-		<pathelement location="${server.classes}" />
-	</path>
-
-	<path id="classpath.datatype-dicom">
-		<path refid="classpath"/>
-		<pathelement location="${classes.dicom}" />
-	</path>
+	<dirname property="dicom.plugins.dir" file="${ant.file.dicom-plugins}"/>
 
 	<target name="clean">
-		<delete dir="${classes.dicom}" />
-		<delete dir="${classes.datatype-dicom}" />
+		<ant antfile="${dicom.plugins.dir}/connector-dicom/build.xml" target="clean" inheritall="false" />
+		<ant antfile="${dicom.plugins.dir}/datatype-dicom/build.xml" target="clean" inheritall="false" />
+		<ant antfile="${dicom.plugins.dir}/dicomviewer/build.xml" target="clean" inheritall="false" />
 	</target>
 
-	<target name="compile">
-		<!-- Compile dicom connector first -->
-		<mkdir dir="${classes.dicom}" />
-		<javac srcdir="${src.dicom}" destdir="${classes.dicom}" debug="on" includeAntRuntime="false">
-			<classpath refid="classpath" />
-		</javac>
-		
-		<!-- Compile datatype-dicom with dicom classes in classpath -->
-		<mkdir dir="${classes.datatype-dicom}" />
-		<javac srcdir="${src.datatype-dicom}" destdir="${classes.datatype-dicom}" debug="on" includeAntRuntime="false">
-			<classpath refid="classpath.datatype-dicom" />
-		</javac>
-	</target>
-
-	<target name="build" depends="compile">
-		<!-- ========== DICOM Connector ========== -->
-		<mkdir dir="${dist.dicom}" />
-		<copy file="${src.dicom}/source.xml" todir="${dist.dicom}" />
-		<copy file="${src.dicom}/destination.xml" todir="${dist.dicom}" />
-		<copy todir="${dist.dicom}/lib">
-			<fileset dir="${lib}" />
-		</copy>
-		<jar destfile="${dist.dicom}/dicom-shared.jar" basedir="${classes.dicom}">
-			<include name="com/mirth/connect/connectors/dimse/DICOMReceiverProperties.class" />
-			<include name="com/mirth/connect/connectors/dimse/DICOMDispatcherProperties.class" />
-			<include name="com/mirth/connect/model/converters/DICOMConverter.class" />
-		</jar>
-		<jar destfile="${dist.dicom}/dicom-server.jar" basedir="${classes.dicom}">
-			<exclude name="com/mirth/connect/connectors/dimse/DICOMReceiverProperties.class" />
-			<exclude name="com/mirth/connect/connectors/dimse/DICOMDispatcherProperties.class" />
-			<exclude name="com/mirth/connect/model/converters/DICOMConverter.class" />
-		</jar>
-		<mkdir dir="${dist.dicom}/src" />
-		<jar destfile="${dist.dicom}/src/dicom-userutil-sources.jar" basedir="${src.dicom}">
-			<include name="com/mirth/connect/server/userutil/DICOMUtil.java" />
-		</jar>
-
-		<!-- ========== Datatype DICOM ========== -->
-		<mkdir dir="${dist.datatype-dicom}" />
-		<copy file="${src.datatype-dicom}/plugin.xml" todir="${dist.datatype-dicom}" />
-		<jar destfile="${dist.datatype-dicom}/datatype-dicom-shared.jar" basedir="${classes.datatype-dicom}">
-			<exclude name="com/mirth/connect/plugins/datatypes/dicom/DICOMDataTypeServerPlugin.class" />
-		</jar>
-		<jar destfile="${dist.datatype-dicom}/datatype-dicom-server.jar" basedir="${classes.datatype-dicom}">
-			<include name="com/mirth/connect/plugins/datatypes/dicom/DICOMDataTypeServerPlugin.class" />
-		</jar>
-
-		<!-- ========== DICOM Viewer ========== -->
-		<mkdir dir="${dist.dicomviewer}" />
-		<copy file="${src.dicomviewer}/plugin.xml" todir="${dist.dicomviewer}" />
-		<copy todir="${dist.dicomviewer}/lib" failonerror="false" quiet="true">
-			<fileset dir="${lib.dicomviewer}" />
-		</copy>
+	<target name="build">
+		<ant antfile="${dicom.plugins.dir}/connector-dicom/build.xml" target="build" inheritall="false" />
+		<ant antfile="${dicom.plugins.dir}/datatype-dicom/build.xml" target="build" inheritall="false" />
+		<ant antfile="${dicom.plugins.dir}/dicomviewer/build.xml" target="build" inheritall="false" />
 	</target>
 
 	<target name="create-zip">
-		<zip destfile="${server.dist.extensions}/dicom-${version}.zip" basedir="${server.extensions}" includes="dicom/**/*" />
-		<zip destfile="${server.dist.extensions}/datatype-dicom-${version}.zip" basedir="${server.extensions}" includes="datatype-dicom/**/*" />
-		<zip destfile="${server.dist.extensions}/dicomviewer-${version}.zip" basedir="${server.extensions}" includes="dicomviewer/**/*" />
+		<ant antfile="${dicom.plugins.dir}/connector-dicom/build.xml" target="create-zip" inheritall="false" />
+		<ant antfile="${dicom.plugins.dir}/datatype-dicom/build.xml" target="create-zip" inheritall="false" />
+		<ant antfile="${dicom.plugins.dir}/dicomviewer/build.xml" target="create-zip" inheritall="false" />
 	</target>
 
 </project>

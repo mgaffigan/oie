@@ -11,8 +11,6 @@
 			<fileset dir="${lib}" includes="**/*.jar" />
 			<!-- HACK: include from pdfviewer since this still builds the client portion -->
 			<fileset dir="${basedir}/../plugins/pdfviewer" includes="**/*.jar" />
-			<!-- HACK: include from dicom since this still builds the client portion -->
-			<fileset dir="${basedir}/../plugins/dicom" includes="*/lib/**/*.jar" />
 		</path>
 
 		<mkdir dir="${logs}" />
@@ -22,7 +20,6 @@
 		<!-- connectors -->
 		<property name="connectors.jms" value="${extensions}/jms" />
 		<property name="connectors.jdbc" value="${extensions}/jdbc" />
-		<property name="connectors.dicom" value="${extensions}/dicom" />
 		<property name="connectors.doc" value="${extensions}/doc" />
 		<property name="connectors.smtp" value="${extensions}/smtp" />
 		<property name="connectors.tcp" value="${extensions}/tcp" />
@@ -32,7 +29,6 @@
 		
 		<!-- datatypes -->
 		<property name="plugins.datatype-delimited" value="${extensions}/datatype-delimited" />
-		<property name="plugins.datatype-dicom" value="${extensions}/datatype-dicom" />
 		<property name="plugins.datatype-edi" value="${extensions}/datatype-edi" />
 		<property name="plugins.datatype-hl7v2" value="${extensions}/datatype-hl7v2" />
 		<property name="plugins.datatype-hl7v3" value="${extensions}/datatype-hl7v3" />
@@ -45,7 +41,6 @@
 		<property name="plugins.directoryresource" value="${extensions}/directoryresource" />
 		<property name="plugins.dashboardstatus" value="${extensions}/dashboardstatus" />
 		<property name="plugins.destinationsetfilter" value="${extensions}/destinationsetfilter" />
-		<property name="plugins.dicomviewer" value="${extensions}/dicomviewer" />
 		<property name="plugins.imageviewer" value="${extensions}/imageviewer" />
 		<property name="plugins.javascriptrule" value="${extensions}/javascriptrule" />
 		<property name="plugins.javascriptstep" value="${extensions}/javascriptstep" />
@@ -135,11 +130,6 @@
 
 	<target name="build-plugins" depends="compile-plugins">
 		<mkdir dir="${dist}" />
-		<mkdir dir="${connectors.dicom}" />
-		<jar destfile="${connectors.dicom}/dicom-client.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/connectors/dimse/**" />
-		</jar>
-
 		<mkdir dir="${connectors.jdbc}" />
 		<jar destfile="${connectors.jdbc}/jdbc-client.jar" basedir="${classes.plugins}">
 			<include name="com/mirth/connect/connectors/jdbc/**" />
@@ -184,11 +174,6 @@
 		<mkdir dir="${plugins.datatype-delimited}" />
 		<jar destfile="${plugins.datatype-delimited}/datatype-delimited-client.jar" basedir="${classes.plugins}">
 			<include name="com/mirth/connect/plugins/datatypes/delimited/**" />
-		</jar>
-		
-		<mkdir dir="${plugins.datatype-dicom}" />
-		<jar destfile="${plugins.datatype-dicom}/datatype-dicom-client.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/datatypes/dicom/**" />
 		</jar>
 			
 		<mkdir dir="${plugins.datatype-edi}" />
@@ -239,11 +224,6 @@
 		<mkdir dir="${plugins.destinationsetfilter}" />
 		<jar destfile="${plugins.destinationsetfilter}/destinationsetfilter-client.jar" basedir="${classes.plugins}">
 			<include name="com/mirth/connect/plugins/destinationsetfilter/**" />
-		</jar>
-
-		<mkdir dir="${plugins.dicomviewer}" />
-		<jar destfile="${plugins.dicomviewer}/dicomviewer-client.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/dicomviewer/**" />
 		</jar>
 
 		<mkdir dir="${plugins.globalmapviewer}" />

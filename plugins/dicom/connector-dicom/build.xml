@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<project name="dicom-connector" basedir="." default="build">
+
+	<dirname property="plugin.dir" file="${ant.file.dicom-connector}/.."/>
+	<property file="${plugin.dir}/../build.properties" />
+
+	<!-- Local properties -->
+	<property name="shared.classes" value="${basedir}/shared/classes" />
+	<property name="server.classes.local" value="${basedir}/server/classes" />
+	<property name="client.classes.local" value="${basedir}/client/classes" />
+	<property name="src.shared" value="${basedir}/shared/src" />
+	<property name="src.server" value="${basedir}/server/src" />
+	<property name="src.client" value="${basedir}/client/src" />
+	<property name="lib" value="${basedir}/server/lib" />
+	<property name="lib.dicomviewer" value="${plugin.dir}/dicomviewer/lib" />
+	<property name="dist" value="${server.extensions}/dicom" />
+
+	<path id="classpath">
+		<fileset dir="${server.lib}" includes="**/*.jar" />
+		<fileset dir="${lib}" includes="**/*.jar" />
+		<fileset dir="${lib.dicomviewer}" includes="**/*.jar" />
+		<pathelement location="${server.classes}" />
+	</path>
+
+	<path id="classpath.client">
+		<fileset dir="${client.lib}" includes="**/*.jar" />
+		<pathelement location="${client.classes}" />
+	</path>
+
+	<target name="clean">
+		<delete dir="${shared.classes}" />
+		<delete dir="${server.classes.local}" />
+		<delete dir="${client.classes.local}" />
+	</target>
+
+	<target name="compile">
+		<mkdir dir="${shared.classes}" />
+		<javac srcdir="${src.shared}" destdir="${shared.classes}" debug="on" includeAntRuntime="false">
+			<classpath refid="classpath" />
+		</javac>
+
+		<mkdir dir="${server.classes.local}" />
+		<javac srcdir="${src.server}" destdir="${server.classes.local}" debug="on" includeAntRuntime="false">
+			<classpath refid="classpath" />
+			<classpath location="${shared.classes}" />
+		</javac>
+
+		<mkdir dir="${client.classes.local}" />
+		<javac srcdir="${src.client}" destdir="${client.classes.local}" debug="on" includeAntRuntime="false">
+			<classpath refid="classpath.client" />
+			<classpath location="${shared.classes}" />
+		</javac>
+	</target>
+
+	<target name="build" depends="compile">
+		<mkdir dir="${dist}" />
+		<mkdir dir="${dist}/src" />
+		<copy file="${src.server}/source.xml" todir="${dist}" />
+		<copy file="${src.server}/destination.xml" todir="${dist}" />
+		<copy todir="${dist}/lib">
+			<fileset dir="${lib}" />
+		</copy>
+
+		<jar destfile="${dist}/dicom-shared.jar" basedir="${shared.classes}" />
+		<jar destfile="${dist}/dicom-server.jar" basedir="${server.classes.local}" />
+		<jar destfile="${dist}/dicom-client.jar" basedir="${client.classes.local}" />
+		<jar destfile="${dist}/src/dicom-userutil-sources.jar" basedir="${src.server}">
+			<include name="com/mirth/connect/server/userutil/DICOMUtil.java" />
+		</jar>
+	</target>
+
+	<target name="create-zip">
+		<zip destfile="${server.dist.extensions}/dicom-${version}.zip" basedir="${server.extensions}" includes="dicom/**/*" />
+	</target>
+
+</project>

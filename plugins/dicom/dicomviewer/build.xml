@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<project name="dicomviewer" basedir="." default="build">
+
+	<dirname property="plugin.dir" file="${ant.file.dicomviewer}/.."/>
+	<property file="${plugin.dir}/../build.properties" />
+
+	<!-- Local properties -->
+	<property name="client.classes.local" value="${basedir}/client/classes" />
+	<property name="src.client" value="${basedir}/client/src" />
+	<property name="lib" value="${basedir}/lib" />
+	<property name="dist" value="${server.extensions}/dicomviewer" />
+
+	<!-- Classes from connector-dicom (already compiled) -->
+	<property name="dicom.shared.classes" value="${plugin.dir}/connector-dicom/shared/classes" />
+
+	<path id="classpath.client">
+		<fileset dir="${client.lib}" includes="**/*.jar" />
+		<fileset dir="${lib}" includes="**/*.jar" />
+		<pathelement location="${client.classes}" />
+		<pathelement location="${dicom.shared.classes}" />
+	</path>
+
+	<target name="clean">
+		<delete dir="${client.classes.local}" />
+	</target>
+
+	<target name="compile">
+		<mkdir dir="${client.classes.local}" />
+		<javac srcdir="${src.client}" destdir="${client.classes.local}" debug="on" includeAntRuntime="false">
+			<classpath refid="classpath.client" />
+		</javac>
+	</target>
+
+	<target name="build" depends="compile">
+		<mkdir dir="${dist}" />
+		<copy file="${src.client}/plugin.xml" todir="${dist}" />
+		<copy todir="${dist}/lib" failonerror="false" quiet="true">
+			<fileset dir="${lib}" />
+		</copy>
+
+		<jar destfile="${dist}/dicomviewer-client.jar" basedir="${client.classes.local}" />
+	</target>
+
+	<target name="create-zip">
+		<zip destfile="${server.dist.extensions}/dicomviewer-${version}.zip" basedir="${server.extensions}" includes="dicomviewer/**/*" />
+	</target>
+
+</project>
