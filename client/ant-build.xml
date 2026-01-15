@@ -31,7 +31,6 @@
 		<property name="plugins.datatype-delimited" value="${extensions}/datatype-delimited" />
 		<property name="plugins.datatype-hl7v2" value="${extensions}/datatype-hl7v2" />
 		<property name="plugins.datatype-hl7v3" value="${extensions}/datatype-hl7v3" />
-		<property name="plugins.datatype-ncpdp" value="${extensions}/datatype-ncpdp" />
 		<property name="plugins.datatype-xml" value="${extensions}/datatype-xml" />
 		<property name="plugins.datatype-json" value = "${extensions}/datatype-json" />
 
@@ -184,11 +183,6 @@
 			<include name="com/mirth/connect/plugins/datatypes/hl7v3/**" />
 		</jar>
 		
-		<mkdir dir="${plugins.datatype-ncpdp}" />
-		<jar destfile="${plugins.datatype-ncpdp}/datatype-ncpdp-client.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/plugins/datatypes/ncpdp/**" />
-		</jar>
-			
 		<mkdir dir="${plugins.datatype-xml}" />
 		<jar destfile="${plugins.datatype-xml}/datatype-xml-client.jar" basedir="${classes.plugins}">
 			<include name="com/mirth/connect/plugins/datatypes/xml/**" />
