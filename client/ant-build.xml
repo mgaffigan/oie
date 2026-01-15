@@ -18,7 +18,6 @@
 		<property name="extensions" value="${dist}/extensions" />
 
 		<!-- connectors -->
-		<property name="connectors.js" value="${extensions}/js" />
 		<property name="connectors.vm" value="${extensions}/vm" />
 		
 		<!-- datatypes -->
@@ -118,11 +117,6 @@
 
 	<target name="build-plugins" depends="compile-plugins">
 		<mkdir dir="${dist}" />
-		<mkdir dir="${connectors.js}" />
-		<jar destfile="${connectors.js}/js-client.jar" basedir="${classes.plugins}">
-			<include name="com/mirth/connect/connectors/js/**" />
-		</jar>
-
 		<mkdir dir="${connectors.vm}" />
 		<jar destfile="${connectors.vm}/vm-client.jar" basedir="${classes.plugins}">
 			<include name="com/mirth/connect/connectors/vm/**" />
