@@ -97,24 +97,6 @@
 		</jar>
 	</target>
 
-	<target name="create-connectors" depends="create-client-core">
-
-		<!-- Build all external plugins -->
-		<ant antfile="${basedir}/../plugins/build.xml" target="build" inheritAll="false" />
-
-		<!-- set the version on all connectors -->
-		<replace dir="${extensions}" token="@mirthversion" value="${version}">
-			<include name="**/*.xml" />
-		</replace>
-	</target>
-
-	<target name="create-plugins" depends="create-connectors">
-		<!-- set the version on all plugins -->
-		<replace dir="${extensions}" token="@mirthversion" value="${version}">
-			<include name="**/*.xml" />
-		</replace>
-	</target>
-
 	<target name="create-setup" depends="init">
 		<echo>Sub-project files have been copied into setup</echo>
 

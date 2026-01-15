@@ -34,22 +34,13 @@
 	-->
 	</target>
 
-	<!-- Client Plugins -->
-	<target name="build-client-plugins" depends="build-client">
-		<ant antfile="${client}/ant-build.xml" dir="${client}" target="build-plugins" />
-
-		<copy todir="${server.setup}/extensions">
-			<fileset dir="${client}/dist/extensions" />
-		</copy>
-	</target>
-	
-	<!-- Server extensions -->
-	<target name="build-server-extensions" depends="build-donkey">
-		<ant antfile="${server}/build.xml" dir="${server}" target="create-plugins" />
+	<!-- Server core (compiles server and creates client-core jar) -->
+	<target name="build-server" depends="build-donkey">
+		<ant antfile="${server}/build.xml" dir="${server}" target="create-client-core" />
 	</target>
 
 	<!-- Client -->
-	<target name="build-client" depends="build-server-extensions">
+	<target name="build-client" depends="build-server">
 		<copy file="${donkey.setup}/donkey-model.jar" todir="${client}/lib" />
 		<copy file="${server.setup}/server-lib/mirth-client-core.jar" todir="${client}/lib" />
 		<copy file="${server.setup}/server-lib/mirth-crypto.jar" todir="${client}/lib" />
@@ -67,8 +58,26 @@
 		</copy>
 	</target>
 
+	<!-- All plugins (server and client portions) -->
+	<target name="build-plugins" depends="build-client">
+		<!-- Build all external plugins -->
+		<ant antfile="${plugins}/build.xml" dir="${plugins}" target="build" />
+
+		<!-- Build client-side plugin code -->
+		<ant antfile="${client}/ant-build.xml" dir="${client}" target="build-plugins" />
+
+		<copy todir="${server.setup}/extensions">
+			<fileset dir="${client}/dist/extensions" />
+		</copy>
+
+		<!-- set the version on all extensions -->
+		<replace dir="${server.build}/extensions" token="@mirthversion" value="${version}">
+			<include name="**/*.xml" />
+		</replace>
+	</target>
+
 	<!-- Manager -->
-	<target name="build-manager" depends="build-client">
+	<target name="build-manager" depends="build-plugins">
 		<copy file="${donkey.setup}/donkey-model.jar" todir="${manager}/lib" />
 		<copy file="${server.setup}/server-lib/mirth-client-core.jar" todir="${manager}/lib" />
 		<copy file="${server.setup}/server-lib/mirth-crypto.jar" todir="${manager}/lib" />
@@ -85,7 +94,7 @@
 	</target>
 
 	<!-- CLI -->
-	<target name="build-cli" depends="build-client">
+	<target name="build-cli" depends="build-plugins">
 		<copy file="${donkey.setup}/donkey-model.jar" todir="${cli}/lib" />
 		<copy file="${server.setup}/server-lib/mirth-client-core.jar" todir="${cli}/lib" />
 		<copy file="${server.setup}/server-lib/mirth-crypto.jar" todir="${cli}/lib" />
@@ -124,7 +133,7 @@
 		<antcall target="test-run" />
 	</target>
 
-	<target name="build" depends="build-manager, build-cli, build-webadmin, build-client-plugins">
+	<target name="build" depends="build-manager, build-cli, build-webadmin">
 		<ant antfile="${server}/build.xml" dir="${server}" target="create-setup">
 			<property name="version" value="${version}" />
 		</ant>
@@ -140,7 +149,7 @@
 		<antcall target="build-time-tests" />
 	</target>
 
-	<target name="dist" depends="build-manager, build-cli, build-webadmin, build-client-plugins">
+	<target name="dist" depends="build-manager, build-cli, build-webadmin">
 		<echo>Application version: ${version}</echo>
 
 		<ant antfile="${server}/build.xml" dir="${server}" target="create-dist">
