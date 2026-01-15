@@ -10,7 +10,9 @@
 
 	<path id="classpath">
 		<fileset dir="${server.lib}" includes="**/*.jar" />
+		<fileset dir="${client.lib}" includes="**/*.jar" />
 		<pathelement location="${server.classes}" />
+		<pathelement location="${client.classes}" />
 	</path>
 
 	<target name="clean">
@@ -30,9 +32,15 @@
 		<jar destfile="${dist}/datatype-hl7v3-shared.jar" basedir="${classes}">
 			<include name="com/mirth/connect/plugins/datatypes/hl7v3/**" />
 			<exclude name="com/mirth/connect/plugins/datatypes/hl7v3/HL7V3DataTypeServerPlugin.class" />
+			<exclude name="com/mirth/connect/plugins/datatypes/hl7v3/HL7V3DataTypeClientPlugin.class" />
+			<exclude name="com/mirth/connect/plugins/datatypes/hl7v3/HL7V3DataTypeCodeTemplatePlugin.class" />
 		</jar>
 		<jar destfile="${dist}/datatype-hl7v3-server.jar" basedir="${classes}">
 			<include name="com/mirth/connect/plugins/datatypes/hl7v3/HL7V3DataTypeServerPlugin.class" />
+		</jar>
+		<jar destfile="${dist}/datatype-hl7v3-client.jar" basedir="${classes}">
+			<include name="com/mirth/connect/plugins/datatypes/hl7v3/HL7V3DataTypeClientPlugin.class" />
+			<include name="com/mirth/connect/plugins/datatypes/hl7v3/HL7V3DataTypeCodeTemplatePlugin.class" />
 		</jar>
 	</target>
 
