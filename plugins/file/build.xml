@@ -4,8 +4,12 @@
 	<dirname property="plugin.dir" file="${ant.file.file-connector}"/>
 	<property file="${plugin.dir}/../build.properties" />
 
-	<property name="classes" value="${basedir}/classes" />
-	<property name="src" value="${basedir}/src" />
+	<property name="shared.src" value="${basedir}/shared/src" />
+	<property name="shared.classes" value="${basedir}/shared/classes" />
+	<property name="plugin.server.src" value="${basedir}/server/src" />
+	<property name="plugin.server.classes" value="${basedir}/server/classes" />
+	<property name="plugin.client.src" value="${basedir}/client/src" />
+	<property name="plugin.client.classes" value="${basedir}/client/classes" />
 	<property name="lib" value="${basedir}/lib" />
 	<property name="dist" value="${server.extensions}/file" />
 
@@ -15,53 +19,56 @@
 		<pathelement location="${server.classes}" />
 	</path>
 
+	<path id="client.classpath">
+		<path refid="classpath" />
+		<fileset dir="${client.lib}" includes="**/*.jar" />
+		<pathelement location="${client.classes}" />
+		<pathelement location="${shared.classes}" />
+	</path>
+
 	<target name="clean">
-		<delete dir="${classes}" />
+		<delete dir="${shared.classes}" />
+		<delete dir="${plugin.server.classes}" />
+		<delete dir="${plugin.client.classes}" />
 	</target>
 
 	<target name="compile">
-		<mkdir dir="${classes}" />
-		<javac srcdir="${src}" destdir="${classes}" debug="on" includeAntRuntime="false">
+		<mkdir dir="${shared.classes}" />
+		<javac srcdir="${shared.src}" destdir="${shared.classes}" debug="on" includeAntRuntime="false">
 			<classpath refid="classpath" />
+		</javac>
+
+		<mkdir dir="${plugin.server.classes}" />
+		<javac srcdir="${plugin.server.src}" destdir="${plugin.server.classes}" debug="on" includeAntRuntime="false">
+			<classpath>
+				<path refid="classpath" />
+				<pathelement location="${shared.classes}" />
+			</classpath>
+		</javac>
+
+		<mkdir dir="${plugin.client.classes}" />
+		<javac srcdir="${plugin.client.src}" destdir="${plugin.client.classes}" debug="on" includeAntRuntime="false">
+			<classpath refid="client.classpath" />
 		</javac>
 	</target>
 
 	<target name="build" depends="compile">
 		<mkdir dir="${dist}" />
-		<copy todir="${dist}" file="${src}/source.xml" />
-		<copy todir="${dist}" file="${src}/destination.xml" />
+		<copy todir="${dist}" file="${plugin.server.src}/source.xml" />
+		<copy todir="${dist}" file="${plugin.server.src}/destination.xml" />
 		<copy todir="${dist}/lib" failonerror="false" quiet="true">
 			<fileset dir="${lib}" />
 		</copy>
-		<jar destfile="${dist}/file-shared.jar" basedir="${classes}">
-			<include name="com/mirth/connect/connectors/file/SchemeProperties.class" />
-			<include name="com/mirth/connect/connectors/file/FTPSchemeProperties.class" />
-			<include name="com/mirth/connect/connectors/file/SmbDialectVersion.class" />
-			<include name="com/mirth/connect/connectors/file/SmbSchemeProperties.class" />
-			<include name="com/mirth/connect/connectors/file/SftpSchemeProperties.class" />
-			<include name="com/mirth/connect/connectors/file/S3SchemeProperties.class" />
-			<include name="com/mirth/connect/connectors/file/FileReceiverProperties.class" />
-			<include name="com/mirth/connect/connectors/file/FileDispatcherProperties.class" />
-			<include name="com/mirth/connect/connectors/file/FileScheme.class" />
-			<include name="com/mirth/connect/connectors/file/FileAction.class" />
-			<include name="com/mirth/connect/connectors/file/FileConnectorServletInterface.class" />
+		<jar destfile="${dist}/file-shared.jar" basedir="${shared.classes}" />
+		<jar destfile="${dist}/file-server.jar">
+			<fileset dir="${plugin.server.classes}" />
+			<!-- These are duplicated in both shared and server jars for some reason -->
+			<fileset dir="${shared.classes}">
+				<include name="com/mirth/connect/connectors/file/SmbDialectVersion.class" />
+				<include name="com/mirth/connect/connectors/file/SmbSchemeProperties.class" />
+			</fileset>
 		</jar>
-		<jar destfile="${dist}/file-server.jar" basedir="${classes}">
-			<exclude name="com/mirth/connect/connectors/file/SchemeProperties.class" />
-			<exclude name="com/mirth/connect/connectors/file/FTPSchemeProperties.class" />
-            <!-- 
-            These are duplicated in both jars for some reason
-			<exclude name="com/mirth/connect/connectors/file/SmbDialectVersion.class" />
-			<exclude name="com/mirth/connect/connectors/file/SmbSchemeProperties.class" />
-            -->
-			<exclude name="com/mirth/connect/connectors/file/SftpSchemeProperties.class" />
-			<exclude name="com/mirth/connect/connectors/file/S3SchemeProperties.class" />
-			<exclude name="com/mirth/connect/connectors/file/FileReceiverProperties.class" />
-			<exclude name="com/mirth/connect/connectors/file/FileDispatcherProperties.class" />
-			<exclude name="com/mirth/connect/connectors/file/FileScheme.class" />
-			<exclude name="com/mirth/connect/connectors/file/FileAction.class" />
-			<exclude name="com/mirth/connect/connectors/file/FileConnectorServletInterface.class" />
-		</jar>
+		<jar destfile="${dist}/file-client.jar" basedir="${plugin.client.classes}" />
 	</target>
 
 	<target name="create-zip">
