@@ -377,8 +377,10 @@
 			<dirset dir="${classes}"/>
 			<!-- Plugin classes compiled by plugins/build.xml -->
 			<dirset dir="../plugins">
-				<include name="*/classes" />
+				<include name="**/classes" />
 			</dirset>
+			<!-- Plugin libraries -->
+			<fileset dir="../plugins" includes="**/lib/*.jar" />
 			<path refid="classpath" />
 		</path>
 	</target>
