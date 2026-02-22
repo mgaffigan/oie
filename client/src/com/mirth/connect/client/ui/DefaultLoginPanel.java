@@ -37,13 +37,13 @@ import com.mirth.connect.model.converters.ObjectXMLSerializer;
 import com.mirth.connect.plugins.MultiFactorAuthenticationClientPlugin;
 import com.mirth.connect.util.MirthSSLUtil;
 
-public class LoginPanel extends javax.swing.JFrame {
+public class DefaultLoginPanel extends javax.swing.JFrame {
 
     private Client client;
     private static final String ERROR_MESSAGE = "There was an error connecting to the server at the specified address. Please verify that the server is up and running.";
-    private static LoginPanel instance = null;
+    private static DefaultLoginPanel instance = null;
 
-    private LoginPanel() {
+    private DefaultLoginPanel() {
         initComponents();
         DisplayUtil.setResizable(this, false);
         jLabel2.setForeground(UIConstants.HEADER_TITLE_TEXT_COLOR);
@@ -81,10 +81,10 @@ public class LoginPanel extends javax.swing.JFrame {
         errorTextArea.setDisabledTextColor(Color.RED);
     }
 
-    public static LoginPanel getInstance() {
-        synchronized (LoginPanel.class) {
+    public static DefaultLoginPanel getInstance() {
+        synchronized (DefaultLoginPanel.class) {
             if (instance == null) {
-                instance = new LoginPanel();
+                instance = new DefaultLoginPanel();
             }
             return instance;
         }
@@ -448,8 +448,8 @@ public class LoginPanel extends javax.swing.JFrame {
                     // If SUCCESS or SUCCESS_GRACE_PERIOD
                     if (loginStatus != null && loginStatus.isSuccess()) {
                         if (!handleSuccess(loginStatus)) {
-                            LoginPanel.getInstance().setVisible(false);
-                            LoginPanel.getInstance().initialize(PlatformUI.SERVER_URL, PlatformUI.CLIENT_VERSION, "", "");
+                            DefaultLoginPanel.getInstance().setVisible(false);
+                            DefaultLoginPanel.getInstance().initialize(PlatformUI.SERVER_URL, PlatformUI.CLIENT_VERSION, "", "");
                         }
                     } else {
                         // Assume failure unless overridden by a plugin
@@ -462,13 +462,13 @@ public class LoginPanel extends javax.swing.JFrame {
                                 String updatedUsername = StringUtils.defaultString(loginStatus.getUpdatedUsername(), username.getText());
                                 MultiFactorAuthenticationClientPlugin plugin = (MultiFactorAuthenticationClientPlugin) Class.forName(extendedLoginStatus.getClientPluginClass()).newInstance();
 
-                                loginStatus = plugin.authenticate(LoginPanel.this, client, updatedUsername, loginStatus);
+                                loginStatus = plugin.authenticate(DefaultLoginPanel.this, client, updatedUsername, loginStatus);
 
                                 if (loginStatus != null && loginStatus.isSuccess()) {
                                     errorOccurred = false;
                                     if (!handleSuccess(loginStatus)) {
-                                        LoginPanel.getInstance().setVisible(false);
-                                        LoginPanel.getInstance().initialize(PlatformUI.SERVER_URL, PlatformUI.CLIENT_VERSION, "", "");
+                                        DefaultLoginPanel.getInstance().setVisible(false);
+                                        DefaultLoginPanel.getInstance().initialize(PlatformUI.SERVER_URL, PlatformUI.CLIENT_VERSION, "", "");
                                     }
                                 }
                             }
@@ -504,7 +504,7 @@ public class LoginPanel extends javax.swing.JFrame {
                     PublicServerSettings publicServerSettings = client.getPublicServerSettings();
                     
                     if (publicServerSettings.getLoginNotificationEnabled() == true) {
-                    	CustomBannerPanelDialog customBannerPanelDialog = new CustomBannerPanelDialog(LoginPanel.getInstance(), "Login Notification", publicServerSettings.getLoginNotificationMessage());
+                    	CustomBannerPanelDialog customBannerPanelDialog = new CustomBannerPanelDialog(DefaultLoginPanel.getInstance(), "Login Notification", publicServerSettings.getLoginNotificationMessage());
                     	boolean isAccepted = customBannerPanelDialog.isAccepted();
                     	
                     	if (isAccepted == true) {
@@ -559,7 +559,7 @@ public class LoginPanel extends javax.swing.JFrame {
                 PlatformUI.USER_NAME = StringUtils.defaultString(loginStatus.getUpdatedUsername(), username.getText());
                 setStatus("Authenticated...");
                 new Mirth(client);
-                LoginPanel.getInstance().setVisible(false);
+                DefaultLoginPanel.getInstance().setVisible(false);
 
                 User currentUser = PlatformUI.MIRTH_FRAME.getCurrentUser(PlatformUI.MIRTH_FRAME);
                 Properties userPreferences = new Properties();
