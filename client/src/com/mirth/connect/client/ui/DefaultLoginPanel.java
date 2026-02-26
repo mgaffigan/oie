@@ -6,16 +6,20 @@ package com.mirth.connect.client.ui;
 
 import java.awt.Color;
 import java.awt.Cursor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.ImageIcon;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.mirth.connect.client.core.Client;
 import com.mirth.connect.client.core.ClientException;
@@ -26,11 +30,14 @@ import com.mirth.connect.model.ExtendedLoginStatus;
 import com.mirth.connect.model.LoginStatus;
 import com.mirth.connect.plugins.MultiFactorAuthenticationClientPlugin;
 
-public class DefaultLoginPanel extends AbstractLoginPanel {
+class DefaultLoginPanel extends javax.swing.JFrame implements LoginPanel {
 
+    private static final Logger logger = LogManager.getLogger(DefaultLoginPanel.class);
     private static final String ERROR_MESSAGE = "There was an error connecting to the server at the specified address. Please verify that the server is up and running.";
 
-    public DefaultLoginPanel() {
+    private LoginSuccessHandler onSuccess;
+
+    DefaultLoginPanel() {
         initComponents();
         DisplayUtil.setResizable(this, false);
         jLabel2.setForeground(UIConstants.HEADER_TITLE_TEXT_COLOR);
@@ -69,12 +76,21 @@ public class DefaultLoginPanel extends AbstractLoginPanel {
     }
 
     @Override
-    public void initialize(String mirthServer, String version, String user, String pass) {
+    public void initialize(String mirthServer, String version, String user, String pass, LoginSuccessHandler onSuccess) {
+        if (SwingUtilities.isEventDispatchThread()) {
+            doInitialize(mirthServer, version, user, pass, onSuccess);
+        } else {
+            SwingUtilities.invokeLater(() -> doInitialize(mirthServer, version, user, pass, onSuccess));
+        }
+    }
+
+    private void doInitialize(String mirthServer, String version, String user, String pass, LoginSuccessHandler onSuccess) {
         synchronized (this) {
             // Do not initialize another login window if one is already visible
             if (isVisible()) {
                 return;
             }
+            this.onSuccess = onSuccess;
 
             setTitle(String.format("%s %s - Login", BrandingConstants.PRODUCT_NAME, version));
             setIconImage(BrandingConstants.FAVICON.getImage());
@@ -392,7 +408,7 @@ public class DefaultLoginPanel extends AbstractLoginPanel {
     private void loginButtonActionPerformed(java.awt.event.ActionEvent evt)// GEN-FIRST:event_loginButtonActionPerformed
     {// GEN-HEADEREND:event_loginButtonActionPerformed
         errorPane.setVisible(false);
-        LoginPanel loginPanel = this;
+        DefaultLoginPanel loginPanel = this;
 
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
 
@@ -425,9 +441,9 @@ public class DefaultLoginPanel extends AbstractLoginPanel {
 
                     // If SUCCESS or SUCCESS_GRACE_PERIOD
                     if (loginStatus != null && loginStatus.isSuccess()) {
-                        if (!Mirth.handleLoginSuccess(client, loginStatus, username.getText())) {
+                        if (!onSuccess.handle(client, loginStatus, username.getText())) {
                             loginPanel.setVisible(false);
-                            loginPanel.initialize(PlatformUI.SERVER_URL, PlatformUI.CLIENT_VERSION, "", "");
+                            loginPanel.initialize(PlatformUI.SERVER_URL, PlatformUI.CLIENT_VERSION, "", "", onSuccess);
                         }
                     } else {
                         // Assume failure unless overridden by a plugin
@@ -444,9 +460,9 @@ public class DefaultLoginPanel extends AbstractLoginPanel {
 
                                 if (loginStatus != null && loginStatus.isSuccess()) {
                                     errorOccurred = false;
-                                    if (!Mirth.handleLoginSuccess(client, loginStatus, username.getText())) {
+                                    if (!onSuccess.handle(client, loginStatus, username.getText())) {
                                         loginPanel.setVisible(false);
-                                        loginPanel.initialize(PlatformUI.SERVER_URL, PlatformUI.CLIENT_VERSION, "", "");
+                                        loginPanel.initialize(PlatformUI.SERVER_URL, PlatformUI.CLIENT_VERSION, "", "", onSuccess);
                                     }
                                 }
                             }
@@ -488,17 +504,47 @@ public class DefaultLoginPanel extends AbstractLoginPanel {
     }// GEN-LAST:event_closeButtonActionPerformed
 
     @Override
-    public void setStatus(String status) {
-        this.status.setText("Please wait: " + status);
+    public void setVisible(boolean visible) {
+        if (SwingUtilities.isEventDispatchThread()) {
+            super.setVisible(visible);
+        } else {
+            SwingUtilities.invokeLater(() -> super.setVisible(visible));
+        }
     }
 
-    public void setError(String status) {
-        errorTextArea.setText(status);
-        errorPane.setVisible(true);
-        loggingIn.setVisible(false);
-        loginMain.setVisible(true);
-        loginProgress.setIndeterminate(false);
-        password.grabFocus();
+    @Override
+    public void setStatus(String status) {
+        SwingUtilities.invokeLater(() -> this.status.setText("Please wait: " + status));
+    }
+
+    private void setError(String status) {
+        SwingUtilities.invokeLater(() -> {
+            errorTextArea.setText(status);
+            errorPane.setVisible(true);
+            loggingIn.setVisible(false);
+            loginMain.setVisible(true);
+            loginProgress.setIndeterminate(false);
+            password.grabFocus();
+        });
+    }
+
+    @Override
+    public boolean showLoginNotification(String title, String message) {
+        // Called from a background thread (SwingWorker.doInBackground via handleLoginSuccess).
+        // Swing dialogs must be created and shown on the EDT to avoid deadlocks.
+        final AtomicBoolean accepted = new AtomicBoolean(false);
+        try {
+            SwingUtilities.invokeAndWait(() -> {
+                CustomBannerPanelDialog dialog = new CustomBannerPanelDialog(this, title, message);
+                accepted.set(dialog.isAccepted());
+            });
+        } catch (InterruptedException e) {
+            logger.warn("Login notification dialog interrupted; treating as declined");
+            Thread.currentThread().interrupt();
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e.getCause());
+        }
+        return accepted.get();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

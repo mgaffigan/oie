@@ -69,8 +69,9 @@ public class Mirth {
         UIManager.put("Tree.closedIcon", UIConstants.CLOSED_ICON);
 
         userPreferences = Preferences.userNodeForPackage(Mirth.class);
-        LoginPanelFactory.getInstance().setStatus("Loading components...");
-        PlatformUI.MIRTH_FRAME.setupFrame(mirthClient);
+        LoginPanel loginPanel = LoginPanelFactory.getLoginPanel();
+        loginPanel.setStatus("Loading components...");
+        PlatformUI.MIRTH_FRAME.setupFrame(mirthClient, loginPanel::setStatus);
 
         boolean maximized;
         int width;
@@ -129,7 +130,7 @@ public class Mirth {
      * @return quit
      */
     public static boolean quitMac() {
-        return (LoginPanelFactory.getInstance().isVisible() || (PlatformUI.MIRTH_FRAME != null && PlatformUI.MIRTH_FRAME.logout(true)));
+        return (LoginPanelFactory.getLoginPanel().isVisible() || (PlatformUI.MIRTH_FRAME != null && PlatformUI.MIRTH_FRAME.logout(true)));
     }
 
     /**
@@ -291,20 +292,29 @@ public class Mirth {
             public void run() {
                 initUIManager();
                 PlatformUI.BACKGROUND_IMAGE = new ImageIcon(com.mirth.connect.client.ui.Frame.class.getResource("images/header_nologo.png"));
-                LoginPanelFactory.getInstance().initialize(server, version, username, password);
+                showLogin(username, password);
             }
         });
     }
 
-    public static boolean handleLoginSuccess(Client client, LoginStatus loginStatus, String userName) throws ClientException {
-        AbstractLoginPanel loginPanel = LoginPanelFactory.getInstance();
+    static void showLogin() {
+        showLogin("", "");
+    }
+
+    static void showLogin(String user, String pass) {
+        LoginPanelFactory.getLoginPanel().initialize(
+            PlatformUI.SERVER_URL, PlatformUI.CLIENT_VERSION, user, pass,
+            Mirth::handleLoginSuccess);
+    }
+
+    private static boolean handleLoginSuccess(Client client, LoginStatus loginStatus, String userName) throws ClientException {
+        LoginPanel loginPanel = LoginPanelFactory.getLoginPanel();
         try {
             PublicServerSettings publicServerSettings = client.getPublicServerSettings();
             
             if (publicServerSettings.getLoginNotificationEnabled() == true) {
-                CustomBannerPanelDialog customBannerPanelDialog = new CustomBannerPanelDialog(loginPanel, "Login Notification", publicServerSettings.getLoginNotificationMessage());
-                boolean isAccepted = customBannerPanelDialog.isAccepted();
-                
+                boolean isAccepted = loginPanel.showLoginNotification("Login Notification", publicServerSettings.getLoginNotificationMessage());
+
                 if (isAccepted == true) {
                     client.setUserNotificationAcknowledged(client.getCurrentUser().getId());
                 }
