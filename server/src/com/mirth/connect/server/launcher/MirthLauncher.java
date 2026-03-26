@@ -15,6 +15,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -40,11 +41,13 @@ public class MirthLauncher {
     private static final String EXTENSIONS_DIR = "./extensions";
     private static final String SERVER_LAUNCHER_LIB_DIR = "./server-launcher-lib";
     private static final String MIRTH_PROPERTIES_FILE = "./conf/mirth.properties";
+    private static final String LOG4J_PROPERTIES_FILE = "./conf/log4j2.properties";
     private static final String PROPERTY_APP_DATA_DIR = "dir.appdata";
     private static final String PROPERTY_INCLUDE_CUSTOM_LIB = "server.includecustomlib";
     private static final String[] LOG4J_JAR_FILES = { "./server-lib/log4j/log4j-core-2.25.3.jar",
             "./server-lib/log4j/log4j-api-2.25.3.jar",
             "./server-lib/log4j/log4j-1.2-api-2.25.3.jar" };
+    private static final String INVALID_LOG4J_PROPERTY = "dir.logs";
 
     private static String appDataDir = null;
 
@@ -53,6 +56,8 @@ public class MirthLauncher {
     public static void main(String[] args) {
         JarFile mirthClientCoreJarFile = null;
         try {
+            sanitizeLog4jConfiguration(new File(LOG4J_PROPERTIES_FILE));
+
             List<URL> classpathUrls = new ArrayList<>();
             // Always add log4j
             for (String log4jJar : LOG4J_JAR_FILES) {
@@ -126,6 +131,28 @@ public class MirthLauncher {
                 logger.error("Error closing mirthClientCoreJarFile.", e);
             }
         }
+    }
+
+    private static void sanitizeLog4jConfiguration(File propertiesFile) {
+        if (!propertiesFile.exists() || !propertiesFile.isFile()) {
+            return;
+        }
+
+        try {
+            List<String> lines = FileUtils.readLines(propertiesFile, StandardCharsets.UTF_8);
+            if (lines.removeIf(MirthLauncher::isInvalidLog4jPropertyLine)) {
+                FileUtils.writeLines(propertiesFile, StandardCharsets.UTF_8.name(), lines, System.lineSeparator(), false);
+            }
+        } catch (IOException e) {
+            System.err.println("Failed to sanitize Log4j configuration: " + propertiesFile.getAbsolutePath());
+            e.printStackTrace();
+        }
+    }
+
+    private static boolean isInvalidLog4jPropertyLine(String line) {
+        String trimmedLine = line.trim();
+        int equalsIndex = trimmedLine.indexOf('=');
+        return equalsIndex >= 0 && trimmedLine.substring(0, equalsIndex).trim().equals(INVALID_LOG4J_PROPERTY);
     }
 
     // if we have an uninstall file, uninstall the listed extensions
