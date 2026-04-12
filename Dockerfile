@@ -33,6 +33,14 @@ RUN --mount=type=cache,target=/root/.gradle/caches,sharing=locked \
     source "$HOME/.sdkman/bin/sdkman-init.sh" \
     && ./gradlew --no-daemon build ${GRADLE_BUILD_ARGS}
 
+# Stage 1c: Present artifacts for export if not running within docker
+FROM scratch AS build-output-export
+COPY --from=builder /app/server/setup /app/server/setup/
+COPY --from=builder /app/client/build/test-results /app/client/build/test-results/
+COPY --from=builder /app/command/build/test-results /app/command/build/test-results/
+COPY --from=builder /app/donkey/build/test-results /app/donkey/build/test-results/
+COPY --from=builder /app/server/build/test-results /app/server/build/test-results/
+
 ##########################################
 #
 #     Ubuntu JDK Image

@@ -179,14 +179,17 @@ channels/
 Test fixture are split into the original data:
 
 - `source` is the payload sent into the deployed channel.
-- `source_metadata.yml` is the metadata sent with the source payload. (Optional)
+- `source_sourcemap.yml` is the metadata sent with the source payload. (Optional) 
 
 And the optional assertions:
 
+- `source_metadata.yml` is a dictionary of assertions for the source message metadata after submission.
 - `source_status` is the asserted status enumeration text for the source message after submission.
+- `source_response` is the asserted response payload if the channel gives a response to the source submission.
 - `source_transformed` is the asserted transformed source payload if the channel transforms the message before delivery.
 - `dest01_transformed` asserts byte-identical transformed content for destination 1 if the channel transforms the message before delivery.
 - `dest01` asserts byte-identical sent content for destination 1.
+- `dest01_response` asserts byte-identical response content if destination 1 gives a response to the message delivery.
 - `dest01_metadata.yml` is a dictionary of assertions for destination 1 metadata.
 - `dest01_status` asserts the status of the message at destination 1.
 - `dest02*` repeats the same pattern for destination 2, and so on.
