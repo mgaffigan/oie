@@ -17,15 +17,19 @@
     <entries>
       <dirEntry mountPoint="24" file="${compiler:installer:mediaRoot}/server/setup" subDirectory="setup">
         <exclude>
+          <entry location="oieserver" />
+          <entry location="oieserver.ps1" />
+          <entry location="oieserver.vmoptions" />
+          <entry location="oieservice.vmoptions" />
           <entry location="conf" />
         </exclude>
       </dirEntry>
       <dirEntry mountPoint="24" file="${compiler:installer:mediaRoot}/server/setup" overwriteMode="0" uninstallMode="1" overrideOverwriteMode="true" overrideUninstallMode="true">
         <exclude>
           <entry location="server-lib" />
-          <entry location="webapps" />
-          <entry location="mirth-manager-launcher.jar" />
+          <entry location="oieserver" />
           <entry location="public_html" />
+          <entry location="oieserver.ps1" />
           <entry location="oieserver.vmoptions" />
           <entry location="cli-lib" />
           <entry location="server-launcher-lib" />
@@ -33,7 +37,6 @@
           <entry location="public_api_html" />
           <entry location="docs" />
           <entry location="extensions" />
-          <entry location="manager-lib" />
           <entry location="mirth-cli-launcher.jar" />
           <entry location="logs" />
           <entry location="oieservice.vmoptions" />
