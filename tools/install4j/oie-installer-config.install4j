@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<install4j version="11.0.3" transformSequenceNumber="11">
-  <application name="Open Integration Engine" applicationId="4145-9206-7630-8076" mediaDir="${compiler:installer:mediaRoot}/server/build" shortName="oie" publisher="Open Integration Engine Project" publisherWeb="https://openintegrationengine.com" version="4.5.2" backupOnSave="true" autoSave="true" macVolumeId="88477e584eb462ba" javaMinVersion="17" javaMaxVersion="25">
+<install4j version="11.0.5" transformSequenceNumber="11">
+  <application name="Open Integration Engine" applicationId="4145-9206-7630-8076" mediaDir="${compiler:installer:mediaRoot}server/build" shortName="oie" publisher="Open Integration Engine Project" publisherWeb="https://openintegrationengine.com" version="4.5.2" backupOnSave="true" autoSave="true" macVolumeId="88477e584eb462ba" javaMinVersion="17" javaMaxVersion="25">
     <variables>
-      <variable name="installer:mediaRoot" value="../../../engine" />
+      <variable name="installer:mediaRoot" value="../../" />
     </variables>
     <jreBundles jdkProviderId="Zulu" release="17/17.0.18">
       <modules>
@@ -15,7 +15,7 @@
       <mountPoint id="24" />
     </mountPoints>
     <entries>
-      <dirEntry mountPoint="24" file="${compiler:installer:mediaRoot}/server/setup" subDirectory="setup">
+      <dirEntry mountPoint="24" file="${compiler:installer:mediaRoot}server/setup" subDirectory="setup">
         <exclude>
           <entry location="oieserver" />
           <entry location="oieserver.ps1" />
@@ -24,7 +24,7 @@
           <entry location="conf" />
         </exclude>
       </dirEntry>
-      <dirEntry mountPoint="24" file="${compiler:installer:mediaRoot}/server/setup" overwriteMode="0" uninstallMode="1" overrideOverwriteMode="true" overrideUninstallMode="true">
+      <dirEntry mountPoint="24" file="${compiler:installer:mediaRoot}server/setup" overwriteMode="0" uninstallMode="1" overrideOverwriteMode="true" overrideUninstallMode="true">
         <exclude>
           <entry location="server-lib" />
           <entry location="oieserver" />
@@ -64,7 +64,7 @@
 -Dapple.awt.UIElement=true</content>
       </vmOptionsFile>
       <iconImageFiles>
-        <file path="${compiler:installer:mediaRoot}/../governance/branding/icons/oie_logo_only_white_background_128x128.png" />
+        <file path="${compiler:installer:mediaRoot}tools/install4j/oie_logo_only_white_background_128x128.png" />
       </iconImageFiles>
     </launcher>
     <launcher name="Open Integration Engine Server" id="39" excludeFromMenu="true">
@@ -85,7 +85,7 @@
 -Dapple.awt.UIElement=true</content>
       </vmOptionsFile>
       <iconImageFiles>
-        <file path="${compiler:installer:mediaRoot}/../governance/branding/icons/oie_logo_only_white_background_128x128.png" />
+        <file path="${compiler:installer:mediaRoot}tools/install4j/oie_logo_only_white_background_128x128.png" />
       </iconImageFiles>
     </launcher>
     <launcher name="oiemanager" id="56" menuName="${compiler:sys.fullName}">
@@ -97,7 +97,7 @@
       </java>
       <vmOptionsFile mode="none" />
       <iconImageFiles>
-        <file path="${compiler:installer:mediaRoot}/../governance/branding/icons/oie_logo_only_white_background_128x128.png" />
+        <file path="${compiler:installer:mediaRoot}tools/install4j/oie_logo_only_white_background_128x128.png" />
       </iconImageFiles>
     </launcher>
     <launcher name="oiecommand" id="140" menuName="${compiler:sys.fullName}">
@@ -109,7 +109,7 @@
       </java>
       <vmOptionsFile mode="none" />
       <iconImageFiles>
-        <file path="${compiler:installer:mediaRoot}/../governance/branding/icons/oie_logo_only_white_background_128x128.png" />
+        <file path="${compiler:installer:mediaRoot}tools/install4j/oie_logo_only_white_background_128x128.png" />
       </iconImageFiles>
     </launcher>
   </launchers>
@@ -120,7 +120,7 @@
           <property name="customIconImageFiles">
             <add>
               <object class="com.install4j.api.beans.ExternalFile">
-                <string>${compiler:installer:mediaRoot}/../governance/branding/icons/oie_logo_only_white_background_128x128.png</string>
+                <string>${compiler:installer:mediaRoot}tools/install4j/oie_logo_only_white_background_128x128.png</string>
               </object>
             </add>
           </property>
@@ -257,7 +257,7 @@ return console.askOkCancel(message, true);
                       <entry>
                         <string>en</string>
                         <object class="com.install4j.api.beans.ExternalFile">
-                          <string>${compiler:installer:mediaRoot}/server/setup/docs/LICENSE.txt</string>
+                          <string>${compiler:installer:mediaRoot}server/setup/docs/LICENSE.txt</string>
                         </object>
                       </entry>
                     </property>
@@ -319,7 +319,7 @@ return console.askOkCancel(message, true);
                       <entry>
                         <string>en</string>
                         <object class="com.install4j.api.beans.ExternalFile">
-                          <string>${compiler:installer:mediaRoot}/tools/install4j/readme.html</string>
+                          <string>${compiler:installer:mediaRoot}tools/install4j/readme.html</string>
                         </object>
                       </entry>
                     </property>
@@ -849,6 +849,8 @@ return console.askYesNo(message, true);
     </windowsArchive>
   </mediaSets>
   <buildIds buildAll="false">
+    <mediaSet refId="121" />
+    <mediaSet refId="125" />
     <mediaSet refId="136" />
   </buildIds>
 </install4j>
