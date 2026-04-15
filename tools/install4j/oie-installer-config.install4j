@@ -4,7 +4,7 @@
     <variables>
       <variable name="installer:mediaRoot" value="../../../engine" />
     </variables>
-    <jreBundles jdkProviderId="Zulu" release="17/17.0.15">
+    <jreBundles jdkProviderId="Zulu" release="17/17.0.18">
       <modules>
         <defaultModules set="all" />
       </modules>
