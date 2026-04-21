@@ -66,11 +66,9 @@ The following are distributed under the terms of the MPL version 1.1
 (see MPL-1.1.txt). The source code is also available under the same license
 terms.
 
-	dcm4che 2.0.29 (source code can be downloaded at: http://www.dcm4che.org/)
-	DcmRcv and DcmSnd were modified to allow overriding of the network
-	connections.
+	dcm4che 5.34.3 (source code can be downloaded at: http://www.dcm4che.org/)
 
-	HAPI 2.3 (source code can be downloaded at: 
+	HAPI 2.3 (source code can be downloaded at:
 	https://github.com/hapifhir/hapi-hl7v2)
 
 	iText, a free Java-PDF library version 2.1.7 (source code can be downloaded 

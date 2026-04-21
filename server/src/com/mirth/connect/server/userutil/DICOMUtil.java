@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.dcm4che2.data.DicomObject;
+import org.dcm4che3.data.Attributes;
 
 import com.mirth.connect.donkey.model.message.MessageSerializerException;
 import com.mirth.connect.donkey.util.Base64Util;
@@ -226,30 +226,30 @@ public class DICOMUtil {
     }
 
     /**
-     * Converts a byte array into a dcm4che DicomObject.
-     * 
+    * Converts a byte array into dcm4che5 {@link Attributes}.
+     *
      * @param bytes
      *            The binary data to convert.
      * @param decodeBase64
      *            If true, the data is assumed to be Base64-encoded.
-     * @return The converted DicomObject.
+     * @return The converted Attributes.
      * @throws IOException
-     *             If Base64 encoding failed.
+     *             If parsing fails.
      */
-    public static DicomObject byteArrayToDicomObject(byte[] bytes, boolean decodeBase64) throws IOException {
+    public static Attributes byteArrayToDicomObject(byte[] bytes, boolean decodeBase64) throws IOException {
         return DICOMConverter.byteArrayToDicomObject(bytes, decodeBase64);
     }
 
     /**
-     * Converts a dcm4che DicomObject into a byte array.
-     * 
+     * Converts a DICOM object into a byte array.
+     *
      * @param dicomObject
-     *            The DicomObject to convert.
+     *            The Attributes object to convert.
      * @return The converted byte array.
      * @throws IOException
-     *             If Base64 encoding failed.
+     *             If serialization fails.
      */
-    public static byte[] dicomObjectToByteArray(DicomObject dicomObject) throws IOException {
+    public static byte[] dicomObjectToByteArray(Attributes dicomObject) throws IOException {
         return DICOMConverter.dicomObjectToByteArray(dicomObject);
     }
 }

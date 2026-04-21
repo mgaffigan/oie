@@ -1,8 +1,8 @@
 /*
  * Copyright (c) Mirth Corporation. All rights reserved.
- * 
+ *
  * http://www.mirthcorp.com
- * 
+ *
  * The software in this package is published under the terms of the MPL license a copy of which has
  * been included with this distribution in the LICENSE.txt file.
  */
@@ -10,9 +10,9 @@
 package com.mirth.connect.server.attachments.dicom;
 
 import org.apache.commons.codec.binary.StringUtils;
-import org.dcm4che2.data.DicomElement;
-import org.dcm4che2.data.DicomObject;
-import org.dcm4che2.data.Tag;
+import org.dcm4che3.data.Attributes;
+import org.dcm4che3.data.Fragments;
+import org.dcm4che3.data.Tag;
 
 import com.mirth.connect.donkey.model.message.RawMessage;
 import com.mirth.connect.donkey.model.message.attachment.Attachment;
@@ -25,8 +25,8 @@ import com.mirth.connect.server.util.ServerUUIDGenerator;
 
 public class DICOMAttachmentHandler implements AttachmentHandler {
 
-    private DicomObject dicomObject;
-    private DicomElement dicomElement;
+    private Attributes dicomObject;
+    private Object dicomElement;
     private int index;
     private String attachmentId;
 
@@ -58,19 +58,17 @@ public class DICOMAttachmentHandler implements AttachmentHandler {
     @Override
     public Attachment nextAttachment() throws AttachmentException {
         try {
-            if (dicomElement != null) {
-                if (dicomElement.hasItems()) {
-                    int total = dicomElement.countItems();
-                    if (index < total) {
-                        // Add prefix with sequence ID so that fragments will get re-attached in the right order
-                        String fragment = "F" + org.apache.commons.lang3.StringUtils.leftPad(String.valueOf(index), String.valueOf(total).length(), '0') + "-";
-                        return new Attachment(fragment + attachmentId, dicomElement.getFragment(index++), "DICOM");
-                    }
-                } else {
-                    Attachment attachment = new Attachment(attachmentId, dicomElement.getBytes(), "DICOM");
-                    dicomElement = null;
-                    return attachment;
+            if (dicomElement instanceof Fragments) {
+                Fragments fragments = (Fragments) dicomElement;
+                int total = fragments.size();
+                if (index < total) {
+                    String fragment = "F" + org.apache.commons.lang3.StringUtils.leftPad(String.valueOf(index), String.valueOf(total).length(), '0') + "-";
+                    return new Attachment(fragment + attachmentId, (byte[]) fragments.get(index++), "DICOM");
                 }
+            } else if (dicomElement instanceof byte[]) {
+                Attachment attachment = new Attachment(attachmentId, (byte[]) dicomElement, "DICOM");
+                dicomElement = null;
+                return attachment;
             }
 
             return null;
