@@ -10,7 +10,7 @@
 package com.mirth.connect.client.ui.browsers.message;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
@@ -52,22 +52,24 @@ class MessageBrowserRecentFilterStore {
             throw new IllegalArgumentException("Filter cannot be null");
         }
 
-        var existingFilters = new ArrayList<MessageFilter>(getRecentFilters());
-        Collections.reverse(existingFilters);
-
         var filters = EvictingQueue.create(MAX_RECENT_FILTERS);
-        filters.addAll(existingFilters);
+        var existingFilters = getRecentFilters();
+        for (int i = existingFilters.size() - 1; i >= 0; i--) {
+            filters.add(existingFilters.get(i));
+        }
 
         // Remove then re-add to avoid duplicates.
         filters.remove(filter);
         filters.add(filter);
 
-        var filtersToStore = new ArrayList<MessageFilter>(filters);
-        Collections.reverse(filtersToStore);
+        var filtersToStore = new LinkedList<MessageFilter>();
+        for (MessageFilter existingFilter : filters) {
+            filtersToStore.addFirst(existingFilter);
+        }
 
         try {
             var preferences = Preferences.userNodeForPackage(Mirth.class);
-            preferences.put(prefKey, ObjectXMLSerializer.getInstance().serialize(filtersToStore));
+            preferences.put(prefKey, ObjectXMLSerializer.getInstance().serialize(new ArrayList<MessageFilter>(filtersToStore)));
         } catch (Exception e) {
             e.printStackTrace();
         }

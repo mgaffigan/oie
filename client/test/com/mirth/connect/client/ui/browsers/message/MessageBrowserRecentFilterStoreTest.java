@@ -10,7 +10,7 @@
 package com.mirth.connect.client.ui.browsers.message;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +69,7 @@ public class MessageBrowserRecentFilterStoreTest {
 
         assertEquals(10, recentFilterValues.size());
         assertEquals(List.of("f10", "f9", "f8", "f7", "f6", "f5", "f4", "f3", "f2", "f1"), recentFilterValues);
-        assertTrue(!recentFilterValues.contains("f0"));
+        assertFalse(recentFilterValues.contains("f0"));
     }
 
     private MessageFilter createFilter(String textSearch) {
