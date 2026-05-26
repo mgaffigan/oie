@@ -10,10 +10,12 @@
 package com.mirth.connect.client.ui.browsers.message;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.prefs.Preferences;
 
 import org.apache.commons.lang3.StringUtils;
+import com.google.common.collect.EvictingQueue;
 
 import com.mirth.connect.client.ui.Mirth;
 import com.mirth.connect.model.converters.ObjectXMLSerializer;
@@ -50,20 +52,22 @@ class MessageBrowserRecentFilterStore {
             throw new IllegalArgumentException("Filter cannot be null");
         }
 
-        var filters = new ArrayList<MessageFilter>(getRecentFilters());
+        var existingFilters = new ArrayList<MessageFilter>(getRecentFilters());
+        Collections.reverse(existingFilters);
 
-        // Remove then re-add to avoid duplicates
+        var filters = EvictingQueue.create(MAX_RECENT_FILTERS);
+        filters.addAll(existingFilters);
+
+        // Remove then re-add to avoid duplicates.
         filters.remove(filter);
-        filters.add(0, filter);
+        filters.add(filter);
 
-        // Trim to the maximum number of recent filters
-        if (filters.size() > MAX_RECENT_FILTERS) {
-            filters.subList(MAX_RECENT_FILTERS, filters.size()).clear();
-        }
+        var filtersToStore = new ArrayList<MessageFilter>(filters);
+        Collections.reverse(filtersToStore);
 
         try {
             var preferences = Preferences.userNodeForPackage(Mirth.class);
-            preferences.put(prefKey, ObjectXMLSerializer.getInstance().serialize(filters));
+            preferences.put(prefKey, ObjectXMLSerializer.getInstance().serialize(filtersToStore));
         } catch (Exception e) {
             e.printStackTrace();
         }
