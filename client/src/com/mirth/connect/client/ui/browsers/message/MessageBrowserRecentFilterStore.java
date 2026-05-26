@@ -52,7 +52,7 @@ class MessageBrowserRecentFilterStore {
             throw new IllegalArgumentException("Filter cannot be null");
         }
 
-        var filters = EvictingQueue.create(MAX_RECENT_FILTERS);
+        EvictingQueue<MessageFilter> filters = EvictingQueue.create(MAX_RECENT_FILTERS);
         var existingFilters = getRecentFilters();
         for (int i = existingFilters.size() - 1; i >= 0; i--) {
             filters.add(existingFilters.get(i));
