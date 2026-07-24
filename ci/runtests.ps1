@@ -15,11 +15,15 @@ $ResultsDir = Join-Path $RootDir "ci/test-results"
 
 function Build-Images {
     $serverBuildArgs = @("build")
-    if ($GradleBuildArgs) {
-        $serverBuildArgs += @( "--build-arg", "GRADLE_BUILD_ARGS=$GradleBuildArgs" )
-    }
+    # Merge user args and the disable-tests flags into a single GRADLE_BUILD_ARGS;
+    # passing --build-arg twice would let docker keep only the last, silently
+    # dropping the user-supplied args.
+    $effectiveBuildArgs = $GradleBuildArgs
     if ($DisableUnitTests) {
-        $serverBuildArgs += @( "--build-arg", "GRADLE_BUILD_ARGS=-PdisableTests=true -PdisableSigning=true" )
+        $effectiveBuildArgs = ("$effectiveBuildArgs -PdisableTests=true -PdisableSigning=true").Trim()
+    }
+    if ($effectiveBuildArgs) {
+        $serverBuildArgs += @( "--build-arg", "GRADLE_BUILD_ARGS=$effectiveBuildArgs" )
     }
     docker @($serverBuildArgs + @( "--target", "jre-run", "-t", $AlpineServerImage, $RootDir ))
     docker @($serverBuildArgs + @( "--target", "jdk-run", "-t", $UbuntuServerImage, $RootDir ))

@@ -272,17 +272,13 @@ def run_reported_hook(
 
 
 def invoke_callable(callable_obj: Any, client: ApiClient, context: TestRunContext) -> None:
+    # Hooks have a fixed signature: (self, client, context). A hook that needs
+    # only one of them simply ignores the other.
     result: dict[str, BaseException | None] = {"error": None}
 
     def run_hook() -> None:
         try:
-            try:
-                callable_obj(client, context)
-            except TypeError:
-                try:
-                    callable_obj(client)
-                except TypeError:
-                    callable_obj()
+            callable_obj(client, context)
         except BaseException as error:
             result["error"] = error
 

@@ -126,7 +126,7 @@ def run_message_test(
     source_payload = fixture.source_file.read_text(encoding="utf-8")
     source_sourcemap = load_yaml_mapping(fixture.source_sourcemap_file)
     message_id = client.process_message(provisioned_channel.channel_id, source_payload, source_sourcemap)
-    result = wait_for_message_result(client, provisioned_channel, fixture, parse_xml_long(message_id), timeout_seconds)
+    result = wait_for_message_result(client, provisioned_channel, fixture, message_id, timeout_seconds)
     print(f"Validated message {fixture.name} ({message_id})", flush=True)
     return result
 
@@ -286,12 +286,6 @@ def is_terminal_message(result: MessageTestResult) -> bool:
         if status in PENDING_STATUSES:
             return False
     return True
-
-
-def parse_xml_long(xml_element) -> int:
-    if xml_element.tag != "long" or xml_element.text is None:
-        raise RuntimeError("Unexpected XML long response")
-    return int(xml_element.text.strip())
 
 
 def message_element(xml_element):

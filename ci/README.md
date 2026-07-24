@@ -143,6 +143,17 @@ Each test executes in this order:
 7. `teardown`
 
 Hook methods are optional and come from the test directory's `test.py` file if present.
+They are defined on a `Hooks` (or `TestHooks`) class and share one fixed signature —
+`def <hook>(self, client, context)` — where `client` is the connected REST client and
+`context` is the `TestRunContext` (test run, provisioned channels, message results). A
+hook that needs only one of them simply ignores the other. Each hook runs under a
+timeout; any exception it raises fails that hook's test case.
+
+```python
+class Hooks:
+    def postDeploy(self, client, context):
+        ...
+```
 
 The initial hook surface is:
 

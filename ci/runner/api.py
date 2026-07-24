@@ -83,7 +83,11 @@ class ApiClient:
             accept="application/xml",
             timeout=MAX_REQUEST_TIMEOUT_SECONDS,
         )
-        return parse_xml(body)
+        # The endpoint returns the new message id as a <long> element.
+        element = parse_xml(body)
+        if element.tag != "long" or element.text is None:
+            raise RuntimeError("Unexpected XML long response")
+        return int(element.text.strip())
 
     def get_message_content(self, channel_id: str, message_id: int, meta_data_ids: list[int] | None = None):
         query = ""
