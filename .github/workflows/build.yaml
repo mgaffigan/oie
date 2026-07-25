@@ -7,6 +7,10 @@ on:
   pull_request:
     branches:
       - main
+  # Allows running the full build, including the docker_smoke matrix, against a
+  # branch on demand. GitHub only offers this once the workflow declaring it has
+  # reached the default branch.
+  workflow_dispatch:
 
 jobs:
   event_file:
@@ -108,6 +112,12 @@ jobs:
           name: oie-server-image-ubuntu-temurin21
           path: oie-server-image-ubuntu-temurin21.tar.gz
 
+      - name: Upload smoke test harness
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoketest-harness
+          path: docker-build-output/app/smoketest/harness
+
       - name: Stage Test Results
         if: (!cancelled())
         run: |
@@ -152,20 +162,16 @@ jobs:
           IMAGE_ARCHIVE="${{ startsWith(matrix.configuration, 'ubuntu-') && 'oie-server-image-ubuntu-temurin21.tar.gz' || 'oie-server-image-alpine-temurin21.tar.gz' }}"
           gunzip -c "$IMAGE_ARCHIVE" | docker load
 
-      - name: Build runner image
-        run: docker build --progress=plain -t oie-ci-runner:${{ github.sha }} ci/runner
+      - name: Download smoke test harness
+        uses: actions/download-artifact@v4
+        with:
+          name: smoketest-harness
+          path: smoketest-harness
 
-      - name: Boot and tear down configuration
-        run: |
-          docker run --rm \
-            --add-host host.docker.internal:host-gateway \
-            -v /var/run/docker.sock:/var/run/docker.sock \
-            -v "$GITHUB_WORKSPACE:/workspace" \
-            oie-ci-runner:${{ github.sha }} \
-            --workspace /workspace \
-            --configuration "${{ matrix.configuration }}" \
-            --server-image "${{ startsWith(matrix.configuration, 'ubuntu-') && needs.build.outputs.ubuntu_server_image || needs.build.outputs.alpine_server_image }}" \
-            --results-root ci/test-results
+      - name: Run smoke tests
+        env:
+          OIE_IMAGE_OVERRIDE: ${{ startsWith(matrix.configuration, 'ubuntu-') && needs.build.outputs.ubuntu_server_image || needs.build.outputs.alpine_server_image }}
+        run: ci/runtests.sh --configuration "${{ matrix.configuration }}" --harness smoketest-harness
 
       - name: Upload Docker Smoke Test Results
         if: ${{ !cancelled() }}

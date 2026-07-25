@@ -1,4 +1,4 @@
-# GENERATED FROM .gitignore by tools/gen-dockerignore.py -- DO NOT EDIT BY HAND.
+# GENERATED FROM .gitignore by tools/gen-dockerignore.sh -- DO NOT EDIT BY HAND.
 # .gitignore is authoritative; edit it and re-run the generator.
 # (git and docker use opposite default path anchoring -- see the script.)
 

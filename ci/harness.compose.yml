@@ -1,0 +1,33 @@
+# Overlay that adds the smoke-test harness to any configuration under
+# ci/configurations. Layered by ci/runtests.sh:
+#
+#   docker compose -f ci/configurations/<name>.compose.yml -f ci/harness.compose.yml ...
+#
+# The harness runs from the server image itself, so the whole OIE distribution is
+# already on its classpath under /opt/engine and only the harness jars have to be
+# mounted in. Running inside the compose network is also what lets it reach the
+# server as https://oie:8443 by service name, with no docker socket and no
+# host-gateway plumbing.
+#
+# Paths are absolute and supplied by ci/runtests.sh: relative volume paths would
+# resolve against the project directory, which is ambiguous when two -f files are
+# combined.
+services:
+  harness:
+    image: ${OIE_IMAGE}
+    depends_on:
+      oie:
+        condition: service_healthy
+    entrypoint: ["/bin/bash", "/ci/run-harness.sh"]
+    # The report is written to a bind mount, so run as the user that owns the
+    # checkout instead of the image's `engine` user, whose uid would not be able to
+    # write there. HOME is redirected because that user has no home in this image.
+    user: "${HOST_UID}:${HOST_GID}"
+    environment:
+      HOME: /tmp
+      OIE_BASE_URL: https://oie:8443
+      OIE_CONFIGURATION: ${OIE_CONFIGURATION}
+    volumes:
+      - ${HARNESS_DIR}:/harness:ro
+      - ${WORKSPACE}/ci:/ci:ro
+      - ${WORKSPACE}/ci/test-results:/results

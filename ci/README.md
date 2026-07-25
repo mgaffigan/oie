@@ -5,26 +5,32 @@ This directory defines a minimal integration test system for the Docker image pr
 ## Goals
 
 - Build the OIE server image from the in-tree `Dockerfile`.
-- Build a dedicated CI runner image from `ci/runner/`.
+- Build the test harness once and reuse it for every configuration.
 - Run one or more docker compose configurations in parallel in CI.
 - Wait for Docker healthchecks instead of scraping logs.
 - Authenticate to the server over REST using `admin` / `admin`.
 - Discover tests from the filesystem, not from a registry.
 - Execute tests in lexicographic order.
 - Keep the authoring model slim enough that most tests are just fixture files.
+- Assert on client-API operations rather than on HTTP payloads.
 
 ## Directory Layout
 
-Suggested layout:
-
 ```text
 .github/workflows/       CI entrypoints
+smoketest/               the JUnit 5 harness (a Gradle module)
 ci/
   README.md              this design
-  runner/                dockerized Python runner
   configurations/        compose files keyed by configuration name
+  harness.compose.yml    overlay that adds the harness to any configuration
+  run-harness.sh         harness container entrypoint
+  runtests.sh            local and CI entrypoint
   tests/                 filesystem-discovered test cases
 ```
+
+The harness is a Gradle module at the repository root rather than under `ci/`
+because `.dockerignore` excludes all of `ci/` from the image build context, and
+`settings.gradle` has to be able to include it during the in-image build.
 
 Expected configuration names are the compose basenames without the file suffix, for example:
 
@@ -42,19 +48,15 @@ No additional registry of configurations is planned.
 
 ## CI Model
 
-The workflow is expected to do three things:
+The workflow does three things:
 
 1. Build the server image from the repository `Dockerfile` and tag it with a CI-unique tag.
-2. Build the runner image from `ci/runner/Dockerfile`.
+2. Build the harness once, in the same Gradle build, and publish it as an artifact.
 3. Launch one job per configuration so configurations can run in parallel.
 
-The workflow passes these inputs into the runner container:
-
-- the server image tag to inject into the selected compose file
-- the configuration name to execute
-- the tests root, defaulting to `ci/tests`
-
-The runner is a consumer of images, not the component that builds them.
+Each smoke job downloads the harness artifact and hands it to `ci/runtests.sh`
+together with the configuration name and the server image tag. The harness is a
+consumer of images, not the component that builds them.
 
 ## Compose Contract
 
@@ -63,29 +65,38 @@ Each compose file under `ci/configurations/` defines one test environment.
 Conventions are preferred over options:
 
 - The OIE service is named `oie`.
-- The compose file references a server image that the runner rewrites to the CI-built image tag before startup.
+- The image comes from `${OIE_IMAGE}`, which `ci/runtests.sh` exports.
 - Dependencies such as MySQL or PostgreSQL declare Docker healthchecks.
 - The OIE service declares a Docker healthcheck that represents API readiness, not just process start.
 
-The runner relies on `docker compose up -d` plus Compose health state. It should not parse container logs for readiness.
+`ci/runtests.sh` layers `ci/harness.compose.yml` on top of the selected
+configuration, then relies on `docker compose up -d --wait oie` plus Compose health
+state. It does not parse container logs for readiness.
 
 If the current image does not already expose a suitable health endpoint, we will add one in the server later. No server changes are part of this design doc.
 
-## Runner Contract
+## Harness Contract
 
-The runner is a small Python application packaged as a Docker image.
+The harness is a JUnit 5 module in `smoketest/`, run by the JUnit Platform Console
+Launcher inside a container started from the server image itself. Deriving the
+harness container from the server image means the whole OIE distribution is already
+on its classpath under `/opt/engine`, so the harness ships only its own jar and the
+JUnit platform. Running inside the compose network is what lets it reach the server
+as `https://oie:8443` by service name, with no Docker socket and no host-gateway
+plumbing.
 
-Responsibilities:
+Responsibilities are split deliberately:
 
-- select one configuration
-- materialize the effective compose file with the CI-built OIE image tag
-- boot the compose stack
-- wait until all required services are healthy
-- authenticate to the OIE REST API with `admin` / `admin`
-- discover applicable tests under `ci/tests`
-- run them in lexicographic order
-- collect failures with enough detail to debug fixture mismatches
-- always tear down the compose stack unless explicitly running in a local keep-alive mode
+- `ci/runtests.sh` owns the compose lifecycle: boot one configuration, run the
+  harness, always tear the stack down unless `--keep-alive` was passed.
+- The harness owns only the tests. It is handed a base URL and asserts against it.
+
+Because the harness talks to the server through `com.mirth.connect.client.core.Client`
+— the same client the CLI and the Administrator use — it does not implement any part
+of the API itself. Self-signed certificates, the mandatory `X-Requested-With` header,
+session cookies and model serialization are all handled by that client, and
+assertions run against typed `Message` and `ConnectorMessage` objects rather than
+scraped XML.
 
 Non-goals for the first iteration:
 
@@ -99,12 +110,9 @@ Non-goals for the first iteration:
 
 Tests live under `ci/tests/` and are discovered recursively.
 
-A test directory is any directory under `ci/tests/`.  A test directory must contain at
-least one recognized test, such as `channels/` or `test.py`.
+A test directory is any directory containing `channels/<channel_name>/channel.xml`.
 
 Tests run in lexicographic order by relative path. This keeps execution deterministic without extra metadata.
-
-The runner may support optional filtering by path later, but the default behavior is full discovery.
 
 ## Configuration Filtering
 
@@ -116,11 +124,13 @@ Rules:
 - Blank lines are ignored.
 - A missing `configurations` file means the test runs in all configurations.
 
-This is the only planned per-test targeting mechanism.
+This is the only planned per-test targeting mechanism. When the harness is run
+without `-Doie.configuration` — pointed at a server by hand, for instance — the
+filter is not applied and every test runs.
 
 ## Authentication
 
-The runner authenticates using the existing REST login endpoint.
+The harness authenticates using the existing REST login endpoint.
 
 Initial contract:
 
@@ -128,41 +138,25 @@ Initial contract:
 - password: `admin`
 - transport: HTTPS
 
-The runner stores the authenticated session and passes a connected client object into any Python hook class loaded from a test directory.
+Override with `-Doie.username` / `-Doie.password` if needed.
 
 ## Test Execution Phases
 
-Each test executes in this order:
+Within each channel, the harness runs:
 
-1. `startup`
-2. deploy channels from `channels/<channel_name>/channel.xml`
-3. `postDeploy`
-4. send messages from fixtures, assert results after each message
-5. `postRun`
-6. assertions
-7. `teardown`
+1. deploy the channel from `channels/<channel_name>/channel.xml` and wait for it to start
+2. send messages from fixtures, in order, asserting results after each message
+3. undeploy and remove the channel
 
-Hook methods are optional and come from the test directory's `test.py` file if present.
-They are defined on a `Hooks` (or `TestHooks`) class and share one fixed signature —
-`def <hook>(self, client, context)` — where `client` is the connected REST client and
-`context` is the `TestRunContext` (test run, provisioned channels, message results). A
-hook that needs only one of them simply ignores the other. Each hook runs under a
-timeout; any exception it raises fails that hook's test case.
+Each of those steps is a separate test case in the report, so a failure names the
+step it happened in. Channels are also removed on shutdown as a safety net.
 
-```python
-class Hooks:
-    def postDeploy(self, client, context):
-        ...
-```
-
-The initial hook surface is:
-
-- `startup`
-- `postDeploy`
-- `postRun`
-- `teardown`
-
-These hooks are intended for narrow gaps that fixture-only tests cannot cover.
+Fixtures are pure data; there is no per-fixture scripting hook. A test that needs
+real logic is an ordinary JUnit test in
+`smoketest/src/test/java/org/openintegrationengine/smoketest/`, using the same
+`OieServer` helper the fixture runner uses. That keeps the fixture format small and
+puts custom logic somewhere it can be compiled, refactored and debugged like any
+other test.
 
 ## Message Fixtures
 
@@ -177,20 +171,19 @@ channels/
       messages/
         01-verify-date/
           source
-          source_metadata.yml
+          source_sourcemap.yml
           source_status
           dest01
           dest01_metadata.yml
           dest01_status
-          assertion.py
         02-verify-foo/
           ...
 ```
 
-Test fixture are split into the original data:
+Test fixtures are split into the original data:
 
 - `source` is the payload sent into the deployed channel.
-- `source_sourcemap.yml` is the metadata sent with the source payload. (Optional) 
+- `source_sourcemap.yml` is the source map sent with the source payload. (Optional)
 
 And the optional assertions:
 
@@ -204,38 +197,53 @@ And the optional assertions:
 - `dest01_metadata.yml` is a dictionary of assertions for destination 1 metadata.
 - `dest01_status` asserts the status of the message at destination 1.
 - `dest02*` repeats the same pattern for destination 2, and so on.
-- `assertion.py` contains custom assertions for the message.
 
-Any function in `assertion.py` named `test_*` is automatically discovered and executed by
-the runner after any fixture-based assertions. The function receives the authenticated 
-REST client and test results as arguments, and can execute arbitrary logic and assertions.
+The number in `destNN` is the connector's metadata id, so `dest01` is the first
+destination. Metadata assertions are a subset check against the connector map and
+the message metadata map: list only the keys the test cares about.
 
 The assertions may include the byte string `((ANY))` as a wildcard to ignore content that
-is not relevant to the test case. This is useful for fields like timestamps or IDs that 
-are expected to change on each run.  `((ANY))` behaves as regex `.*?`.
+is not relevant to the test case. This is useful for fields like timestamps or IDs that
+are expected to change on each run. `((ANY))` behaves as regex `.*?`.
+
+Because messages are written asynchronously, assertions are retried until they pass
+or the message reaches a terminal state, so a fixture never has to encode a delay.
+When a fixture does fail, the failure includes every connector's status, content and
+maps, which is normally enough to fix the fixture without re-running anything.
 
 ## Channel Fixtures
 
-`channels/` contains exported channel XML files that the runner deploys before message execution.
+`channels/` contains exported channel XML files that the harness deploys before message execution.
 
 Initial assumptions:
 
 - files are deployed in lexicographic order
 - deployment errors fail the current test immediately
-- the runner removes or undeploys test channels during teardown
+- the harness undeploys and removes test channels during teardown
 
 ## Local Developer Flow
 
-Local development should mirror CI closely.
+Local development mirrors CI closely: `ci/runtests.sh` is the same entrypoint the
+`docker_smoke` job uses.
 
-- runtests.sh: a shell entrypoint for macOS/Linux
-- runtests.ps1: a PowerShell entrypoint for Windows
+```sh
+# Build the images and the harness, then run every configuration.
+ci/runtests.sh
 
-Those scripts should do the same high-level steps as workflow yml's for 
-use by a developer running tests locally:
+# One configuration, skipping unit tests and signing for a faster image build.
+ci/runtests.sh --configuration alpine-temurin21-derby --disable-unit-tests
 
-1. build the server image
-2. build the runner image
-3. execute one configuration or all configurations
+# Leave the stack up afterwards to poke at it.
+ci/runtests.sh --configuration alpine-temurin21-postgres --keep-alive
+```
 
-The script layer should stay thin and delegate all real logic to the runner container.
+Results are written to `ci/test-results/<configuration>/` as JUnit XML.
+
+To iterate on the tests themselves without rebuilding images, point the module at an
+already-running server:
+
+```sh
+./gradlew :smoketest:test -Doie.baseUrl=https://localhost:8443
+```
+
+The script layer stays thin and delegates all real logic to the harness.

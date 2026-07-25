@@ -1,0 +1,48 @@
+// Integration ("smoke") tests that run against a live OIE server started by
+// ci/runtests.sh. They are not unit tests and are deliberately absent from the
+// root build/test/clean aggregates: `./gradlew build` (including the one inside
+// the Dockerfile builder stage) must never try to reach a server.
+//
+// The harness executes inside a container derived from the server image, so every
+// OIE class it compiles against is already on that image's classpath under
+// /opt/engine. That is why the OIE dependencies below are compile-only: the only
+// thing this module ships is its own jar plus the JUnit platform.
+
+dependencies {
+    // Client, Channel, DashboardStatus, MessageFilter, ObjectXMLSerializer
+    testCompileOnly project(':server')
+    // RawMessage, Message, ConnectorMessage, MessageContent, Status, DeployedState
+    testCompileOnly project(':donkey')
+    // Provided at runtime by /opt/engine/server-lib (server-main uses it too).
+    testCompileOnly libs.snakeyaml
+
+    testImplementation libs.junit.platform.console.standalone
+}
+
+// The root convention applies useJUnit() to every Test task; this module is JUnit 5.
+tasks.named('test') {
+    useJUnitPlatform()
+    // An unqualified `./gradlew build` runs the `build` task of every subproject, so
+    // this task IS reached by the Dockerfile builder stage, where no server exists.
+    // Requiring the base URL is what keeps it from failing there, and it still lets a
+    // developer run `./gradlew :smoketest:test -Doie.baseUrl=https://localhost:8443`
+    // or launch a single test from an IDE.
+    onlyIf { System.getProperty('oie.baseUrl') != null }
+    systemProperties System.getProperties().findAll { it.key.toString().startsWith('oie.') }
+}
+
+def harnessJar = tasks.register('harnessJar', Jar) {
+    description = 'Packages the harness classes for the CI harness container.'
+    archiveFileName = 'oie-smoketest.jar'
+    destinationDirectory = layout.buildDirectory.dir('libs')
+    from sourceSets.test.output
+}
+
+// The build-once half of "build once, test many": one staging directory that
+// ci/runtests.sh bind-mounts into the harness container for every configuration.
+tasks.register('harnessDist', Sync) {
+    description = 'Stages the harness jar and the JUnit platform for the CI harness container.'
+    into layout.buildDirectory.dir('harness')
+    from harnessJar
+    from configurations.testRuntimeClasspath
+}

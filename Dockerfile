@@ -27,11 +27,13 @@ RUN apt-get update\
 # Stage 1b: Build the application
 # Copy the entire source tree (excluding .dockerignore files), and build
 # (file encoding is pinned to UTF-8 in gradle.properties)
+# harnessDist stages the smoke-test harness; it is built here, once, and reused by
+# every configuration in the docker_smoke matrix.
 COPY . .
 RUN --mount=type=cache,target=/root/.gradle/caches,sharing=locked \
     --mount=type=cache,target=/root/.gradle/wrapper,sharing=locked \
     source "$HOME/.sdkman/bin/sdkman-init.sh" \
-    && ./gradlew --no-daemon build ${GRADLE_BUILD_ARGS}
+    && ./gradlew --no-daemon build :smoketest:harnessDist ${GRADLE_BUILD_ARGS}
 
 # Stage 1c: Present artifacts for export if not running within docker
 FROM scratch AS build-output-export
@@ -40,6 +42,7 @@ COPY --from=builder /app/client/build/test-results /app/client/build/test-result
 COPY --from=builder /app/command/build/test-results /app/command/build/test-results/
 COPY --from=builder /app/donkey/build/test-results /app/donkey/build/test-results/
 COPY --from=builder /app/server/build/test-results /app/server/build/test-results/
+COPY --from=builder /app/smoketest/build/harness /app/smoketest/harness/
 
 ##########################################
 #
