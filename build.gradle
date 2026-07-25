@@ -193,8 +193,13 @@ subprojects {
     }
 
     // The default java-plugin jar (build/libs/<name>.jar) is not an OIE
-    // artifact; every real jar is declared explicitly per module.
-    tasks.named('jar') { enabled = false }
+    // artifact; every real jar is declared explicitly per module. It stays
+    // enabled for the modules that other projects consume as ordinary
+    // `project(...)` dependencies -- Gradle resolves a project dependency to the
+    // producer's jar, so disabling it would silently yield an empty classpath.
+    if (!(project.name in ['donkey', 'server'])) {
+        tasks.named('jar') { enabled = false }
+    }
 
     tasks.withType(AbstractArchiveTask).configureEach {
         preserveFileTimestamps = false
