@@ -237,7 +237,11 @@ ci/runtests.sh --configuration alpine-temurin21-derby --disable-unit-tests
 ci/runtests.sh --configuration alpine-temurin21-postgres --keep-alive
 ```
 
-Results are written to `ci/test-results/<configuration>/` as JUnit XML.
+Results are written to `ci/test-results/<configuration>/` as JUnit XML, by the JUnit
+Platform Console Launcher's own reporting. Note that the platform names dynamic tests
+positionally, so a fixture appears in the GitHub check as `fixtures()[2][1][3]` rather
+than by name. Identify a failing fixture from the failure message, which leads with the
+fixture directory — not from the test title.
 
 To iterate on the tests themselves without rebuilding images, point the module at an
 already-running server:

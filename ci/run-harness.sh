@@ -24,31 +24,31 @@ if [[ -z "$classpath" ]]; then
     exit 1
 fi
 
-report="$RESULTS_DIR/$OIE_CONFIGURATION/smoketest.xml"
-mkdir -p "$(dirname "$report")"
+results="$RESULTS_DIR/$OIE_CONFIGURATION"
+mkdir -p "$results"
 
-# SmokeTestReport (registered via META-INF/services) writes the report to
-# oie.reportFile, naming each test after its fixture directory. The platform's own
-# --reports-dir output is not used: it names dynamic tests by index, which makes a
-# CI failure impossible to identify without reading the log.
+# --include-engine keeps the launcher from also writing the empty junit-vintage and
+# junit-platform-suite reports that the standalone jar's other engines produce, which
+# CI would otherwise publish as extra (always-passing) test suites.
 status=0
 java \
     -Doie.baseUrl="$OIE_BASE_URL" \
     -Doie.configuration="$OIE_CONFIGURATION" \
     -Doie.testsRoot="$TESTS_ROOT" \
-    -Doie.reportFile="$report" \
     ${OIE_HARNESS_OPTS:-} \
     -cp "$classpath" \
     org.junit.platform.console.ConsoleLauncher execute \
     --select-package=org.openintegrationengine.smoketest \
+    --include-engine=junit-jupiter \
     --details=tree \
     --disable-ansi-colors \
-    --fail-if-no-tests || status=$?
+    --fail-if-no-tests \
+    --reports-dir="$results" || status=$?
 
 # A missing report would let CI publish a green check for a run that never reported,
 # so treat it as a failure in its own right.
-if [[ ! -s "$report" ]]; then
-    echo "The harness produced no report at $report" >&2
+if ! compgen -G "$results/*.xml" > /dev/null; then
+    echo "The harness produced no report in $results" >&2
     exit 1
 fi
 
