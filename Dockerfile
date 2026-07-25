@@ -31,7 +31,24 @@ COPY . .
 RUN --mount=type=cache,target=/root/.gradle/caches,sharing=locked \
     --mount=type=cache,target=/root/.gradle/wrapper,sharing=locked \
     source "$HOME/.sdkman/bin/sdkman-init.sh" \
-    && ./gradlew --no-daemon build ${GRADLE_BUILD_ARGS}
+    && ./gradlew --no-daemon build :smoketest:installHarnessDist ${GRADLE_BUILD_ARGS}
+
+# Stage 1c: Present artifacts for export if not running within docker
+FROM scratch AS build-output-export
+COPY --from=builder /app/server/setup /app/server/setup/
+COPY --from=builder /app/client/build/test-results /app/client/build/test-results/
+COPY --from=builder /app/command/build/test-results /app/command/build/test-results/
+COPY --from=builder /app/donkey/build/test-results /app/donkey/build/test-results/
+COPY --from=builder /app/server/build/test-results /app/server/build/test-results/
+
+# Stage 1d: Smoke Test Harness
+FROM eclipse-temurin:21.0.9_10-jre-noble AS smoketest-harness
+
+COPY --from=builder /app/server/setup/server-lib /opt/engine/server-lib
+COPY --from=builder /app/server/setup/extensions /opt/engine/extensions
+COPY --from=builder /app/smoketest/build/install/smoketest-harness /harness
+
+ENTRYPOINT ["/bin/bash", "/harness/run-harness.sh"]
 
 ##########################################
 #
