@@ -8,36 +8,32 @@ on:
     branches:
       - main
 
-jobs:
-  event_file:
-    name: "Event File"
-    runs-on: ubuntu-latest
-    steps:
-    - name: Upload
-      uses: actions/upload-artifact@v4
-      with:
-        name: Event File
-        path: ${{ github.event_path }}
+# Every job builds the same Dockerfile, so this must match across jobs or they
+# miss each other's build cache.
+env:
+  GRADLE_BUILD_ARGS: ${{ github.ref != 'refs/heads/main' && '-PdisableSigning=true -Pcoverage=true' || '' }}
 
+jobs:
   build:
     runs-on: ubuntu-latest
 
+    outputs:
+      configurations: ${{ steps.configurations.outputs.names }}
+
     steps:
       - uses: actions/checkout@v4
+
+      - name: List smoke-test configurations
+        id: configurations
+        run: |
+          names=$(basename -s .compose.yml ci/configurations/*.compose.yml | jq -Rsc 'split("\n") - [""]')
+          echo "names=$names" >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
       - name: Expose GitHub Actions runtime for buildx cache
         uses: crazy-max/ghaction-github-runtime@v3
-
-      - name: Set build metadata
-        run: |
-          if [ "${GITHUB_REF}" = "refs/heads/main" ]; then
-            echo "GRADLE_BUILD_ARGS=" >> "$GITHUB_ENV"
-          else
-            echo "GRADLE_BUILD_ARGS=-PdisableSigning=true -Pcoverage=true" >> "$GITHUB_ENV"
-          fi
 
       - name: Build and run tests
         run: |
@@ -60,13 +56,6 @@ jobs:
           name: oie-build
           path: openintegrationengine.tar.gz
 
-      - name: Run integration tests
-        env:
-          EXTRA_BUILDX_ARGS: >-
-            --cache-from type=gha,scope=oie-build
-            --cache-to type=gha,scope=oie-build,mode=max
-        run: ci/runtests.sh
-
       - name: Stage Test Results
         if: (!cancelled())
         run: |
@@ -75,13 +64,62 @@ jobs:
           cp -r --parents docker-build-output/app/command/build/test-results aggregate-test-results/
           cp -r --parents docker-build-output/app/donkey/build/test-results aggregate-test-results/
           cp -r --parents docker-build-output/app/server/build/test-results aggregate-test-results/
-          cp -r ci/test-results aggregate-test-results/
 
       - name: Upload Test Results
         if: (!cancelled())
         uses: actions/upload-artifact@v4
         with:
-          name: Test Results
+          name: Test Results (unit)
           path: |
             aggregate-test-results/**/*.xml
 
+  integration-test:
+    needs: build
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: ${{ fromJSON(needs.build.outputs.configurations) }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Expose GitHub Actions runtime for buildx cache
+        uses: crazy-max/ghaction-github-runtime@v3
+
+      # Read-only: the build job populates this cache, and concurrent writers
+      # from the matrix would just fight over the same scope.
+      - name: Run integration tests
+        env:
+          EXTRA_BUILDX_ARGS: --cache-from type=gha,scope=oie-build
+        run: ci/runtests.sh ${{ matrix.configuration }}
+
+      - name: Upload Test Results
+        if: (!cancelled())
+        uses: actions/upload-artifact@v4
+        with:
+          name: Test Results (${{ matrix.configuration }})
+          path: |
+            ci/test-results/**/*.xml
+
+  test-results:
+    needs: [build, integration-test]
+    if: (!cancelled())
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Upload Event File
+        uses: actions/upload-artifact@v4
+        with:
+          name: Event File
+          path: ${{ github.event_path }}
+      - name: Merge Test Results
+        uses: actions/upload-artifact/merge@v4
+        with:
+          name: Test Results
+          pattern: Test Results (*)
+          delete-merged: true
