@@ -16,7 +16,13 @@ final class HarnessConfig {
     static final String BASE_URL = require("oie.baseUrl");
 
     static final String USERNAME = System.getProperty("oie.username", "admin");
-    static final String PASSWORD = System.getProperty("oie.password", "admin");
+
+    /**
+     * Password of {@link #USERNAME}. Required: a server generates a random admin password on
+     * first boot unless {@code server.initialadminpassword} was set before it, so there is no
+     * default worth guessing.
+     */
+    static final String PASSWORD = require("oie.password");
 
     /**
      * Name of the compose configuration being exercised, used to honour each test

@@ -15,6 +15,9 @@ if [[ ! -f "$1" ]]; then
 fi
 export OIE_IMAGE="$2"
 export OIE_CONFIGURATION="$(basename "$1" .compose.yml)"
+# The engine generates a random admin password on first boot, so the stack and the
+# harness have to agree on one up front. See ci/harness.compose.yml.
+export OIE_ADMIN_PASSWORD="${OIE_ADMIN_PASSWORD:-ci-smoke-admin}"
 export WORKSPACE="$PWD"
 export HOST_UID="$(id -u)"
 export HOST_GID="$(id -g)"

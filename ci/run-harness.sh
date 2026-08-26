@@ -18,6 +18,7 @@ status=0
 java \
     -Doie.baseUrl="$OIE_BASE_URL" \
     -Doie.configuration="$OIE_CONFIGURATION" \
+    -Doie.password="$OIE_PASSWORD" \
     ${OIE_HARNESS_OPTS:-} \
     -cp "$classpath" \
     org.junit.platform.console.ConsoleLauncher execute \

@@ -101,10 +101,12 @@ Run one configuration:
 ci/runtests.sh alpine-temurin21-derby
 ```
 
-To iterate against an already-running server:
+To iterate against an already-running server, pass that server's admin password.
+`ci/runtests.sh` seeds its own stacks with `server.initialadminpassword`; a server you
+started yourself logged a generated password on its first boot:
 
 ```sh
-./gradlew :smoketest:test -Doie.baseUrl=https://localhost:8443
+./gradlew :smoketest:test -Doie.baseUrl=https://localhost:8443 -Doie.password=...
 ```
 
 JUnit XML results are written to `ci/test-results/<configuration>/` when using
