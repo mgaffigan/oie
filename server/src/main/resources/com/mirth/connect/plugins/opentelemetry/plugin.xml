@@ -1,0 +1,14 @@
+<pluginMetaData path="opentelemetry">
+	<name>OpenTelemetry</name>
+	<author>NextGen Healthcare</author>
+	<pluginVersion>@mirthversion</pluginVersion>
+	<mirthVersion>@mirthversion</mirthVersion>
+	<url>https://openintegrationengine.org</url>
+	<description>Emits OpenTelemetry spans for channel/message dispatch and per-destination processing.</description>
+	<serverClasses>
+		<string>com.mirth.connect.plugins.opentelemetry.OpenTelemetryPlugin</string>
+	</serverClasses>
+	<library type="SERVER" path="opentelemetry-server.jar" />
+	<library type="SERVER" path="lib/opentelemetry-api-1.49.0.jar" />
+	<library type="SERVER" path="lib/opentelemetry-context-1.49.0.jar" />
+</pluginMetaData>

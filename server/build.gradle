@@ -9,6 +9,9 @@ import java.text.SimpleDateFormat
 dependencies {
     implementation libs.bundles.server.main
     implementation libs.bundles.server.extensions
+    // opentelemetry plugin only; server-only, so not part of the client-shared server-extensions bundle
+    implementation libs.opentelemetry.api
+    implementation libs.opentelemetry.context
     // classified artifact; version catalogs cannot express classifiers
     implementation 'io.netty:netty-transport-native-epoll:4.1.119.Final:linux-x86_64'
     testImplementation libs.bundles.server.test
@@ -369,6 +372,10 @@ def serverExtensions = [
      shared: [includes: ['com/mirth/connect/plugins/datapruner/DataPrunerServletInterface.class']],
      server: [includes: ['com/mirth/connect/plugins/datapruner/**'],
               excludes: ['com/mirth/connect/plugins/datapruner/DataPrunerServletInterface.class']]],
+
+    [name: 'opentelemetry', pkg: 'com/mirth/connect/plugins/opentelemetry', lib: 'opentelemetry',
+     shared: null,
+     server: [includes: ['com/mirth/connect/plugins/opentelemetry/**']]],
 
     [name: 'mllpmode', pkg: 'com/mirth/connect/plugins/mllpmode', lib: 'mllpmode',
      shared: [includes: ['com/mirth/connect/plugins/mllpmode/MLLPModeProperties.class']],

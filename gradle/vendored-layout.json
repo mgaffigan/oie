@@ -389,6 +389,8 @@
    "dir": "extensions/dicomviewer",
    "file": "ij.jar"
   },
+  "io.opentelemetry:opentelemetry-api": "extensions/opentelemetry",
+  "io.opentelemetry:opentelemetry-context": "extensions/opentelemetry",
   "org.apache.pdfbox:fontbox": "extensions/doc",
   "org.apache.pdfbox:pdfbox": "extensions/doc",
   "org.apache.pdfbox:xmpbox": "extensions/doc",

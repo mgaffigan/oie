@@ -99,6 +99,8 @@ public class DestinationChain implements Callable<List<ConnectorMessage>> {
              * transaction if a response transformer is used)
              */
             DonkeyDao dao = chainProvider.getDaoFactory().getDao();
+            ChannelThreadScope destinationScope = ChannelThreadPlugins.beginThread(
+                destinationConnector.getChannel(), message, destinationConnector.getDestinationName());
 
             try {
                 Status previousStatus = message.getStatus();
@@ -200,6 +202,7 @@ public class DestinationChain implements Callable<List<ConnectorMessage>> {
                 throw e;
             } finally {
                 dao.close();
+                destinationScope.close();
             }
 
             // Set the next message in the loop

@@ -1256,6 +1256,7 @@ public class Channel implements Runnable {
         String originalThreadName = currentThread.getName();
         boolean lockAcquired = false;
         Long persistedMessageId = null;
+        ChannelThreadScope dispatchScope = null;
 
         try {
             synchronized (dispatchThreads) {
@@ -1289,6 +1290,7 @@ public class Channel implements Runnable {
                  */
                 dao = daoFactory.getDao();
                 ConnectorMessage sourceMessage = createAndStoreSourceMessage(dao, rawMessage);
+                dispatchScope = ChannelThreadPlugins.beginThread(this, sourceMessage, "dispatch");
                 ThreadUtils.checkInterruptedStatus();
 
                 if (sourceConnector.isRespondAfterProcessing()) {
@@ -1386,6 +1388,10 @@ public class Channel implements Runnable {
                 dispatchThreads.remove(currentThread);
             }
             currentThread.setName(originalThreadName);
+
+            if (dispatchScope != null) {
+                dispatchScope.close();
+            }
         }
     }
 
