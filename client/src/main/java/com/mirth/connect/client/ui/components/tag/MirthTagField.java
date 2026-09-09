@@ -139,7 +139,8 @@ public class MirthTagField extends JPanel {
     private AutoCompletionDelegate completionDelegate;
 
     private final List<Token> tokens = new ArrayList<Token>();
-    private final Map<String, FilterCompletion> completionsByName = new TreeMap<String, FilterCompletion>(String.CASE_INSENSITIVE_ORDER);
+    /** Keyed by type and name, since a channel and a tag may go by the same name. */
+    private final Map<String, FilterCompletion> completions = new TreeMap<String, FilterCompletion>(String.CASE_INSENSITIVE_ORDER);
     private final Map<String, Color> tagColorMap = new HashMap<String, Color>();
     private final List<SearchFilterListener> updateSearchListeners = new ArrayList<SearchFilterListener>();
 
@@ -337,10 +338,10 @@ public class MirthTagField extends JPanel {
     private Token resolve(String type, String name) {
         /*
          * In the channel editor everything in the field is a tag, including free text for a tag
-         * that doesn't exist yet, so a name match is always honored. Elsewhere free text filters on
-         * channel name and stays neutrally colored.
+         * that doesn't exist yet. Elsewhere free text filters on channel name and stays neutrally
+         * colored, so it deliberately matches nothing.
          */
-        FilterCompletion completion = channelContext || !NAME_TYPE.equals(type) ? completionsByName.get(name) : null;
+        FilterCompletion completion = completions.get(completionKey(channelContext && NAME_TYPE.equals(type) ? TAG_TYPE : type, name));
 
         if (completion != null) {
             return new Token(type, name, completion.getBackgroundColor(), completion.getForegroundColor());
@@ -466,11 +467,15 @@ public class MirthTagField extends JPanel {
 
     /** The tags the chips take their colors from. */
     private void setCompletions(Set<FilterCompletion> tags) {
-        completionsByName.clear();
+        completions.clear();
 
         for (FilterCompletion tag : tags) {
-            completionsByName.put(tag.getName(), tag);
+            completions.put(completionKey(tag.getType(), tag.getName()), tag);
         }
+    }
+
+    private static String completionKey(String type, String name) {
+        return type + DELIM + name;
     }
 
     /** The tags the autocomplete popup offers. */
