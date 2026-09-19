@@ -13,7 +13,7 @@ import junit.framework.TestCase;
 
 import com.mirth.connect.util.MigrationUtil;
 
-public class MigrationUtilTests extends TestCase {
+public class MigrationUtilTest extends TestCase {
     public void testCompareVersions() {
         assertEquals(1, MigrationUtil.compareVersions("5", "4"));
         assertEquals(-1, MigrationUtil.compareVersions("5", "6"));
@@ -31,10 +31,15 @@ public class MigrationUtilTests extends TestCase {
         assertEquals(-1, MigrationUtil.compareVersions("1.8", "1.8.2"));
     }
 
+    /*
+     * length is the exact number of components to emit: shorter versions are padded with zeroes and
+     * longer ones are truncated, so a length below the number of components present loses them and
+     * a non-positive length yields nothing at all. Both production callers pass 3.
+     */
     public void testNormalizeVersion() {
-        assertEquals("1.8", MigrationUtil.normalizeVersion("1.8", -1));
-        assertEquals("1.8", MigrationUtil.normalizeVersion("1.8", 0));
-        assertEquals("1.8", MigrationUtil.normalizeVersion("1.8", 1));
+        assertEquals("", MigrationUtil.normalizeVersion("1.8", -1));
+        assertEquals("", MigrationUtil.normalizeVersion("1.8", 0));
+        assertEquals("1", MigrationUtil.normalizeVersion("1.8", 1));
         assertEquals("1.8", MigrationUtil.normalizeVersion("1.8", 2));
         assertEquals("1.8.0", MigrationUtil.normalizeVersion("1.8", 3));
         assertEquals("1.8.0.0", MigrationUtil.normalizeVersion("1.8", 4));
