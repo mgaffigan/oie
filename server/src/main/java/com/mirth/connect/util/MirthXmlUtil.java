@@ -9,12 +9,15 @@
 
 package com.mirth.connect.util;
 
+import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Hashtable;
 
 import javax.xml.XMLConstants;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
@@ -24,10 +27,12 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.xml.sax.InputSource;
 
 public class MirthXmlUtil {
 
@@ -112,6 +117,18 @@ public class MirthXmlUtil {
         }
 
         return input;
+    }
+
+    /** Returns a {@link Source} for XML from an untrusted origin. */
+    public static Source getSecureSource(Reader reader) throws Exception {
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        // False by default
+        factory.setNamespaceAware(true);
+
+        SAXParser parser = factory.newSAXParser();
+        parser.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+
+        return new SAXSource(parser.getXMLReader(), new InputSource(reader));
     }
 
     public static String decode(String entity) {
