@@ -208,6 +208,12 @@ public class JdbcDao implements DonkeyDao {
         insertContent(messageContent.getChannelId(), messageContent.getMessageId(), messageContent.getMetaDataId(), messageContent.getContentType(), messageContent.getContent(), messageContent.getDataType(), messageContent.isEncrypted());
     }
 
+    /*
+     * The statement is deliberately left open here. It is the cached statement that holds the
+     * accumulated batch, so closing it would discard every addBatch() made so far;
+     * executeBatchInsertMessageContent() runs the batch and closes the statement if the
+     * subclass needs that.
+     */
     @Override
     public void batchInsertMessageContent(MessageContent messageContent) {
         logger.debug(messageContent.getChannelId() + "/" + messageContent.getMessageId() + "/" + messageContent.getMetaDataId() + ": batch inserting message content (" + messageContent.getContentType().toString() + ")");
@@ -237,9 +243,10 @@ public class JdbcDao implements DonkeyDao {
             statement.addBatch();
             statement.clearParameters();
         } catch (SQLException e) {
-            throw new DonkeyDaoException(e);
-        } finally {
+            // The batch will never be executed now, so do not leave it for the next message.
+            clearBatchQuietly(statement);
             closeDatabaseObjectIfNeeded(statement);
+            throw new DonkeyDaoException(e);
         }
     }
 
@@ -258,11 +265,26 @@ public class JdbcDao implements DonkeyDao {
              */
             statement = prepareStatement("batchInsertMessageContent", channelId);
             statement.executeBatch();
-            statement.clearBatch();
         } catch (SQLException e) {
             throw new DonkeyDaoException(e);
         } finally {
+            clearBatchQuietly(statement);
             closeDatabaseObjectIfNeeded(statement);
+        }
+    }
+
+    /**
+     * Empties a cached statement's batch without letting the cleanup itself fail. The statement
+     * outlives the DAO in the prepared statement cache, so anything left on its batch would be
+     * executed along with the next message's rows.
+     */
+    private void clearBatchQuietly(Statement statement) {
+        if (statement != null) {
+            try {
+                statement.clearBatch();
+            } catch (SQLException e) {
+                logger.debug("Failed to clear batch", e);
+            }
         }
     }
 

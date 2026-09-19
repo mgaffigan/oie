@@ -44,6 +44,7 @@ the payload sent to the channel. The other files are optional assertions:
 | `source_status` | Source status |
 | `source_response` | Source response payload |
 | `source_transformed` | Transformed source payload |
+| `source_encoded` | Encoded source payload |
 | `destNN` | Sent payload for destination `NN` |
 | `destNN_transformed` | Transformed payload for destination `NN` |
 | `destNN_response` | Response payload from destination `NN` |
