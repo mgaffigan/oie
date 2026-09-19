@@ -55,6 +55,8 @@ final class MessageAssertions {
                     connector(message, SOURCE_META_DATA_ID, fileName).getStatus());
             case "source_transformed" -> assertContent("source transformed", content,
                     content(connector(message, SOURCE_META_DATA_ID, fileName).getTransformed()));
+            case "source_encoded" -> assertContent("source encoded", content,
+                    content(connector(message, SOURCE_META_DATA_ID, fileName).getEncoded()));
             case "source_response" -> assertResponse("source response", content,
                     connector(message, SOURCE_META_DATA_ID, fileName));
             case "source_metadata.yml" -> assertMetadata("source_metadata.yml", parseYamlMap(content),
