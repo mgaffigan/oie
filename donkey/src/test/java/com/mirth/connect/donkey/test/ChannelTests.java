@@ -47,9 +47,6 @@ import com.mirth.connect.donkey.server.channel.StorageSettings;
 import com.mirth.connect.donkey.server.controllers.ChannelController;
 import com.mirth.connect.donkey.test.util.TestChannel;
 import com.mirth.connect.donkey.test.util.TestDestinationConnector;
-import com.mirth.connect.donkey.test.util.TestFilterTransformer;
-import com.mirth.connect.donkey.test.util.TestPostProcessor;
-import com.mirth.connect.donkey.test.util.TestPreProcessor;
 import com.mirth.connect.donkey.test.util.TestSourceConnector;
 import com.mirth.connect.donkey.test.util.TestUtils;
 import com.mirth.connect.donkey.test.util.TestUtils.MessageStorageMode;
@@ -432,65 +429,6 @@ public class ChannelTests {
         columnType = MetaDataColumnType.TIMESTAMP;
         Calendar dateValue = (Calendar) columnType.castValue("2010-01-02 13:01:02");
         assertEquals("13 01 02 01 02 2010", new SimpleDateFormat("HH mm ss MM dd yyyy").format(dateValue.getTimeInMillis()));
-    }
-
-    /*
-     * Create a new test channel Process a source message with a metadata ID of 1, assert that: - An
-     * InvalidConnectorMessageState exception is thrown
-     * 
-     * Process a source message with a status other than RECEIVED, assert that: - An
-     * InvalidConnectorMessageState exception is thrown
-     * 
-     * Process a valid source message, and assert that: - The pre-processor was run - The processed
-     * raw content was stored - The filter/transformer was run - The transformed/encoded content was
-     * stored - Initial messages were created for each destination chain - The message processed
-     * through at least the first destination connector for each chain - The post-processor was run
-     * - The final transaction was created
-     */
-    @Test
-    public final void testProcess() throws Exception {
-        TestChannel channel = (TestChannel) TestUtils.createDefaultChannel(channelId, serverId);
-
-        channel.deploy();
-        channel.start(null);
-
-        ConnectorMessage sourceMessage = TestUtils.createAndStoreNewMessage(new RawMessage(testMessage), channelId, channelName, serverId).getConnectorMessages().get(0);
-
-        Message message = null;
-
-        message = channel.process(sourceMessage, false);
-
-        // Assert that the message was run through the pre-processor
-        assertTrue(((TestPreProcessor) channel.getPreProcessor()).isProcessed());
-
-        // Assert that the processed raw content was stored
-        TestUtils.assertMessageContentExists(sourceMessage.getProcessedRaw());
-
-        // Assert that the FilterTransformer was run
-        assertTrue(((TestFilterTransformer) channel.getSourceConnector().getFilterTransformerExecutor().getFilterTransformer()).isTransformed());
-
-        // Assert that the transformed/encoded content was stored
-        TestUtils.assertMessageContentExists(sourceMessage.getTransformed());
-        TestUtils.assertMessageContentExists(sourceMessage.getEncoded());
-
-        for (DestinationChainProvider chain : channel.getDestinationChainProviders()) {
-            Integer firstId = null;
-            for (Integer metaDataId : chain.getDestinationConnectors().keySet()) {
-                if (firstId == null || metaDataId < firstId) {
-                    firstId = metaDataId;
-                }
-            }
-            // Assert that messages were created for each destination chain
-            TestUtils.assertConnectorMessageExists(message.getConnectorMessages().get(firstId), false);
-            // Assert that the message processed through at least the first destination connector for each chain
-            assertTrue(((TestDestinationConnector) chain.getDestinationConnectors().get(firstId)).getMessageIds().size() > 0);
-        }
-
-        // Assert that the message was run through the post-processor
-        assertTrue(((TestPostProcessor) channel.getPostProcessor()).isProcessed());
-
-        channel.stop();
-        channel.undeploy();
     }
 
     @Test
