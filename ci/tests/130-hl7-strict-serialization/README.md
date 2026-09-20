@@ -1,0 +1,10 @@
+# 130-hl7-strict-serialization
+
+The HL7 v2 data type with `useStrictParser`, so the message goes through HAPI rather than being
+read as delimited text. The channel's transformer step does nothing; it is there only because the
+engine does not serialize at all without one.
+
+- `01-valid-adt` - an ADT^A01 is TRANSFORMED, and `source_transformed` asserts the whole strict
+  `urn:hl7-org:v2xml` document, which is what distinguishes strict parsing from the `<HL7Message>`
+  form the non-strict reader produces.
+- `02-not-hl7` - a payload HAPI cannot read gives ERROR rather than being passed through.
