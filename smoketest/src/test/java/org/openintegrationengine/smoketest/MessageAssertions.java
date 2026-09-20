@@ -56,6 +56,8 @@ final class MessageAssertions {
         switch (fileName) {
             case "source_status" -> assertStatus("source status", content,
                     connector(message, SOURCE_META_DATA_ID, fileName).getStatus());
+            case "source_raw" -> assertContent("source raw", content,
+                    content(connector(message, SOURCE_META_DATA_ID, fileName).getRaw()));
             case "source_transformed" -> assertContent("source transformed", content,
                     content(connector(message, SOURCE_META_DATA_ID, fileName).getTransformed()));
             case "source_encoded" -> assertContent("source encoded", content,

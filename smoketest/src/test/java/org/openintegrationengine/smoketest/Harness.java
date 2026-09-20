@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -27,6 +28,13 @@ public final class Harness {
 
     /** Statuses that mean the server has not finished with the message yet. */
     private static final List<Status> PENDING_STATUSES = List.of(Status.PENDING, Status.QUEUED);
+
+    /**
+     * How long to keep retrying after the message looks terminal. Some work outruns the
+     * statuses: a channel with a queued destination and removeContentOnCompletion deletes
+     * its content in a transaction committed after the destination is already SENT.
+     */
+    private static final Duration TERMINAL_GRACE = Duration.ofSeconds(5);
 
     private Harness() {
     }
@@ -63,9 +71,9 @@ public final class Harness {
     /**
      * Submits {@code <base>/source} (with {@code <base>/source_sourcemap.yml} when
      * {@code hasSourceMap}) into the channel, then retries the named assertion files until
-     * they all hold or the message reaches a terminal state. Because the message is written
-     * asynchronously, an early poll can legitimately fail; only a failure that persists once
-     * the message is terminal is a real failure.
+     * they all hold or the message has been terminal for {@link #TERMINAL_GRACE}. Because the
+     * message is written asynchronously, an early poll can legitimately fail; only a failure
+     * that outlives the message's terminal state is a real failure.
      */
     public static void runMessage(String channelId, String base, boolean hasSourceMap, String... assertionFiles)
             throws Exception {
@@ -85,6 +93,7 @@ public final class Harness {
         long deadline = System.nanoTime() + HarnessConfig.TIMEOUT.toNanos();
         AssertionError lastFailure = null;
         Message lastMessage = null;
+        long graceDeadline = 0;
         while (System.nanoTime() < deadline) {
             Message message = server().fetchMessage(channelId, messageId);
             if (message != null) {
@@ -97,7 +106,11 @@ public final class Harness {
                 } catch (AssertionError e) {
                     lastFailure = e;
                     if (isTerminal(message)) {
-                        break;
+                        if (graceDeadline == 0) {
+                            graceDeadline = System.nanoTime() + TERMINAL_GRACE.toNanos();
+                        } else if (System.nanoTime() >= graceDeadline) {
+                            break;
+                        }
                     }
                 }
             }
