@@ -172,6 +172,8 @@ public final class Harness {
             appendContent(detail, "encoded", connectorMessage.getEncoded());
             appendContent(detail, "sent", connectorMessage.getSent());
             appendContent(detail, "response", connectorMessage.getResponse());
+            appendContent(detail, "responseTransformed", connectorMessage.getResponseTransformed());
+            appendContent(detail, "processedResponse", connectorMessage.getProcessedResponse());
             detail.append("\n        connectorMap=").append(connectorMessage.getConnectorMap())
                     .append("\n        metaDataMap=").append(connectorMessage.getMetaDataMap());
             if (connectorMessage.getProcessingError() != null) {
