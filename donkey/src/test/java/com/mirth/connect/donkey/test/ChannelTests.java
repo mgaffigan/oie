@@ -25,31 +25,21 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.mirth.connect.donkey.model.channel.DeployedState;
-import com.mirth.connect.donkey.model.channel.DestinationConnectorProperties;
-import com.mirth.connect.donkey.model.channel.DestinationConnectorPropertiesInterface;
 import com.mirth.connect.donkey.model.channel.MetaDataColumn;
 import com.mirth.connect.donkey.model.channel.MetaDataColumnException;
 import com.mirth.connect.donkey.model.channel.MetaDataColumnType;
-import com.mirth.connect.donkey.model.message.ConnectorMessage;
-import com.mirth.connect.donkey.model.message.ContentType;
 import com.mirth.connect.donkey.model.message.Message;
-import com.mirth.connect.donkey.model.message.MessageContent;
-import com.mirth.connect.donkey.model.message.RawMessage;
 import com.mirth.connect.donkey.server.Donkey;
 import com.mirth.connect.donkey.server.StartException;
 import com.mirth.connect.donkey.server.channel.Channel;
 import com.mirth.connect.donkey.server.channel.ChannelException;
 import com.mirth.connect.donkey.server.channel.DestinationChainProvider;
 import com.mirth.connect.donkey.server.channel.DestinationConnector;
-import com.mirth.connect.donkey.server.channel.DispatchResult;
-import com.mirth.connect.donkey.server.channel.SourceConnector;
-import com.mirth.connect.donkey.server.channel.StorageSettings;
 import com.mirth.connect.donkey.server.controllers.ChannelController;
 import com.mirth.connect.donkey.test.util.TestChannel;
 import com.mirth.connect.donkey.test.util.TestDestinationConnector;
 import com.mirth.connect.donkey.test.util.TestSourceConnector;
 import com.mirth.connect.donkey.test.util.TestUtils;
-import com.mirth.connect.donkey.test.util.TestUtils.MessageStorageMode;
 
 public class ChannelTests {
     final public static int TEST_SIZE = 50;
@@ -506,153 +496,9 @@ public class ChannelTests {
 //        }
     }
 
-    @Test
-    public final void testContentRemoval() throws Exception {
-        testContentRemoval(false, false);
-        testContentRemoval(true, false);
-    }
-
-    @Test
-    public final void testContentRemovalWithQueueing() throws Exception {
-        testContentRemoval(false, true);
-        testContentRemoval(true, true);
-    }
-
-    private void testContentRemoval(boolean removeContentOnCompletion, boolean useQueue) throws Exception {
-        TestChannel channel = (TestChannel) TestUtils.createDefaultChannel(channelId, serverId);
-        channel.getStorageSettings().setRemoveContentOnCompletion(removeContentOnCompletion);
-
-        if (useQueue) {
-            DestinationConnectorProperties destinationConnectorProperties = ((DestinationConnectorPropertiesInterface) channel.getDestinationConnector(1).getConnectorProperties()).getDestinationConnectorProperties();
-            destinationConnectorProperties.setQueueEnabled(true);
-            destinationConnectorProperties.setSendFirst(false);
-        }
-
-        SourceConnector sourceConnector = channel.getSourceConnector();
-
-        channel.deploy();
-        channel.start(null);
-
-        DispatchResult dispatchResult = sourceConnector.dispatchRawMessage(new RawMessage(testMessage));
-        sourceConnector.finishDispatch(dispatchResult);
-
-        // if queueing, give the queue time to flush out
-        if (useQueue) {
-            Thread.sleep(1000);
-        }
-
-        channel.stop();
-        channel.undeploy();
-
-        for (ConnectorMessage connectorMessage : dispatchResult.getProcessedMessage().getConnectorMessages().values()) {
-            boolean foundContent = false;
-
-            for (ContentType contentType : ContentType.getMessageTypes()) {
-                MessageContent messageContent = connectorMessage.getMessageContent(contentType);
-
-                if (messageContent != null && (messageContent.getMetaDataId() == 0 || messageContent.getContentType() != ContentType.RAW)) {
-                    foundContent = true;
-
-                    if (removeContentOnCompletion) {
-                        TestUtils.assertMessageContentDoesNotExist(messageContent);
-                    } else {
-                        TestUtils.assertMessageContentExists(messageContent);
-                    }
-                }
-            }
-
-            assertTrue(foundContent);
-        }
-    }
-
-    @Test
-    public final void testContentStorageDevelopment() throws Exception {
-        testContentStorageSettings(TestUtils.getStorageSettings(MessageStorageMode.DEVELOPMENT));
-    }
-
-    @Test
-    public final void testContentStorageProduction() throws Exception {
-        testContentStorageSettings(TestUtils.getStorageSettings(MessageStorageMode.PRODUCTION));
-    }
-
-    @Test
-    public final void testContentStorageMetadata() throws Exception {
-        testContentStorageSettings(TestUtils.getStorageSettings(MessageStorageMode.METADATA));
-    }
-
-    @Test
-    public final void testContentStorageDisabled() throws Exception {
-        testContentStorageSettings(TestUtils.getStorageSettings(MessageStorageMode.DISABLED));
-    }
-
-    private void testContentStorageSettings(StorageSettings storageSettings) throws Exception {
-        TestChannel channel = (TestChannel) TestUtils.createDefaultChannel(channelId, serverId);
-        channel.setStorageSettings(storageSettings);
-        SourceConnector sourceConnector = channel.getSourceConnector();
-
-        channel.deploy();
-        channel.start(null);
-
-        DispatchResult dispatchResult = sourceConnector.dispatchRawMessage(new RawMessage(testMessage));
-        sourceConnector.finishDispatch(dispatchResult);
-
-        channel.stop();
-        channel.undeploy();
-
-        ConnectorMessage sourceMessage = dispatchResult.getProcessedMessage().getConnectorMessages().get(0);
-        ConnectorMessage destinationMessage = dispatchResult.getProcessedMessage().getConnectorMessages().get(1);
-
-        assertNotNull(sourceMessage);
-        assertNotNull(destinationMessage);
-
-        if (storageSettings.isStoreRaw()) {
-            TestUtils.assertMessageContentExists(sourceMessage.getRaw());
-        } else {
-            TestUtils.assertMessageContentDoesNotExist(sourceMessage.getRaw());
-        }
-
-        if (storageSettings.isStoreProcessedRaw()) {
-            TestUtils.assertMessageContentExists(sourceMessage.getProcessedRaw());
-        } else {
-            TestUtils.assertMessageContentDoesNotExist(sourceMessage.getProcessedRaw());
-        }
-
-        if (storageSettings.isStoreTransformed()) {
-            TestUtils.assertMessageContentExists(sourceMessage.getTransformed());
-            TestUtils.assertMessageContentExists(destinationMessage.getTransformed());
-        } else {
-            TestUtils.assertMessageContentDoesNotExist(sourceMessage.getTransformed());
-            TestUtils.assertMessageContentDoesNotExist(destinationMessage.getTransformed());
-        }
-
-        if (storageSettings.isStoreSourceEncoded()) {
-            TestUtils.assertMessageContentExists(sourceMessage.getEncoded());
-        } else {
-            TestUtils.assertMessageContentDoesNotExist(sourceMessage.getEncoded());
-        }
-
-        if (storageSettings.isStoreSent()) {
-            TestUtils.assertMessageContentExists(destinationMessage.getSent());
-        } else {
-            TestUtils.assertMessageContentDoesNotExist(new MessageContent(channelId, dispatchResult.getMessageId(), 1, ContentType.SENT, null, null, false));
-        }
-
-        if (storageSettings.isStoreResponse()) {
-            TestUtils.assertMessageContentExists(destinationMessage.getResponse());
-        } else {
-            TestUtils.assertMessageContentDoesNotExist(destinationMessage.getResponse());
-        }
-
-        if (storageSettings.isStoreResponseTransformed()) {
-            TestUtils.assertMessageContentExists(destinationMessage.getResponseTransformed());
-        } else {
-            TestUtils.assertMessageContentDoesNotExist(destinationMessage.getResponseTransformed());
-        }
-
-        if (storageSettings.isStoreProcessedResponse()) {
-            TestUtils.assertMessageContentExists(destinationMessage.getProcessedResponse());
-        } else {
-            TestUtils.assertMessageContentDoesNotExist(destinationMessage.getProcessedResponse());
-        }
-    }
+    /*
+     * Replaced by the ci/tests/160-message-storage-levels fixtures (DEVELOPMENT, PRODUCTION, RAW
+     * and METADATA), MessageStorageDisabledTest (DISABLED) and the ci/tests/170-content-removal
+     * fixtures (removeContentOnCompletion, with and without a queued destination).
+     */
 }

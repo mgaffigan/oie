@@ -51,6 +51,7 @@ The rest are optional assertions against the message the channel produced:
 | `source_raw` | Raw source payload |
 | `source_encoded` | Encoded source payload |
 | `source_status` | Source status |
+| `source_raw` | Raw source payload as stored |
 | `source_response` | Source response payload |
 | `source_transformed` | Transformed source payload |
 | `source_processing_error` | Processing error recorded against the source |
@@ -118,6 +119,10 @@ Put hand-written JUnit 5 tests in
 `Harness` and `OieServer` helpers to work with the live server. Java tests run with
 the fixture tests and are appropriate for multi-step workflows, computed
 expectations, or assertions that do not fit the fixture files.
+
+A Java test's channels go in `smoketest/src/test/resources/channels/`, not under
+`ci/tests/`, which is the fixture generator's tree; `Harness.deploy` loads either from
+the classpath.
 
 ## Run Locally
 
