@@ -59,7 +59,9 @@ The rest are optional assertions against the message the channel produced:
 | `destNN_encoded` | Encoded payload for destination `NN` |
 | `destNN` | Sent payload for destination `NN` |
 | `destNN_transformed` | Transformed payload for destination `NN` |
-| `destNN_response` | Response payload from destination `NN` |
+| `destNN_response` | Response payload from destination `NN`, before its response transformer |
+| `destNN_processed_response` | Response payload for destination `NN` after its response transformer |
+| `destNN_processing_error` | Processing error recorded against destination `NN` |
 | `destNN_metadata.yml` | Selected metadata for destination `NN` |
 | `destNN_status` | Status for destination `NN` |
 
