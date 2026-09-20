@@ -32,6 +32,9 @@ final class MessageAssertions {
     /** Fixture wildcard: matches any run of characters, for timestamps and generated ids. */
     private static final String ANY_WILDCARD = "((ANY))";
 
+    /** Fixture sentinel: the whole file asserts that the server stored no such content at all. */
+    private static final String NONE_SENTINEL = "((NONE))";
+
     private static final Pattern RESPONSE_ENVELOPE = Pattern.compile("^\\s*<response[\\s>].*", Pattern.DOTALL);
 
     /** Destination assertion files are {@code dest<NN>} plus an optional suffix. */
@@ -55,6 +58,10 @@ final class MessageAssertions {
                     connector(message, SOURCE_META_DATA_ID, fileName).getStatus());
             case "source_transformed" -> assertContent("source transformed", content,
                     content(connector(message, SOURCE_META_DATA_ID, fileName).getTransformed()));
+            case "source_encoded" -> assertContent("source encoded", content,
+                    content(connector(message, SOURCE_META_DATA_ID, fileName).getEncoded()));
+            case "source_processing_error" -> assertContent("source processing error", content,
+                    connector(message, SOURCE_META_DATA_ID, fileName).getProcessingError());
             case "source_response" -> assertResponse("source response", content,
                     connector(message, SOURCE_META_DATA_ID, fileName));
             case "source_metadata.yml" -> assertMetadata("source_metadata.yml", parseYamlMap(content),
@@ -184,8 +191,17 @@ final class MessageAssertions {
         return String.valueOf(expected).equals(String.valueOf(actual));
     }
 
-    /** Compares an assertion file to actual content, honouring {@value #ANY_WILDCARD}. */
+    /**
+     * Compares an assertion file to actual content, honouring {@value #ANY_WILDCARD} and
+     * {@value #NONE_SENTINEL}.
+     */
     private static void assertMatches(String label, String expected, String actual) {
+        if (NONE_SENTINEL.equals(expected.trim())) {
+            if (actual != null) {
+                throw new AssertionError("Expected " + label + " content to be absent, found " + describe(actual));
+            }
+            return;
+        }
         if (actual == null) {
             throw new AssertionError("Expected " + label + " content but the server stored none");
         }

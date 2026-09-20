@@ -44,6 +44,8 @@ the payload sent to the channel. The other files are optional assertions:
 | `source_status` | Source status |
 | `source_response` | Source response payload |
 | `source_transformed` | Transformed source payload |
+| `source_encoded` | Encoded source payload |
+| `source_processing_error` | Processing error recorded against the source |
 | `destNN` | Sent payload for destination `NN` |
 | `destNN_transformed` | Transformed payload for destination `NN` |
 | `destNN_response` | Response payload from destination `NN` |
@@ -53,7 +55,9 @@ the payload sent to the channel. The other files are optional assertions:
 `NN` is the destination connector's metadata ID: `dest01` is the first
 destination, `dest02` the second, and so on. Metadata files are YAML mappings; list
 only the keys that matter to the test. Content assertions are byte-for-byte, except
-that `((ANY))` matches variable content such as generated IDs or timestamps.
+that `((ANY))` matches variable content such as generated IDs or timestamps. A content
+assertion file whose entire contents are `((NONE))` asserts the opposite: that the server
+stored no such content at all, which is not the same as storing an empty string.
 
 A fixture case runs in every configuration by default. To limit it, add a
 `configurations` file at the case root with one configuration name per line:
