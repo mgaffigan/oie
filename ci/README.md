@@ -49,7 +49,9 @@ the payload sent to the channel. The other files are optional assertions:
 | `source_processing_error` | Processing error recorded against the source |
 | `destNN` | Sent payload for destination `NN` |
 | `destNN_transformed` | Transformed payload for destination `NN` |
-| `destNN_response` | Response payload from destination `NN` |
+| `destNN_response` | Response payload from destination `NN`, before its response transformer |
+| `destNN_processed_response` | Response payload for destination `NN` after its response transformer |
+| `destNN_processing_error` | Processing error recorded against destination `NN` |
 | `destNN_metadata.yml` | Selected metadata for destination `NN` |
 | `destNN_status` | Status for destination `NN` |
 

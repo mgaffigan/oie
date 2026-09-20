@@ -38,7 +38,8 @@ final class MessageAssertions {
     private static final Pattern RESPONSE_ENVELOPE = Pattern.compile("^\\s*<response[\\s>].*", Pattern.DOTALL);
 
     /** Destination assertion files are {@code dest<NN>} plus an optional suffix. */
-    private static final Pattern DEST_NAME = Pattern.compile("dest(\\d+)(_transformed|_response|_status|_metadata\\.yml)?");
+    private static final Pattern DEST_NAME = Pattern.compile(
+            "dest(\\d+)(_transformed|_response|_processed_response|_processing_error|_response_error|_status|_metadata\\.yml)?");
 
     /** Source connector metadata id; destination N is metadata id N. */
     private static final int SOURCE_META_DATA_ID = 0;
@@ -65,7 +66,7 @@ final class MessageAssertions {
             case "source_processing_error" -> assertContent("source processing error", content,
                     connector(message, SOURCE_META_DATA_ID, fileName).getProcessingError());
             case "source_response" -> assertResponse("source response", content,
-                    connector(message, SOURCE_META_DATA_ID, fileName));
+                    connector(message, SOURCE_META_DATA_ID, fileName).getResponse());
             case "source_metadata.yml" -> assertMetadata("source_metadata.yml", parseYamlMap(content),
                     connector(message, SOURCE_META_DATA_ID, fileName));
             default -> assertDestination(message, fileName, content);
@@ -85,7 +86,10 @@ final class MessageAssertions {
         switch (suffix) {
             case "" -> assertContent(fileName, content, content(destination.getSent()));
             case "_transformed" -> assertContent(fileName, content, content(destination.getTransformed()));
-            case "_response" -> assertResponse(fileName, content, destination);
+            case "_response" -> assertResponse(fileName, content, destination.getResponse());
+            case "_processed_response" -> assertResponse(fileName, content, destination.getProcessedResponse());
+            case "_processing_error" -> assertContent(fileName, content, destination.getProcessingError());
+            case "_response_error" -> assertContent(fileName, content, destination.getResponseError());
             case "_status" -> assertStatus(fileName, content, destination.getStatus());
             case "_metadata.yml" -> assertMetadata(fileName, parseYamlMap(content), destination);
             default -> throw new IllegalStateException("Unhandled fixture suffix: " + suffix);
@@ -128,8 +132,8 @@ final class MessageAssertions {
      * fixture actually describes. Line endings are normalised because HL7 acknowledgements
      * come back CR-delimited while the fixture files are LF-delimited.
      */
-    private static void assertResponse(String label, String expected, ConnectorMessage connectorMessage) {
-        String stored = content(connectorMessage.getResponse());
+    private static void assertResponse(String label, String expected, MessageContent responseContent) {
+        String stored = content(responseContent);
         String actual = stored;
         if (stored != null && RESPONSE_ENVELOPE.matcher(stored).matches()) {
             Response response = ObjectXMLSerializer.getInstance().deserialize(stored.trim(), Response.class);

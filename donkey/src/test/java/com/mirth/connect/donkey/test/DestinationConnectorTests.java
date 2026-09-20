@@ -16,7 +16,6 @@ import static org.junit.Assert.assertTrue;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Map;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -26,16 +25,13 @@ import com.mirth.connect.donkey.model.DonkeyException;
 import com.mirth.connect.donkey.model.channel.ConnectorProperties;
 import com.mirth.connect.donkey.model.channel.DeployedState;
 import com.mirth.connect.donkey.model.channel.DestinationConnectorProperties;
-import com.mirth.connect.donkey.model.channel.DestinationConnectorPropertiesInterface;
 import com.mirth.connect.donkey.model.message.ConnectorMessage;
 import com.mirth.connect.donkey.model.message.ContentType;
-import com.mirth.connect.donkey.model.message.MessageContent;
 import com.mirth.connect.donkey.model.message.RawMessage;
 import com.mirth.connect.donkey.model.message.Response;
 import com.mirth.connect.donkey.model.message.Status;
 import com.mirth.connect.donkey.server.Donkey;
 import com.mirth.connect.donkey.server.StartException;
-import com.mirth.connect.donkey.server.channel.Channel;
 import com.mirth.connect.donkey.server.channel.DestinationChainProvider;
 import com.mirth.connect.donkey.server.channel.DestinationConnector;
 import com.mirth.connect.donkey.server.channel.DispatchResult;
@@ -50,7 +46,6 @@ import com.mirth.connect.donkey.test.util.TestPreProcessor;
 import com.mirth.connect.donkey.test.util.TestResponseTransformer;
 import com.mirth.connect.donkey.test.util.TestSourceConnector;
 import com.mirth.connect.donkey.test.util.TestUtils;
-import com.mirth.connect.donkey.util.Serializer;
 
 public class DestinationConnectorTests {
     private static int TEST_SIZE = 10;
@@ -514,77 +509,7 @@ public class DestinationConnectorTests {
     }
 
     /*
-     * Create new channel where the response transformer changes the message and status of the
-     * Response object If the response status was changed to QUEUED and queuing is not enabled, or
-     * if the status was changed to something invalid (RECEIVED/TRANSFORMED/PENDING), then assume
-     * that it was changed to ERROR
-     * 
-     * Send messages, assert that: - The processed response was stored - The destination entry in
-     * the response map was overwritten - The connector message status was changed based on the
-     * response status
-     * 
-     * Do the above steps for all statuses
+     * testRunResponseTransformer is re-implemented as CI fixtures in
+     * ci/tests/190-response-handling.
      */
-    @Test
-    public final void testRunResponseTransformer() throws Exception {
-        for (Status status : Status.values()) {
-            testRunResponseTransformer(status);
-        }
-    }
-
-    private void testRunResponseTransformer(Status responseStatus) throws Exception {
-        final Response testResponse = new Response(responseStatus, TestUtils.TEST_HL7_ACK);
-        Channel channel = TestUtils.createDefaultChannel(channelId, serverId);
-
-        Response finalResponse = new Response(testResponse.getStatus(), testResponse.getMessage());
-        if (finalResponse.getStatus() != Status.ERROR && finalResponse.getStatus() != Status.SENT && finalResponse.getStatus() != Status.QUEUED) {
-            // If the response is invalid for a final destination finalResponse.getStatus(), change the status to ERROR
-            finalResponse.setStatus(Status.ERROR);
-        } else if (channel.getDestinationConnector(1).getConnectorProperties() instanceof DestinationConnectorPropertiesInterface) {
-            // If the destination connector isn't queuing, and the response status is QUEUED, then it should have changed to ERROR
-            DestinationConnectorProperties destinationConnectorProperties = ((DestinationConnectorPropertiesInterface) channel.getDestinationConnector(1).getConnectorProperties()).getDestinationConnectorProperties();
-            if ((destinationConnectorProperties == null || !destinationConnectorProperties.isQueueEnabled()) && finalResponse.getStatus() == Status.QUEUED) {
-                finalResponse.setStatus(Status.ERROR);
-            }
-        } else if (finalResponse.getStatus() == Status.QUEUED) {
-            // If the destination connector isn't queuing, and the response status is QUEUED, then it should have changed to ERROR
-            finalResponse.setStatus(Status.ERROR);
-        }
-
-        class TestResponseTransformer2 extends TestResponseTransformer {
-            @Override
-            public String doTransform(Response response, ConnectorMessage connectorMessage) throws DonkeyException, InterruptedException {
-                response.setMessage(testResponse.getMessage());
-                response.setStatus(testResponse.getStatus());
-                connectorMessage.getResponseTransformed().setContent(testResponse.getMessage());
-                return super.doTransform(response, connectorMessage);
-            }
-        }
-        channel.getDestinationConnector(1).getResponseTransformerExecutor().setResponseTransformer(new TestResponseTransformer2());
-
-        //ChannelController.getInstance().deleteAllMessages(channel.getChannelId());
-        channel.deploy();
-        channel.start(null);
-
-        for (int i = 1; i <= TEST_SIZE; i++) {
-            DispatchResult messageResponse = ((TestSourceConnector) channel.getSourceConnector()).readTestMessage(testMessage);
-            Serializer serializer = Donkey.getInstance().getSerializer();
-            String responseString = serializer.serialize(finalResponse);
-
-            // Assert that the processed response was stored
-            MessageContent messageContent = new MessageContent(channel.getChannelId(), messageResponse.getMessageId(), 1, ContentType.PROCESSED_RESPONSE, responseString, null, false);
-            TestUtils.assertMessageContentExists(messageContent);
-
-            // Assert that the entry in the response map was overwritten
-            Map<String, Object> responseMap = TestUtils.getResponseMap(channel.getChannelId(), messageResponse.getMessageId(), 1);
-            assertTrue(responseMap.get("d1").equals(finalResponse));
-
-            // Assert that the message status was changed
-            TestUtils.assertConnectorMessageStatusEquals(channel.getChannelId(), messageResponse.getMessageId(), 1, finalResponse.getStatus());
-        }
-
-        channel.stop();
-        channel.undeploy();
-        //ChannelController.getInstance().removeChannel(channel.getChannelId());
-    }
 }
