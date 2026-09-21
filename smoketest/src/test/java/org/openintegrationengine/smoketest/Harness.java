@@ -166,6 +166,27 @@ public final class Harness {
     }
 
     /**
+     * Polls until the server has marked one message processed, and returns it. A connector reaching
+     * its final status is not the end of the message: the engine still has the postprocessor to run
+     * and the message row to mark, and that last commit is where the remaining statistics land. A
+     * test that reads anything channel-wide has to wait for it.
+     */
+    public static Message awaitProcessed(String channelId, long messageId) throws Exception {
+        long deadline = System.nanoTime() + HarnessConfig.TIMEOUT.toNanos();
+        Message message = null;
+        do {
+            message = server().fetchMessage(channelId, messageId);
+            if (message != null && message.isProcessed()) {
+                return message;
+            }
+            Thread.sleep(POLL_INTERVAL.toMillis());
+        } while (System.nanoTime() < deadline);
+
+        throw new AssertionError("Timed out after " + HarnessConfig.TIMEOUT.toSeconds() + "s waiting for message "
+                + messageId + " of channel " + channelId + " to be processed\n\n" + describe(message, List.of()));
+    }
+
+    /**
      * Polls until at least {@code minimum} messages are queued for one connector. Queue tests use
      * this to know a queue has really built up - past its in-memory buffer, say - before releasing
      * whatever is holding it, so that the depth is a precondition the test enforces rather than one
@@ -184,6 +205,26 @@ public final class Harness {
 
         throw new AssertionError("Timed out after " + HarnessConfig.TIMEOUT.toSeconds() + "s waiting for connector "
                 + metaDataId + " of channel " + channelId + " to have at least " + minimum
+                + " messages queued; last size was " + lastSize);
+    }
+
+    /**
+     * Polls until a connector's queue has fallen to {@code maximum} messages or fewer. The mirror of
+     * {@link #awaitQueueSizeAtLeast}, for a test that emptied a queue rather than filled one.
+     */
+    public static void awaitQueueSizeAtMost(String channelId, int metaDataId, long maximum) throws Exception {
+        long deadline = System.nanoTime() + HarnessConfig.TIMEOUT.toNanos();
+        Long lastSize = null;
+        do {
+            lastSize = server().queueSize(channelId, metaDataId);
+            if (lastSize != null && lastSize <= maximum) {
+                return;
+            }
+            Thread.sleep(POLL_INTERVAL.toMillis());
+        } while (System.nanoTime() < deadline);
+
+        throw new AssertionError("Timed out after " + HarnessConfig.TIMEOUT.toSeconds() + "s waiting for connector "
+                + metaDataId + " of channel " + channelId + " to have at most " + maximum
                 + " messages queued; last size was " + lastSize);
     }
 

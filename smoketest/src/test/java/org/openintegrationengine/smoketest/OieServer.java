@@ -16,6 +16,7 @@ import com.mirth.connect.donkey.model.message.Message;
 import com.mirth.connect.donkey.model.message.RawMessage;
 import com.mirth.connect.donkey.model.message.attachment.Attachment;
 import com.mirth.connect.model.Channel;
+import com.mirth.connect.model.ChannelStatistics;
 import com.mirth.connect.model.DashboardStatus;
 import com.mirth.connect.model.LoginStatus;
 import com.mirth.connect.model.converters.ObjectXMLSerializer;
@@ -251,6 +252,34 @@ final class OieServer implements AutoCloseable {
     List<Attachment> fetchAttachments(String channelId, long messageId) throws ClientException {
         List<Attachment> attachments = client.getAttachmentsByMessageId(channelId, messageId);
         return attachments == null ? List.of() : attachments;
+    }
+
+    /**
+     * Deletes one message, or one of its connector messages when {@code metaDataId} is not null.
+     * This is the message browser's delete: the server turns it into a one-message filter, so
+     * asking for metadata id 0 deletes the whole message rather than only the source.
+     */
+    void removeMessage(String channelId, long messageId, Integer metaDataId) throws ClientException {
+        client.removeMessage(channelId, messageId, metaDataId, null);
+    }
+
+    /**
+     * Deletes every message in a channel, stopping and restarting it if it is running, and
+     * optionally resetting its statistics at the same time.
+     */
+    void removeAllMessages(String channelId, boolean clearStatistics) throws ClientException {
+        client.removeAllMessages(channelId, true, clearStatistics);
+    }
+
+    /** How many messages the channel still holds. */
+    long messageCount(String channelId) throws ClientException {
+        Long count = client.getMessageCount(channelId, new MessageFilter());
+        return count == null ? 0L : count;
+    }
+
+    /** The channel's aggregate lifetime counters, as the dashboard's statistics view reports them. */
+    ChannelStatistics statistics(String channelId) throws ClientException {
+        return client.getStatistics(channelId);
     }
 
     /** Undeploys and removes a channel, tolerating failures so teardown always continues. */
