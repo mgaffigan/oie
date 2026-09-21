@@ -21,14 +21,10 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.mirth.connect.donkey.model.DonkeyException;
 import com.mirth.connect.donkey.model.channel.ConnectorProperties;
 import com.mirth.connect.donkey.model.channel.DeployedState;
 import com.mirth.connect.donkey.model.channel.DestinationConnectorProperties;
-import com.mirth.connect.donkey.model.message.ConnectorMessage;
 import com.mirth.connect.donkey.model.message.ContentType;
-import com.mirth.connect.donkey.model.message.RawMessage;
-import com.mirth.connect.donkey.model.message.Response;
 import com.mirth.connect.donkey.model.message.Status;
 import com.mirth.connect.donkey.server.Donkey;
 import com.mirth.connect.donkey.server.StartException;
@@ -43,7 +39,6 @@ import com.mirth.connect.donkey.test.util.TestDispatcher;
 import com.mirth.connect.donkey.test.util.TestDispatcherProperties;
 import com.mirth.connect.donkey.test.util.TestPostProcessor;
 import com.mirth.connect.donkey.test.util.TestPreProcessor;
-import com.mirth.connect.donkey.test.util.TestResponseTransformer;
 import com.mirth.connect.donkey.test.util.TestSourceConnector;
 import com.mirth.connect.donkey.test.util.TestUtils;
 
@@ -359,157 +354,8 @@ public class DestinationConnectorTests {
     }
 
     /*
-     * Create channel where the response transformer blocks the thread Send messages in asynchronous
-     * thread (so that the response transformer is waiting), assert that: - The destination
-     * connector response content was stored - The message status was updated to PENDING in the
-     * database
-     * 
-     * Then allow the response transformer to finish, join the thread, and assert: - The response
-     * transformer was successfully run - The message status was updated to SENT in the database
-     */
-    @Test
-    public final void testAfterSend() throws Exception {
-        ChannelController.getInstance().getLocalChannelId(channelId);
-
-        final TestChannel channel = new TestChannel();
-
-        channel.setChannelId(channelId);
-        channel.setServerId(serverId);
-
-        channel.setPreProcessor(new TestPreProcessor());
-        channel.setPostProcessor(new TestPostProcessor());
-
-        final TestSourceConnector sourceConnector = (TestSourceConnector) TestUtils.createDefaultSourceConnector();
-        sourceConnector.setChannelId(channel.getChannelId());
-        sourceConnector.setChannel(channel);
-        channel.setSourceConnector(sourceConnector);
-        channel.getSourceConnector().setFilterTransformerExecutor(TestUtils.createDefaultFilterTransformerExecutor());
-
-        final ConnectorProperties connectorProperties = new TestDispatcherProperties();
-        ((TestDispatcherProperties) connectorProperties).getDestinationConnectorProperties().setQueueEnabled(true);
-        ((TestDispatcherProperties) connectorProperties).getDestinationConnectorProperties().setSendFirst(true);
-        ((TestDispatcherProperties) connectorProperties).getDestinationConnectorProperties().setRegenerateTemplate(true);
-
-        final DestinationConnector destinationConnector = new TestDispatcher();
-        TestUtils.initDefaultDestinationConnector(destinationConnector, connectorProperties);
-        destinationConnector.setChannelId(channelId);
-        ((TestDispatcher) destinationConnector).setReturnStatus(Status.SENT);
-
-        class BlockingTestResponseTransformer extends TestResponseTransformer {
-            public volatile boolean waiting = true;
-
-            @Override
-            public String doTransform(Response response, ConnectorMessage connectorMessage) throws DonkeyException, InterruptedException {
-                while (waiting) {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                return super.doTransform(response, connectorMessage);
-            }
-        }
-        final BlockingTestResponseTransformer responseTransformer = new BlockingTestResponseTransformer();
-
-        destinationConnector.setMetaDataReplacer(sourceConnector.getMetaDataReplacer());
-        destinationConnector.setMetaDataColumns(channel.getMetaDataColumns());
-        destinationConnector.setFilterTransformerExecutor(TestUtils.createDefaultFilterTransformerExecutor());
-        destinationConnector.setResponseTransformerExecutor(TestUtils.createDefaultResponseTransformerExecutor());
-        destinationConnector.getResponseTransformerExecutor().setResponseTransformer(responseTransformer);
-
-        DestinationChainProvider chain = new DestinationChainProvider();
-        chain.setChannelId(channelId);
-        chain.addDestination(1, destinationConnector);
-        channel.addDestinationChainProvider(chain);
-
-        if (ChannelController.getInstance().channelExists(channelId)) {
-            ChannelController.getInstance().deleteAllMessages(channelId);
-        }
-
-        channel.deploy();
-        channel.start(null);
-
-        class TempClass {
-            public long messageId;
-        }
-        final TempClass tempClass = new TempClass();
-
-        for (int i = 1; i <= TEST_SIZE; i++) {
-            responseTransformer.waiting = true;
-
-            Thread thread = new Thread() {
-                @Override
-                public void run() {
-                    ConnectorMessage sourceMessage = TestUtils.createAndStoreNewMessage(new RawMessage(testMessage), channel.getChannelId(), channel.getName(), channel.getServerId()).getConnectorMessages().get(0);
-                    tempClass.messageId = sourceMessage.getMessageId();
-
-                    try {
-                        channel.process(sourceMessage, false);
-                    } catch (InterruptedException e) {
-                        throw new AssertionError(e);
-                    }
-                }
-            };
-            thread.start();
-
-            Thread.sleep(100);
-            // Assert that the response content was stored
-            Connection connection = null;
-            PreparedStatement statement = null;
-            ResultSet result = null;
-
-            try {
-                connection = TestUtils.getConnection();
-                long localChannelId = ChannelController.getInstance().getLocalChannelId(channelId);
-                statement = connection.prepareStatement("SELECT * FROM d_mc" + localChannelId + " WHERE message_id = ? AND metadata_id = ? AND content_type = ?");
-                statement.setLong(1, tempClass.messageId);
-                statement.setInt(2, 1);
-                statement.setInt(3, ContentType.SENT.getContentTypeCode());
-                result = statement.executeQuery();
-                assertTrue(result.next());
-                result.close();
-                statement.close();
-
-                // Assert that the message status was updated to PENDING
-                statement = connection.prepareStatement("SELECT * FROM d_mm" + localChannelId + " WHERE message_id = ? AND id = ? AND status = ?");
-                statement.setLong(1, tempClass.messageId);
-                statement.setInt(2, 1);
-                statement.setString(3, String.valueOf(Status.PENDING.getStatusCode()));
-                result = statement.executeQuery();
-                assertTrue(result.next());
-                result.close();
-                statement.close();
-
-                responseTransformer.waiting = false;
-                thread.join();
-
-                // Assert that the response transformer was run
-                assertTrue(responseTransformer.isTransformed());
-
-                // Assert that the message status was updated to SENT
-                statement = connection.prepareStatement("SELECT * FROM d_mm" + localChannelId + " WHERE message_id = ? AND id = ? AND status = ?");
-                statement.setLong(1, tempClass.messageId);
-                statement.setInt(2, 1);
-                statement.setString(3, String.valueOf(Status.SENT.getStatusCode()));
-                result = statement.executeQuery();
-                assertTrue(result.next());
-                result.close();
-                statement.close();
-            } finally {
-                TestUtils.close(result);
-                TestUtils.close(statement);
-                TestUtils.close(connection);
-            }
-        }
-
-        channel.stop();
-        channel.undeploy();
-        //ChannelController.getInstance().removeChannel(channel.getChannelId());
-    }
-
-    /*
-     * testRunResponseTransformer is re-implemented as CI fixtures in
-     * ci/tests/190-response-handling.
+     * testAfterSend and testRunResponseTransformer are re-implemented against the CI harness:
+     * ci/tests/190-response-handling for the response transformer, and
+     * smoketest BlockingResponseTransformerTest for a transformer that has not returned yet.
      */
 }
