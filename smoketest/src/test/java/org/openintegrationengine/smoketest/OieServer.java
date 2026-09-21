@@ -14,6 +14,7 @@ import com.mirth.connect.client.core.ClientException;
 import com.mirth.connect.donkey.model.channel.DeployedState;
 import com.mirth.connect.donkey.model.message.Message;
 import com.mirth.connect.donkey.model.message.RawMessage;
+import com.mirth.connect.donkey.model.message.attachment.Attachment;
 import com.mirth.connect.model.Channel;
 import com.mirth.connect.model.DashboardStatus;
 import com.mirth.connect.model.LoginStatus;
@@ -240,6 +241,16 @@ final class OieServer implements AutoCloseable {
     Message fetchDecryptedMessage(String channelId, long messageId, List<Integer> metaDataIds)
             throws ClientException {
         return client.getMessageContent(channelId, messageId, metaDataIds);
+    }
+
+    /**
+     * Every attachment stored against one message, with its content. Attachments live in their
+     * own table rather than on the message, so they never appear in {@link #fetchMessage}; the
+     * harness makes this second read only when a fixture names an {@code attachmentNN} file.
+     */
+    List<Attachment> fetchAttachments(String channelId, long messageId) throws ClientException {
+        List<Attachment> attachments = client.getAttachmentsByMessageId(channelId, messageId);
+        return attachments == null ? List.of() : attachments;
     }
 
     /** Undeploys and removes a channel, tolerating failures so teardown always continues. */

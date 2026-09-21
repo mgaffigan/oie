@@ -54,6 +54,8 @@ the payload sent to the channel. The other files are optional assertions:
 | `destNN_processing_error` | Processing error recorded against destination `NN` |
 | `destNN_metadata.yml` | Selected metadata for destination `NN` |
 | `destNN_status` | Status for destination `NN` |
+| `attachmentNN` | Content of attachment `NN` |
+| `attachmentNN_type` | MIME type of attachment `NN` |
 
 `NN` is the destination connector's metadata ID: `dest01` is the first
 destination, `dest02` the second, and so on. Metadata files are YAML mappings; list
@@ -64,6 +66,15 @@ it as `2010-01-02T13:01:02Z`. Content assertions are byte-for-byte, except
 that `((ANY))` matches variable content such as generated IDs or timestamps. A content
 assertion file whose entire contents are `((NONE))` asserts the opposite: that the server
 stored no such content at all, which is not the same as storing an empty string.
+
+For an attachment, `NN` is a position rather than an ID: `attachment01` is the attachment
+whose `${ATTACH:id}` token appears first in the source raw content, `attachment02` the next,
+and any attachment the message does not reference comes after those, ordered by ID. The
+server's own list is ordered by ID, which is a generated UUID, so it is not something a
+fixture can count along. An `attachmentNN` file holds raw bytes and is compared byte for
+byte, so it can hold an image or any other binary attachment, and `((NONE))` in it asserts
+that there is no attachment in that position - which is also how a fixture pins down how
+many attachments there are.
 
 A fixture case runs in every configuration by default. To limit it, add a
 `configurations` file at the case root with one configuration name per line:

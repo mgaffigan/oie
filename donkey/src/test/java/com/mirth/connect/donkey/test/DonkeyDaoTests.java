@@ -39,7 +39,6 @@ import com.mirth.connect.donkey.model.message.MessageContent;
 import com.mirth.connect.donkey.model.message.RawMessage;
 import com.mirth.connect.donkey.model.message.Response;
 import com.mirth.connect.donkey.model.message.Status;
-import com.mirth.connect.donkey.model.message.attachment.Attachment;
 import com.mirth.connect.donkey.server.Donkey;
 import com.mirth.connect.donkey.server.StartException;
 import com.mirth.connect.donkey.server.channel.Channel;
@@ -322,35 +321,8 @@ public class DonkeyDaoTests {
 
     // TODO testBatchInsertMessageContent
 
-    /*
-     * Create new channel and message Insert attachments for the message, assert that: - The
-     * attachment was inserted correctly
-     */
-    @Test
-    public final void testInsertMessageAttachment() throws Exception {
-        Channel channel = TestUtils.createDefaultChannel(channelId, serverId);
-        DonkeyDao dao = daoFactory.getDao();
-
-        try {
-            logger.info("Testing DonkeyDao.insertMessageAttachment...");
-
-            ConnectorMessage sourceMessage = TestUtils.createAndStoreNewMessage(new RawMessage(testMessage), channel.getChannelId(), channel.getName(), channel.getServerId(), daoFactory).getConnectorMessages().get(0);
-
-            for (int i = 1; i <= TEST_SIZE; i++) {
-                Attachment attachment = new Attachment("attachment" + i, testMessage.getBytes(), "text/plain");
-
-                dao.insertMessageAttachment(channel.getChannelId(), sourceMessage.getMessageId(), attachment);
-                dao.commit();
-
-                // Assert that the attachment was inserted
-                TestUtils.assertAttachmentExists(channel.getChannelId(), sourceMessage.getMessageId(), attachment);
-            }
-
-            System.out.println(daoTimer.getLog());
-        } finally {
-            dao.close();
-        }
-    }
+    // Attachment storage and retrieval is covered against every dialect by
+    // ci/tests/230-attachments.
 
     /*
      * Create new channel and connector messages Insert content for the messages and assert that: -

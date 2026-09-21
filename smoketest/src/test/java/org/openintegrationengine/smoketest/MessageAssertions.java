@@ -3,9 +3,14 @@
 
 package org.openintegrationengine.smoketest;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -18,6 +23,7 @@ import com.mirth.connect.donkey.model.message.Message;
 import com.mirth.connect.donkey.model.message.MessageContent;
 import com.mirth.connect.donkey.model.message.Response;
 import com.mirth.connect.donkey.model.message.Status;
+import com.mirth.connect.donkey.model.message.attachment.Attachment;
 import com.mirth.connect.model.converters.ObjectXMLSerializer;
 
 /**
@@ -42,6 +48,16 @@ final class MessageAssertions {
 
     private static final Pattern RESPONSE_ENVELOPE = Pattern.compile("^\\s*<response[\\s>].*", Pattern.DOTALL);
 
+    /**
+     * Attachment assertion files are {@code attachment<NN>} plus an optional suffix, where
+     * {@code NN} is the attachment's position in the message rather than its id, which is a
+     * UUID the server generates.
+     */
+    private static final Pattern ATTACHMENT_NAME = Pattern.compile("attachment(\\d+)(_type)?");
+
+    /** The token an attachment handler leaves in the message where it took an attachment out. */
+    private static final Pattern ATTACHMENT_TOKEN = Pattern.compile("\\$\\{ATTACH:([^}]+)\\}");
+
     /** Destination assertion files are {@code dest<NN>} plus an optional suffix. */
     private static final Pattern DEST_NAME = Pattern.compile(
             "dest(\\d+)(_transformed|_response|_processed_response|_processing_error|_response_error|_status|_metadata\\.yml)?");
@@ -53,12 +69,37 @@ final class MessageAssertions {
     }
 
     /**
+     * True for a fixture file that asserts an attachment rather than something on the message.
+     * Attachments are stored in their own table, so the harness has to ask the server for them
+     * separately, and only does so when a fixture names one.
+     */
+    static boolean isAttachmentFixture(String fileName) {
+        return ATTACHMENT_NAME.matcher(fileName).matches();
+    }
+
+    /**
+     * The charset a fixture file is read with. An attachment's content is arbitrary bytes - an
+     * image, a DICOM object - so it is read as ISO-8859-1, which maps every byte to one char and
+     * back without loss, making the comparison a byte-for-byte one. Everything else is text.
+     */
+    static Charset charsetFor(String fileName) {
+        Matcher matcher = ATTACHMENT_NAME.matcher(fileName);
+        return matcher.matches() && matcher.group(2) == null ? StandardCharsets.ISO_8859_1
+                : StandardCharsets.UTF_8;
+    }
+
+    /**
      * Applies one fixture file's assertion to the message.
      *
-     * @param fileName the fixture file name, e.g. {@code source_status} or {@code dest01}
-     * @param content  that file's text, already loaded from the classpath
+     * @param attachments the message's attachments, empty unless a fixture asked for them
+     * @param fileName    the fixture file name, e.g. {@code source_status} or {@code dest01}
+     * @param content     that file's text, already loaded from the classpath
      */
-    static void assertFixtureFile(Message message, String fileName, String content) {
+    static void assertFixtureFile(Message message, List<Attachment> attachments, String fileName, String content) {
+        if (isAttachmentFixture(fileName)) {
+            assertAttachment(message, attachments, fileName, content);
+            return;
+        }
         switch (fileName) {
             case "source_status" -> assertStatus("source status", content,
                     connector(message, SOURCE_META_DATA_ID, fileName).getStatus());
@@ -76,6 +117,57 @@ final class MessageAssertions {
                     connector(message, SOURCE_META_DATA_ID, fileName));
             default -> assertDestination(message, fileName, content);
         }
+    }
+
+    /**
+     * Asserts one attachment's content or mime type. {@code attachment01} is the attachment whose
+     * token appears first in the source raw content, not the first the server hands back: that
+     * list is ordered by id, which is a generated UUID and so bears no relation to the message.
+     * An attachment the message does not reference sorts after the ones it does, by id, so a
+     * handler that stores attachments without leaving tokens behind still has a stable order.
+     */
+    private static void assertAttachment(Message message, List<Attachment> attachments, String fileName,
+            String content) {
+        Matcher matcher = ATTACHMENT_NAME.matcher(fileName);
+        if (!matcher.matches()) {
+            throw new IllegalStateException("Unrecognised fixture file name: " + fileName);
+        }
+        int position = Integer.parseInt(matcher.group(1));
+        List<Attachment> ordered = order(message, attachments);
+        Attachment attachment = position >= 1 && position <= ordered.size() ? ordered.get(position - 1) : null;
+
+        if ("_type".equals(matcher.group(2))) {
+            assertMatches(fileName, content.trim(), attachment == null ? null : attachment.getType());
+        } else {
+            assertMatches(fileName, content, attachment == null ? null
+                    : new String(attachment.getContent(), StandardCharsets.ISO_8859_1));
+        }
+    }
+
+    /**
+     * Puts a message's attachments into the order a fixture numbers them by: the order their
+     * tokens appear in the source raw content, then whatever is left over, by id.
+     */
+    static List<Attachment> order(Message message, List<Attachment> attachments) {
+        Map<String, Attachment> byId = new LinkedHashMap<>();
+        attachments.forEach(attachment -> byId.put(attachment.getId(), attachment));
+
+        List<Attachment> ordered = new ArrayList<>();
+        Map<Integer, ConnectorMessage> connectorMessages = message.getConnectorMessages();
+        ConnectorMessage source = connectorMessages == null ? null : connectorMessages.get(SOURCE_META_DATA_ID);
+        String raw = source == null ? null : content(source.getRaw());
+        if (raw != null) {
+            Matcher tokens = ATTACHMENT_TOKEN.matcher(raw);
+            while (tokens.find()) {
+                Attachment referenced = byId.remove(tokens.group(1));
+                if (referenced != null) {
+                    ordered.add(referenced);
+                }
+            }
+        }
+
+        byId.values().stream().sorted(Comparator.comparing(Attachment::getId)).forEach(ordered::add);
+        return ordered;
     }
 
     private static void assertDestination(Message message, String fileName, String content) {

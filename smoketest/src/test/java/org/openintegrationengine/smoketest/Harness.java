@@ -6,6 +6,7 @@ package org.openintegrationengine.smoketest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Arrays;
@@ -19,6 +20,7 @@ import com.mirth.connect.donkey.model.message.ConnectorMessage;
 import com.mirth.connect.donkey.model.message.Message;
 import com.mirth.connect.donkey.model.message.MessageContent;
 import com.mirth.connect.donkey.model.message.Status;
+import com.mirth.connect.donkey.model.message.attachment.Attachment;
 
 /**
  * The entry points the generated smoke tests call (see :smoketest:generateSmokeTests
@@ -87,8 +89,11 @@ public final class Harness {
 
         // Load the fixtures once; the poll loop below may check them many times.
         Map<String, String> assertions = new LinkedHashMap<>();
+        // Attachments are a second read against the server, so only pay for it when asked.
+        boolean fetchAttachments = false;
         for (String fileName : assertionFiles) {
-            assertions.put(fileName, resource(base + "/" + fileName));
+            assertions.put(fileName, resource(base + "/" + fileName, MessageAssertions.charsetFor(fileName)));
+            fetchAttachments |= MessageAssertions.isAttachmentFixture(fileName);
         }
 
         long messageId = server().submitMessage(channelId, source, sourceMap);
@@ -96,14 +101,20 @@ public final class Harness {
         long deadline = System.nanoTime() + HarnessConfig.TIMEOUT.toNanos();
         AssertionError lastFailure = null;
         Message lastMessage = null;
+        List<Attachment> lastAttachments = List.of();
         long graceDeadline = 0;
         while (System.nanoTime() < deadline) {
             Message message = server().fetchMessage(channelId, messageId);
             if (message != null) {
                 lastMessage = message;
+                List<Attachment> attachments = fetchAttachments
+                        ? server().fetchAttachments(channelId, messageId)
+                        : List.<Attachment>of();
+                lastAttachments = attachments;
                 try {
                     for (Map.Entry<String, String> assertion : assertions.entrySet()) {
-                        MessageAssertions.assertFixtureFile(message, assertion.getKey(), assertion.getValue());
+                        MessageAssertions.assertFixtureFile(message, attachments, assertion.getKey(),
+                                assertion.getValue());
                     }
                     return;
                 } catch (AssertionError e) {
@@ -122,10 +133,10 @@ public final class Harness {
 
         if (lastFailure != null) {
             throw new AssertionError(base + " failed: " + lastFailure.getMessage()
-                    + "\n\n" + describe(lastMessage), lastFailure);
+                    + "\n\n" + describe(lastMessage, lastAttachments), lastFailure);
         }
         throw new AssertionError("Timed out after " + HarnessConfig.TIMEOUT.toSeconds() + "s waiting for message "
-                + messageId + " for fixture " + base + "\n\n" + describe(lastMessage));
+                + messageId + " for fixture " + base + "\n\n" + describe(lastMessage, lastAttachments));
     }
 
     /**
@@ -214,13 +225,22 @@ public final class Harness {
         server().setConfigurationProperty(key, value);
     }
 
-    /** Reads a staged fixture from the classpath. */
+    /** Reads a staged fixture from the classpath as UTF-8 text. */
     static String resource(String path) {
+        return resource(path, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Reads a staged fixture from the classpath. Most fixtures are text and are read as UTF-8;
+     * an attachment's content can be any bytes at all, so it is read as ISO-8859-1, which maps
+     * every byte to one char and back again and so compares byte for byte.
+     */
+    static String resource(String path, Charset charset) {
         try (InputStream in = Harness.class.getClassLoader().getResourceAsStream(path)) {
             if (in == null) {
                 throw new IllegalStateException("Missing fixture resource on the classpath: " + path);
             }
-            return new String(in.readAllBytes(), StandardCharsets.UTF_8);
+            return new String(in.readAllBytes(), charset);
         } catch (IOException e) {
             throw new UncheckedIOException("Could not read fixture resource " + path, e);
         }
@@ -240,7 +260,7 @@ public final class Harness {
     }
 
     /** Renders the message the way a fixture author needs to see it to fix a mismatch. */
-    private static String describe(Message message) {
+    private static String describe(Message message, List<Attachment> attachments) {
         if (message == null) {
             return "No message was retrieved from the server.";
         }
@@ -269,6 +289,11 @@ public final class Harness {
                 detail.append("\n        processingError=").append(connectorMessage.getProcessingError());
             }
         });
+        MessageAssertions.order(message, attachments).forEach(attachment -> detail
+                .append("\n  attachment ").append(attachment.getId())
+                .append(" type=").append(attachment.getType())
+                .append(" content=")
+                .append(quote(new String(attachment.getContent(), StandardCharsets.ISO_8859_1))));
         return detail.toString();
     }
 
