@@ -2901,6 +2901,7 @@ public class JdbcDao implements DonkeyDao {
 
             // do not cache this statement since metadata columns may be added/removed
             statement = connection.prepareStatement(querySource.getQuery("getMetaDataMap", values));
+            disableServerSidePlanCache(statement);
             statement.setLong(1, messageId);
             statement.setInt(2, metaDataId);
 
@@ -2969,6 +2970,7 @@ public class JdbcDao implements DonkeyDao {
 
             // do not cache this statement since metadata columns may be added/removed
             statement = connection.prepareStatement(querySource.getQuery("getMetaDataMapByMessageId", values));
+            disableServerSidePlanCache(statement);
             resultSet = statement.executeQuery();
 
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
@@ -3106,6 +3108,14 @@ public class JdbcDao implements DonkeyDao {
         }
 
         return statementSource.getPreparedStatement(queryId, localChannelId);
+    }
+
+    /**
+     * Stops the driver from caching a server-side plan for one statement where the schema may have
+     * changed from query to query.
+     */
+    protected void disableServerSidePlanCache(PreparedStatement statement) throws SQLException {
+        // nop for most drivers
     }
 
     protected void close(Statement statement) {
