@@ -3,6 +3,8 @@
 
 package org.openintegrationengine.smoketest;
 
+import java.time.Instant;
+import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -32,7 +34,10 @@ final class MessageAssertions {
     /** Fixture wildcard: matches any run of characters, for timestamps and generated ids. */
     private static final String ANY_WILDCARD = "((ANY))";
 
-    /** Fixture sentinel: the whole file asserts that the server stored no such content at all. */
+    /**
+     * Fixture sentinel asserting that nothing is stored: a whole content file, or one key of a
+     * metadata file.
+     */
     private static final String NONE_SENTINEL = "((NONE))";
 
     private static final Pattern RESPONSE_ENVELOPE = Pattern.compile("^\\s*<response[\\s>].*", Pattern.DOTALL);
@@ -169,13 +174,23 @@ final class MessageAssertions {
             Map<String, Object> actual) {
         for (Map.Entry<String, Object> entry : expected.entrySet()) {
             String keyPath = path.isEmpty() ? entry.getKey() : path + "." + entry.getKey();
+            Object expectedValue = entry.getValue();
+            Object actualValue = actual.get(entry.getKey());
+
+            // A key whose value is the sentinel asserts the opposite: nothing was stored for it.
+            if (NONE_SENTINEL.equals(expectedValue)) {
+                if (actualValue != null) {
+                    throw new AssertionError("Metadata mismatch for " + label + " at " + keyPath
+                            + ": expected no value, found " + describe(actualValue));
+                }
+                continue;
+            }
+
             if (!actual.containsKey(entry.getKey())) {
                 throw new AssertionError("Metadata mismatch for " + label + ": missing key " + keyPath
                         + "; present keys: " + actual.keySet());
             }
 
-            Object expectedValue = entry.getValue();
-            Object actualValue = actual.get(entry.getKey());
             if (expectedValue instanceof Map<?, ?> expectedMap) {
                 if (!(actualValue instanceof Map<?, ?> actualMap)) {
                     throw new AssertionError("Metadata mismatch for " + label + " at " + keyPath
@@ -197,7 +212,19 @@ final class MessageAssertions {
         if (expected == null || actual == null) {
             return Objects.equals(expected, actual);
         }
-        return String.valueOf(expected).equals(String.valueOf(actual));
+        return scalarText(expected).equals(scalarText(actual));
+    }
+
+    /**
+     * Renders a scalar the way a fixture writes it. A TIMESTAMP custom metadata column comes back
+     * as a {@link Calendar}, whose {@code toString} spells out every field and the JVM's time zone,
+     * so it is rendered as its UTC instant instead: a fixture writes {@code 2010-01-02T13:01:02Z}.
+     */
+    private static String scalarText(Object value) {
+        if (value instanceof Calendar calendar) {
+            return Instant.ofEpochMilli(calendar.getTimeInMillis()).toString();
+        }
+        return String.valueOf(value);
     }
 
     /**
@@ -247,7 +274,7 @@ final class MessageAssertions {
     }
 
     private static String describe(Object value) {
-        return value == null ? "<none>" : "\"" + value + "\"";
+        return value == null ? "<none>" : "\"" + scalarText(value) + "\"";
     }
 
     @SuppressWarnings("unchecked")
