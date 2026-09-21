@@ -42,7 +42,6 @@ import com.mirth.connect.donkey.server.Donkey;
 import com.mirth.connect.donkey.server.StartException;
 import com.mirth.connect.donkey.server.channel.Channel;
 import com.mirth.connect.donkey.server.channel.DestinationChainProvider;
-import com.mirth.connect.donkey.server.channel.DispatchResult;
 import com.mirth.connect.donkey.server.channel.StorageSettings;
 import com.mirth.connect.donkey.server.controllers.ChannelController;
 import com.mirth.connect.donkey.server.data.DonkeyDao;
@@ -1314,48 +1313,8 @@ public class DonkeyDaoTests {
 
     // TODO testGetMessageAttachment
 
-    /*
-     * Start up a new channel, assert that: - The channel statistics in the database are the same as
-     * the ones returned from getChannelStatistics
-     * 
-     * Then send messages, and after each one assert: - The channel statistics in the database are
-     * the same as the ones returned from getChannelStatistics
-     */
-    @Test
-    public final void testGetChannelStatistics() throws Exception {
-        // TODO also test getChannelTotalStatistics here
-
-        Channel channel = TestUtils.createDefaultChannel(channelId, serverId);
-        channel.deploy();
-        channel.start(null);
-
-        DispatchResult dispatchResult = null;
-
-        try {
-            dispatchResult = channel.getSourceConnector().dispatchRawMessage(new RawMessage(TestUtils.TEST_HL7_MESSAGE));
-        } finally {
-            channel.getSourceConnector().finishDispatch(dispatchResult);
-        }
-
-        try {
-            logger.info("Testing DonkeyDao.getChannelStatistics...");
-
-            // Assert that the statistics are correct
-            assertEquals(TestUtils.getChannelStatistics(channel.getChannelId()), ChannelController.getInstance().getStatistics().getChannelStats(channel.getChannelId()));
-
-            for (int i = 1; i <= TEST_SIZE; i++) {
-                ((TestSourceConnector) channel.getSourceConnector()).readTestMessage(testMessage);
-
-                // Assert that the statistics are correct
-                assertEquals(TestUtils.getChannelStatistics(channel.getChannelId()), ChannelController.getInstance().getStatistics().getChannelStats(channel.getChannelId()));
-            }
-
-            System.out.println(daoTimer.getLog());
-        } finally {
-            channel.stop();
-            channel.undeploy();
-        }
-    }
+    // Reading a channel's statistics back - and the per-dialect statements that wrote them
+    // there - is covered against every dialect by the 250-statistics smoke tests.
 
     /**
      * Sends messages through 5 channels with (maxConnections * 2) asynchronous destinations for 10
