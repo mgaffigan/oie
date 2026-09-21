@@ -32,8 +32,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.mirth.connect.donkey.model.channel.MetaDataColumn;
-import com.mirth.connect.donkey.model.channel.MetaDataColumnType;
 import com.mirth.connect.donkey.model.message.ConnectorMessage;
 import com.mirth.connect.donkey.model.message.ContentType;
 import com.mirth.connect.donkey.model.message.Message;
@@ -351,74 +349,6 @@ public class DonkeyDaoTests {
             System.out.println(daoTimer.getLog());
         } finally {
             dao.close();
-        }
-    }
-
-    /*
-     * Create a new channel, and create metadata columns for it Deploy the channel, assert that: -
-     * The columns were successfully added to the table
-     * 
-     * Create source connector messages Insert source/destination metadata for each message, assert
-     * that: - Each of the metadata columns was inserted successfully
-     */
-    @Test
-    public final void testInsertMetaData() throws Exception {
-        Channel channel = TestUtils.createDefaultChannel(channelId, serverId);
-
-        for (MetaDataColumnType columnType : MetaDataColumnType.values()) {
-            channel.getMetaDataColumns().add(new MetaDataColumn(columnType.toString() + "test", columnType, null));
-        }
-
-        channel.deploy();
-
-        // Assert that the columns were added successfully
-        List<MetaDataColumn> existingColumns = TestUtils.getExistingMetaDataColumns(channel.getChannelId());
-        List<MetaDataColumn> channelColumns = channel.getMetaDataColumns();
-
-        assertEquals(channelColumns.size(), existingColumns.size());
-
-        for (MetaDataColumn metaDataColumn : channelColumns) {
-            assertTrue(metaDataColumn.getName(), existingColumns.contains(metaDataColumn));
-        }
-
-        Map<String, Object> sourceMap = new HashMap<String, Object>();
-        sourceMap.put(MetaDataColumnType.BOOLEAN.toString() + "test", true);
-        sourceMap.put(MetaDataColumnType.NUMBER.toString() + "test", 1);
-        sourceMap.put(MetaDataColumnType.STRING.toString() + "test", "testing");
-        sourceMap.put(MetaDataColumnType.TIMESTAMP.toString() + "test", Calendar.getInstance());
-
-        Map<String, Object> destinationMap = new HashMap<String, Object>();
-        destinationMap.put(MetaDataColumnType.BOOLEAN.toString() + "test", false);
-        destinationMap.put(MetaDataColumnType.NUMBER.toString() + "test", 1);
-        destinationMap.put(MetaDataColumnType.STRING.toString() + "test", "");
-        destinationMap.put(MetaDataColumnType.TIMESTAMP.toString() + "test", Calendar.getInstance());
-
-        logger.info("Testing DonkeyDao.insertMetaData...");
-
-        DonkeyDao dao = daoFactory.getDao();
-
-        try {
-            for (int i = 1; i <= TEST_SIZE; i++) {
-                ConnectorMessage sourceMessage = TestUtils.createAndStoreNewMessage(new RawMessage(testMessage), channel.getChannelId(), channel.getName(), channel.getServerId(), daoFactory).getConnectorMessages().get(0);
-
-                sourceMessage.setMetaDataMap(sourceMap);
-                dao.insertMetaData(sourceMessage, channel.getMetaDataColumns());
-                dao.commit();
-
-                ConnectorMessage destinationMessage = TestUtils.createAndStoreDestinationConnectorMessage(daoFactory, channel.getChannelId(), channel.getName(), channel.getServerId(), sourceMessage.getMessageId(), 1, testMessage, Status.RECEIVED);
-                destinationMessage.setMetaDataMap(destinationMap);
-                dao.insertMetaData(destinationMessage, channel.getMetaDataColumns());
-                dao.commit();
-
-                // Assert the custom metadata was inserted correctly
-                TestUtils.compareMetaDataMaps(channel.getMetaDataColumns(), sourceMap, TestUtils.getCustomMetaData(channel.getChannelId(), sourceMessage.getMessageId(), 0));
-                TestUtils.compareMetaDataMaps(channel.getMetaDataColumns(), destinationMap, TestUtils.getCustomMetaData(channel.getChannelId(), sourceMessage.getMessageId(), 1));
-            }
-
-            System.out.println(daoTimer.getLog());
-        } finally {
-            dao.close();
-            channel.undeploy();
         }
     }
 
@@ -1127,102 +1057,6 @@ public class DonkeyDaoTests {
         System.out.println(daoTimer.getLog());
     }
 
-    /*
-     * Deploy a new channel, manually add metadata columns using addMetaDataColumn, and assert that:
-     * - All the columns were successfully added
-     */
-    @Test
-    public final void testAddMetaDataColumn() throws Exception {
-        Channel channel = TestUtils.createDefaultChannel(channelId, serverId);
-
-        List<MetaDataColumn> metaDataColumns = new ArrayList<MetaDataColumn>();
-
-        try {
-            logger.info("Testing DonkeyDao.addMetaDataColumn...");
-
-            channel.deploy();
-
-            for (int i = 1; i <= TEST_SIZE; i++) {
-                DonkeyDao dao = null;
-
-                try {
-                    dao = daoFactory.getDao();
-
-                    for (MetaDataColumnType type : MetaDataColumnType.values()) {
-                        MetaDataColumn metaDataColumn = new MetaDataColumn(type.toString() + "column" + i, type, null);
-                        dao.addMetaDataColumn(channel.getChannelId(), metaDataColumn);
-                        metaDataColumns.add(metaDataColumn);
-                    }
-
-                    logger.debug("Adding metadata column set " + i);
-                    dao.commit();
-                } finally {
-                    TestUtils.close(dao);
-                }
-
-                // Assert that the columns were added
-                assertEquals(metaDataColumns, TestUtils.getExistingMetaDataColumns(channel.getChannelId()));
-            }
-
-            System.out.println(daoTimer.getLog());
-        } finally {
-            channel.undeploy();
-        }
-    }
-
-    /*
-     * Deploy a new channel, add metadata columns, then use removeMetaDataColumn to delete all the
-     * columns added Get the list of existing metadata columns in the database, and assert: - All
-     * the columns previously added were successfully removed
-     */
-    @Test
-    public final void testRemoveMetaDataColumn() throws Exception {
-        Channel channel = TestUtils.createDefaultChannel(channelId, serverId);
-
-        List<MetaDataColumn> metaDataColumns = new ArrayList<MetaDataColumn>();
-
-        try {
-            logger.info("Testing DonkeyDao.addMetaDataColumn...");
-
-            channel.deploy();
-            DonkeyDao dao = null;
-
-            try {
-                dao = daoFactory.getDao();
-
-                for (int i = 1; i <= TEST_SIZE; i++) {
-                    for (MetaDataColumnType type : MetaDataColumnType.values()) {
-                        MetaDataColumn metaDataColumn = new MetaDataColumn(type.toString() + "column" + i, type, null);
-                        dao.addMetaDataColumn(channel.getChannelId(), metaDataColumn);
-                        metaDataColumns.add(metaDataColumn);
-                    }
-                }
-
-                dao.commit();
-
-                // Remove the columns
-                for (MetaDataColumn metaDataColumn : metaDataColumns) {
-                    dao.removeMetaDataColumn(channel.getChannelId(), metaDataColumn.getName());
-                }
-
-                dao.commit();
-            } finally {
-                TestUtils.close(dao);
-            }
-
-            List<MetaDataColumn> databaseMetaDataColumns = TestUtils.getExistingMetaDataColumns(channel.getChannelId());
-
-            // Assert that the columns in the database do not contain any of the columns previously added
-            for (MetaDataColumn metaDataColumn : metaDataColumns) {
-                assertFalse(databaseMetaDataColumns.contains(metaDataColumn));
-            }
-
-            System.out.println(daoTimer.getLog());
-        } finally {
-            channel.undeploy();
-        }
-    }
-
     // TODO testResetStatistics
 
     // TODO testResetAllStatistics
@@ -1761,48 +1595,6 @@ public class DonkeyDaoTests {
         }
     }
 
-    /*
-     * Create a list of metadata columns and add the list to the channel's metadata columns Deploy
-     * the channel, and assert that: - The list of metadata columns matches the one returned by
-     * getMetaDataColumns
-     */
-    @Test
-    public final void testGetMetaDataColumns() throws Exception {
-        Channel channel = TestUtils.createDefaultChannel(channelId, serverId);
-
-        List<MetaDataColumn> metaDataColumns = new ArrayList<MetaDataColumn>();
-        for (MetaDataColumnType type : MetaDataColumnType.values()) {
-            metaDataColumns.add(new MetaDataColumn(type.toString() + "column", type, null));
-        }
-        channel.setMetaDataColumns(metaDataColumns);
-
-        try {
-            logger.info("Testing DonkeyDao.getMetaDataColumns...");
-
-            channel.deploy();
-
-            List<MetaDataColumn> daoMetaDataColumns;
-            DonkeyDao dao = null;
-
-            try {
-                dao = daoFactory.getDao();
-                daoMetaDataColumns = dao.getMetaDataColumns(channel.getChannelId());
-            } finally {
-                TestUtils.close(dao);
-            }
-
-            assertEquals(metaDataColumns.size(), daoMetaDataColumns.size());
-
-            for (MetaDataColumn column : daoMetaDataColumns) {
-                assertTrue(column.getName(), metaDataColumns.contains(column));
-            }
-
-            System.out.println(daoTimer.getLog());
-        } finally {
-            channel.undeploy();
-        }
-    }
-
     // TODO testGetMessageAttachment
 
     /*
@@ -1916,4 +1708,11 @@ public class DonkeyDaoTests {
 //            channel.undeploy();
 //        }
 //    }
+    /*
+     * Replaced by the ci/tests/200-custom-metadata-columns fixtures, which deploy a channel with a
+     * column of each type and assert the values the engine stored and read back, and by
+     * CustomMetaDataColumnRedeployTest, which edits a deployed channel's column list to reach
+     * removeMetaDataColumn. Covered there: testInsertMetaData, testAddMetaDataColumn,
+     * testRemoveMetaDataColumn and testGetMetaDataColumns.
+     */
 }
