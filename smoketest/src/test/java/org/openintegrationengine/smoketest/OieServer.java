@@ -6,6 +6,7 @@ package org.openintegrationengine.smoketest;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,7 @@ import com.mirth.connect.client.core.ClientException;
 import com.mirth.connect.donkey.model.channel.DeployedState;
 import com.mirth.connect.donkey.model.message.Message;
 import com.mirth.connect.donkey.model.message.RawMessage;
+import com.mirth.connect.donkey.model.message.Status;
 import com.mirth.connect.donkey.model.message.attachment.Attachment;
 import com.mirth.connect.model.Channel;
 import com.mirth.connect.model.ChannelStatistics;
@@ -277,9 +279,43 @@ final class OieServer implements AutoCloseable {
         return count == null ? 0L : count;
     }
 
-    /** The channel's aggregate lifetime counters, as the dashboard's statistics view reports them. */
+    /**
+     * The channel's aggregate lifetime counters, as the dashboard's statistics view reports them.
+     *
+     * <p>For a deployed channel these come from the running engine's own tallies. For a channel
+     * that has been undeployed without being removed they come from the database, which is the
+     * only way a client sees what was actually stored.
+     */
     ChannelStatistics statistics(String channelId) throws ClientException {
         return client.getStatistics(channelId);
+    }
+
+    /** Undeploys a channel without removing it, so its stored rows stay where they are. */
+    void undeployChannel(String channelId) throws ClientException {
+        client.undeployChannel(channelId, true);
+    }
+
+    /**
+     * Every statistics counter the dashboard shows for one channel, keyed by connector: 0 for the
+     * source, its metadata id for each destination, and null for the channel's own aggregate row.
+     * Only the statuses in {@code com.mirth.connect.donkey.server.channel.Statistics}'s
+     * {@code TRACKED_STATUSES} are counted, so each map holds RECEIVED, FILTERED, SENT and ERROR
+     * and nothing else.
+     */
+    Map<Integer, Map<Status, Long>> connectorStatistics(String channelId) throws ClientException {
+        DashboardStatus status = client.getChannelStatus(channelId);
+        if (status == null) {
+            throw new AssertionError("Channel " + channelId + " has no dashboard status");
+        }
+
+        Map<Integer, Map<Status, Long>> statistics = new LinkedHashMap<>();
+        // The channel's own status carries the aggregate row, which the table stores under a null
+        // metadata id; its children carry the per-connector rows.
+        statistics.put(null, status.getStatistics());
+        for (DashboardStatus connectorStatus : status.getChildStatuses()) {
+            statistics.put(connectorStatus.getMetaDataId(), connectorStatus.getStatistics());
+        }
+        return statistics;
     }
 
     /** Undeploys and removes a channel, tolerating failures so teardown always continues. */

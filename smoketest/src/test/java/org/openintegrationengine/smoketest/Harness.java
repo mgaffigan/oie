@@ -261,6 +261,11 @@ public final class Harness {
         server().startChannel(channelId);
     }
 
+    /** Undeploys a channel without removing it, leaving everything it stored in place. */
+    public static void undeployChannel(String channelId) throws Exception {
+        server().undeployChannel(channelId);
+    }
+
     /** Sets one configuration map entry, which channel scripts read back as {@code configurationMap}. */
     public static void setConfigurationProperty(String key, String value) throws Exception {
         server().setConfigurationProperty(key, value);
