@@ -57,7 +57,10 @@ the payload sent to the channel. The other files are optional assertions:
 
 `NN` is the destination connector's metadata ID: `dest01` is the first
 destination, `dest02` the second, and so on. Metadata files are YAML mappings; list
-only the keys that matter to the test. Content assertions are byte-for-byte, except
+only the keys that matter to the test. A key whose value is `((NONE))` asserts that
+nothing is stored under it, which is how a custom metadata column with no value is
+asserted. A TIMESTAMP custom metadata column is compared as its UTC instant, so write
+it as `2010-01-02T13:01:02Z`. Content assertions are byte-for-byte, except
 that `((ANY))` matches variable content such as generated IDs or timestamps. A content
 assertion file whose entire contents are `((NONE))` asserts the opposite: that the server
 stored no such content at all, which is not the same as storing an empty string.

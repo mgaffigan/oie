@@ -15,19 +15,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.List;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.mirth.connect.donkey.model.channel.DeployedState;
-import com.mirth.connect.donkey.model.channel.MetaDataColumn;
-import com.mirth.connect.donkey.model.channel.MetaDataColumnException;
-import com.mirth.connect.donkey.model.channel.MetaDataColumnType;
 import com.mirth.connect.donkey.model.message.Message;
 import com.mirth.connect.donkey.server.Donkey;
 import com.mirth.connect.donkey.server.StartException;
@@ -307,120 +299,6 @@ public class ChannelTests {
         TestUtils.assertChannelDoesNotExist(channelId);
     }
 
-    /*
-     * Creates and deploys a channel, and asserts that: - No extra columns exist on the custom
-     * metadata table
-     * 
-     * Adds metadata columns (one of each type), redeploys the channel, and asserts that: - All the
-     * added columns are in the database with the correct name and type
-     * 
-     * Removes one of the columns, redeploys, and asserts that: - The column is no longer in the
-     * database
-     * 
-     * Alters the name of one of the columns, redeploys, and asserts that: - The old column is
-     * dropped correctly - The new column is added correctly
-     * 
-     * Alters the type one of the columns, redeploys, and asserts that: - The old column is dropped
-     * correctly - The new column is added correctly
-     * 
-     * Alters the name and type of one of the columns, redeploys, and asserts that: - The old column
-     * is dropped correctly - The new column is added correctly
-     */
-    @Test
-    public final void testUpdateMetaDataColumns() throws Exception {
-        ChannelController.getInstance().removeChannel(channelId);
-
-        TestChannel channel = (TestChannel) TestUtils.createDefaultChannel(channelId, serverId);
-
-        channel.deploy();
-
-        // Assert that there are no columns currently
-        assertEquals(TestUtils.getExistingMetaDataColumns(channelId).size(), 0);
-
-        // Add all the columns
-        channel.getMetaDataColumns().add(new MetaDataColumn("stringcolumn", MetaDataColumnType.STRING, null));
-        channel.getMetaDataColumns().add(new MetaDataColumn("numbercolumn", MetaDataColumnType.NUMBER, null));
-        channel.getMetaDataColumns().add(new MetaDataColumn("booleancolumn", MetaDataColumnType.BOOLEAN, null));
-        channel.getMetaDataColumns().add(new MetaDataColumn("timestampcolumn", MetaDataColumnType.TIMESTAMP, null));
-
-        channel.undeploy();
-        channel.deploy();
-
-        // Assert that each column exists
-        List<MetaDataColumn> columns = TestUtils.getExistingMetaDataColumns(channelId);
-        assertTrue(columns.contains(new MetaDataColumn("stringcolumn", MetaDataColumnType.STRING, null)));
-        assertTrue(columns.contains(new MetaDataColumn("numbercolumn", MetaDataColumnType.NUMBER, null)));
-        assertTrue(columns.contains(new MetaDataColumn("booleancolumn", MetaDataColumnType.BOOLEAN, null)));
-        assertTrue(columns.contains(new MetaDataColumn("timestampcolumn", MetaDataColumnType.TIMESTAMP, null)));
-
-        // Remove the string column
-        channel.getMetaDataColumns().remove(0);
-
-        channel.undeploy();
-        channel.deploy();
-
-        // Assert that the string column doesn't exist anymore
-        columns = TestUtils.getExistingMetaDataColumns(channelId);
-        assertFalse(columns.contains(new MetaDataColumn("stringcolumn", MetaDataColumnType.STRING, null)));
-
-        // Alter the long column's name
-        channel.getMetaDataColumns().get(0).setName("longcolumn2");
-
-        channel.undeploy();
-        channel.deploy();
-
-        // Assert that the long column got dropped/added correctly
-        columns = TestUtils.getExistingMetaDataColumns(channelId);
-        assertFalse(columns.contains(new MetaDataColumn("numbercolumn", MetaDataColumnType.NUMBER, null)));
-        assertTrue(columns.contains(new MetaDataColumn("numbercolumn2", MetaDataColumnType.NUMBER, null)));
-
-        // Alter the double column's type
-        channel.getMetaDataColumns().get(1).setType(MetaDataColumnType.TIMESTAMP);
-
-        channel.undeploy();
-        channel.deploy();
-
-        // Assert that the double column got dropped/added correctly as a timestamp column
-        columns = TestUtils.getExistingMetaDataColumns(channelId);
-        assertFalse(columns.contains(new MetaDataColumn("numbercolumn", MetaDataColumnType.NUMBER, null)));
-        assertTrue(columns.contains(new MetaDataColumn("numbercolumn", MetaDataColumnType.TIMESTAMP, null)));
-
-        // Alter the boolean column's name and type
-        channel.getMetaDataColumns().get(2).setName("booleancolumn2");
-        channel.getMetaDataColumns().get(2).setType(MetaDataColumnType.TIMESTAMP);
-
-        channel.undeploy();
-        channel.deploy();
-
-        // Assert that the boolean column got dropped/added correctly as a time column
-        columns = TestUtils.getExistingMetaDataColumns(channelId);
-        assertFalse(columns.contains(new MetaDataColumn("booleancolumn", MetaDataColumnType.BOOLEAN, null)));
-        assertTrue(columns.contains(new MetaDataColumn("booleancolumn2", MetaDataColumnType.TIMESTAMP, null)));
-
-        channel.undeploy();
-    }
-
-    @Test
-    public final void testMetaDataCasting() throws MetaDataColumnException {
-        MetaDataColumnType columnType = MetaDataColumnType.BOOLEAN;
-        Boolean booleanValue = (Boolean) columnType.castValue("TRUE");
-        assertEquals(Boolean.TRUE, booleanValue);
-        booleanValue = (Boolean) columnType.castValue("FALSE");
-        assertEquals(Boolean.FALSE, booleanValue);
-
-        columnType = MetaDataColumnType.NUMBER;
-        BigDecimal bigDecimalValue = (BigDecimal) columnType.castValue("1.0234567890123456789");
-        assertEquals(new BigDecimal(1.0234567890123456789), bigDecimalValue);
-
-        columnType = MetaDataColumnType.STRING;
-        String stringValue = (String) columnType.castValue(" test !@# String 123 ");
-        assertEquals(" test !@# String 123 ", stringValue);
-
-        columnType = MetaDataColumnType.TIMESTAMP;
-        Calendar dateValue = (Calendar) columnType.castValue("2010-01-02 13:01:02");
-        assertEquals("13 01 02 01 02 2010", new SimpleDateFormat("HH mm ss MM dd yyyy").format(dateValue.getTimeInMillis()));
-    }
-
     @Test
     public final void testEncryption() throws Exception {
         //TODO UPDATE THIS TEST!
@@ -495,6 +373,13 @@ public class ChannelTests {
 //            TestUtils.close(connection);
 //        }
     }
+
+    /*
+     * Replaced by the ci/tests/200-custom-metadata-columns fixtures (a column of each type,
+     * value casting, and values that are absent or uncastable) and
+     * CustomMetaDataColumnRedeployTest (adding, removing and retyping a deployed channel's
+     * columns, which is what testUpdateMetaDataColumns redeployed for).
+     */
 
     /*
      * Replaced by the ci/tests/160-message-storage-levels fixtures (DEVELOPMENT, PRODUCTION, RAW

@@ -90,7 +90,18 @@ final class OieServer implements AutoCloseable {
      * @return the deployed channel's id
      */
     String deployChannel(String xml, String label) throws Exception {
-        Channel channel = ObjectXMLSerializer.getInstance().deserialize(xml, Channel.class);
+        return deployChannel(ObjectXMLSerializer.getInstance().deserialize(xml, Channel.class), label);
+    }
+
+    /**
+     * Deploys a channel model, creating or overwriting whatever is on the server under its id.
+     * Deploying the same id twice redeploys it, which is how a test changes a channel in place.
+     *
+     * @param channel the channel to deploy
+     * @param label   a human-readable name for the channel, used only in error messages
+     * @return the deployed channel's id
+     */
+    String deployChannel(Channel channel, String label) throws Exception {
         String channelId = channel.getId();
         if (channelId == null || channelId.isBlank()) {
             throw new IllegalArgumentException("Channel fixture has no id: " + label);
@@ -100,7 +111,9 @@ final class OieServer implements AutoCloseable {
         if (!client.createChannel(channel)) {
             client.updateChannel(channel, true, null);
         }
-        deployedChannelIds.push(channelId);
+        if (!deployedChannelIds.contains(channelId)) {
+            deployedChannelIds.push(channelId);
+        }
 
         // returnErrors=true so a deploy failure surfaces here instead of only as a status
         // that never reaches STARTED. The String overload avoids DebuggerUtil parsing.
