@@ -158,7 +158,12 @@ final class OieServer implements AutoCloseable {
         client.setConfigurationMap(properties);
     }
 
-    /** Reads one message back, with content, so assertions can inspect every connector. */
+    /**
+     * Reads one message back, with content, so assertions can inspect every connector. Asking
+     * for the content switches the server's DAO out of decrypting mode, so the content is
+     * whatever is stored - ciphertext for a channel with {@code encryptData} set. See
+     * {@link #fetchDecryptedMessage}.
+     */
     Message fetchMessage(String channelId, long messageId) throws ClientException {
         MessageFilter filter = new MessageFilter();
         filter.setMinMessageId(messageId);
@@ -169,6 +174,16 @@ final class OieServer implements AutoCloseable {
             return null;
         }
         return messages.get(0);
+    }
+
+    /**
+     * Reads one message back through the decrypting path. {@link #fetchMessage} asks the server
+     * for the content as stored, so an encrypting channel's content arrives as ciphertext; this
+     * call leaves the DAO decrypting, which is what the administrator sees in the message browser.
+     */
+    Message fetchDecryptedMessage(String channelId, long messageId, List<Integer> metaDataIds)
+            throws ClientException {
+        return client.getMessageContent(channelId, messageId, metaDataIds);
     }
 
     /** Undeploys and removes a channel, tolerating failures so teardown always continues. */
