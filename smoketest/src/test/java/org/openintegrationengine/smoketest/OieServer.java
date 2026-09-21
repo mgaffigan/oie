@@ -6,7 +6,6 @@ package org.openintegrationengine.smoketest;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +15,7 @@ import com.mirth.connect.donkey.model.channel.DeployedState;
 import com.mirth.connect.donkey.model.message.Message;
 import com.mirth.connect.donkey.model.message.RawMessage;
 import com.mirth.connect.model.Channel;
+import com.mirth.connect.model.DashboardStatus;
 import com.mirth.connect.model.LoginStatus;
 import com.mirth.connect.model.converters.ObjectXMLSerializer;
 import com.mirth.connect.model.filters.MessageFilter;
@@ -123,18 +123,73 @@ final class OieServer implements AutoCloseable {
     }
 
     private void awaitStarted(String channelId, String label) throws Exception {
+        try {
+            awaitState(channelId, DeployedState.STARTED);
+        } catch (AssertionError e) {
+            throw new AssertionError("Channel " + label + " (" + channelId + ") did not start: " + e.getMessage(), e);
+        }
+    }
+
+    private void awaitState(String channelId, DeployedState state) throws Exception {
         long deadline = System.nanoTime() + HarnessConfig.TIMEOUT.toNanos();
         DeployedState lastState = null;
         while (System.nanoTime() < deadline) {
-            var status = client.getChannelStatus(channelId);
+            DashboardStatus status = client.getChannelStatus(channelId);
             lastState = status == null ? null : status.getState();
-            if (lastState == DeployedState.STARTED) {
+            if (lastState == state) {
                 return;
             }
             Thread.sleep(500);
         }
-        throw new AssertionError("Channel " + label + " (" + channelId + ") did not start within "
+        throw new AssertionError("Channel " + channelId + " did not reach " + state + " within "
                 + HarnessConfig.TIMEOUT.toSeconds() + "s; last state was " + lastState);
+    }
+
+    /**
+     * The number of messages queued for one connector, as the dashboard reports it: the source
+     * queue for metadata id 0, a destination's queue otherwise. Returns null while the channel
+     * has no status for that connector.
+     */
+    Long queueSize(String channelId, int metaDataId) throws ClientException {
+        DashboardStatus status = client.getChannelStatus(channelId);
+        if (status == null) {
+            return null;
+        }
+        for (DashboardStatus connectorStatus : status.getChildStatuses()) {
+            if (Integer.valueOf(metaDataId).equals(connectorStatus.getMetaDataId())) {
+                return connectorStatus.getQueued();
+            }
+        }
+        return Integer.valueOf(metaDataId).equals(status.getMetaDataId()) ? status.getQueued() : null;
+    }
+
+    /** Stops a channel, leaving it deployed, and waits for it to report {@link DeployedState#STOPPED}. */
+    void stopChannel(String channelId) throws Exception {
+        client.stopChannel(channelId, true);
+        awaitState(channelId, DeployedState.STOPPED);
+    }
+
+    /**
+     * Halts a channel, which interrupts whatever it is processing instead of waiting for it, and
+     * waits for it to report {@link DeployedState#STOPPED}.
+     */
+    void haltChannel(String channelId) throws Exception {
+        client.haltChannel(channelId, true);
+        awaitState(channelId, DeployedState.STOPPED);
+    }
+
+    /**
+     * Starts a channel and waits for it to report {@link DeployedState#STARTED}, doing nothing if
+     * it is already started. Tolerating that lets a test restore a channel it stopped from a
+     * {@code finally} without having to know whether the stop got that far.
+     */
+    void startChannel(String channelId) throws Exception {
+        DashboardStatus status = client.getChannelStatus(channelId);
+        if (status != null && status.getState() == DeployedState.STARTED) {
+            return;
+        }
+        client.startChannel(channelId, true);
+        awaitState(channelId, DeployedState.STARTED);
     }
 
     /** Submits a source payload and returns the new message id. */
@@ -151,11 +206,12 @@ final class OieServer implements AutoCloseable {
      * Sets one configuration map entry, leaving the rest alone. This is the only server-side
      * state a client can write that channel scripts can read back, which makes it the harness's
      * way to signal a running script.
+     *
+     * <p>The server does the read-modify-write under its own lock, so test classes running in
+     * parallel can set their own gate properties without dropping each other's.
      */
     void setConfigurationProperty(String key, String value) throws ClientException {
-        Map<String, ConfigurationProperty> properties = new LinkedHashMap<>(client.getConfigurationMap());
-        properties.put(key, new ConfigurationProperty(value, null));
-        client.setConfigurationMap(properties);
+        client.setConfigurationProperty(key, new ConfigurationProperty(value, null));
     }
 
     /**

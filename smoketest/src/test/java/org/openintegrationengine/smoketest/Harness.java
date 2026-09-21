@@ -154,6 +154,61 @@ public final class Harness {
                 + metaDataId + " of message " + messageId + " to reach " + status + "; last status was " + lastStatus);
     }
 
+    /**
+     * Polls until at least {@code minimum} messages are queued for one connector. Queue tests use
+     * this to know a queue has really built up - past its in-memory buffer, say - before releasing
+     * whatever is holding it, so that the depth is a precondition the test enforces rather than one
+     * it hopes for.
+     */
+    public static void awaitQueueSizeAtLeast(String channelId, int metaDataId, long minimum) throws Exception {
+        long deadline = System.nanoTime() + HarnessConfig.TIMEOUT.toNanos();
+        Long lastSize = null;
+        do {
+            lastSize = server().queueSize(channelId, metaDataId);
+            if (lastSize != null && lastSize >= minimum) {
+                return;
+            }
+            Thread.sleep(POLL_INTERVAL.toMillis());
+        } while (System.nanoTime() < deadline);
+
+        throw new AssertionError("Timed out after " + HarnessConfig.TIMEOUT.toSeconds() + "s waiting for connector "
+                + metaDataId + " of channel " + channelId + " to have at least " + minimum
+                + " messages queued; last size was " + lastSize);
+    }
+
+    /**
+     * Reads one connector of one message as it stands right now, without waiting for anything.
+     * This is for asserting where a message has <em>not</em> got to, which is only sound once
+     * something else has proved the engine went past it - never on its own, as a message that has
+     * simply not been picked up yet looks identical.
+     */
+    public static ConnectorMessage connectorMessage(String channelId, long messageId, int metaDataId)
+            throws Exception {
+        Message message = server().fetchMessage(channelId, messageId);
+        ConnectorMessage connectorMessage = message == null ? null
+                : message.getConnectorMessages().get(metaDataId);
+        if (connectorMessage == null) {
+            throw new AssertionError("Message " + messageId + " of channel " + channelId
+                    + " has no connector " + metaDataId);
+        }
+        return connectorMessage;
+    }
+
+    /** Stops a deployed channel, so its queue threads are no longer running. */
+    public static void stopChannel(String channelId) throws Exception {
+        server().stopChannel(channelId);
+    }
+
+    /** Halts a deployed channel, interrupting whatever it is processing rather than waiting. */
+    public static void haltChannel(String channelId) throws Exception {
+        server().haltChannel(channelId);
+    }
+
+    /** Starts a stopped channel back up. */
+    public static void startChannel(String channelId) throws Exception {
+        server().startChannel(channelId);
+    }
+
     /** Sets one configuration map entry, which channel scripts read back as {@code configurationMap}. */
     public static void setConfigurationProperty(String key, String value) throws Exception {
         server().setConfigurationProperty(key, value);
