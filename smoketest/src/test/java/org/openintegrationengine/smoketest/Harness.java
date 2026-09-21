@@ -36,6 +36,9 @@ public final class Harness {
      */
     private static final Duration TERMINAL_GRACE = Duration.ofSeconds(5);
 
+    /** How often to re-read a message while waiting for it to reach a state. */
+    private static final Duration POLL_INTERVAL = Duration.ofMillis(250);
+
     private Harness() {
     }
 
@@ -114,7 +117,7 @@ public final class Harness {
                     }
                 }
             }
-            Thread.sleep(500);
+            Thread.sleep(POLL_INTERVAL.toMillis());
         }
 
         if (lastFailure != null) {
@@ -123,6 +126,37 @@ public final class Harness {
         }
         throw new AssertionError("Timed out after " + HarnessConfig.TIMEOUT.toSeconds() + "s waiting for message "
                 + messageId + " for fixture " + base + "\n\n" + describe(lastMessage));
+    }
+
+    /**
+     * Polls until one connector of one message reaches {@code status}, and returns it. Java
+     * tests need this where {@link #runMessage} cannot help: it stops at the first terminal
+     * state, so it can never observe a message mid-flight.
+     */
+    public static ConnectorMessage awaitConnectorStatus(String channelId, long messageId, int metaDataId,
+            Status status) throws Exception {
+        long deadline = System.nanoTime() + HarnessConfig.TIMEOUT.toNanos();
+        Status lastStatus = null;
+        do {
+            Message message = server().fetchMessage(channelId, messageId);
+            ConnectorMessage connectorMessage = message == null ? null
+                    : message.getConnectorMessages().get(metaDataId);
+            if (connectorMessage != null) {
+                lastStatus = connectorMessage.getStatus();
+                if (lastStatus == status) {
+                    return connectorMessage;
+                }
+            }
+            Thread.sleep(POLL_INTERVAL.toMillis());
+        } while (System.nanoTime() < deadline);
+
+        throw new AssertionError("Timed out after " + HarnessConfig.TIMEOUT.toSeconds() + "s waiting for connector "
+                + metaDataId + " of message " + messageId + " to reach " + status + "; last status was " + lastStatus);
+    }
+
+    /** Sets one configuration map entry, which channel scripts read back as {@code configurationMap}. */
+    public static void setConfigurationProperty(String key, String value) throws Exception {
+        server().setConfigurationProperty(key, value);
     }
 
     /** Reads a staged fixture from the classpath. */

@@ -133,14 +133,17 @@ final class MessageAssertions {
      * come back CR-delimited while the fixture files are LF-delimited.
      */
     private static void assertResponse(String label, String expected, MessageContent responseContent) {
-        String stored = content(responseContent);
-        String actual = stored;
-        if (stored != null && RESPONSE_ENVELOPE.matcher(stored).matches()) {
-            Response response = ObjectXMLSerializer.getInstance().deserialize(stored.trim(), Response.class);
-            String payload = response == null ? null : response.getMessage();
-            actual = payload == null ? null : payload.replace("\r\n", "\n").replace('\r', '\n');
+        assertMatches(label, expected, responsePayload(content(responseContent)));
+    }
+
+    /** Unwraps a stored {@link Response} to the payload a fixture describes, or passes it through. */
+    static String responsePayload(String stored) {
+        if (stored == null || !RESPONSE_ENVELOPE.matcher(stored).matches()) {
+            return stored;
         }
-        assertMatches(label, expected, actual);
+        Response response = ObjectXMLSerializer.getInstance().deserialize(stored.trim(), Response.class);
+        String payload = response == null ? null : response.getMessage();
+        return payload == null ? null : payload.replace("\r\n", "\n").replace('\r', '\n');
     }
 
     /**

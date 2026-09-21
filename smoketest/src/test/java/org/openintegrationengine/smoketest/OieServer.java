@@ -6,6 +6,7 @@ package org.openintegrationengine.smoketest;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,7 @@ import com.mirth.connect.model.Channel;
 import com.mirth.connect.model.LoginStatus;
 import com.mirth.connect.model.converters.ObjectXMLSerializer;
 import com.mirth.connect.model.filters.MessageFilter;
+import com.mirth.connect.util.ConfigurationProperty;
 import com.mirth.connect.util.MirthSSLUtil;
 
 /**
@@ -130,6 +132,17 @@ final class OieServer implements AutoCloseable {
             throw new AssertionError("Server returned no message id for channel " + channelId);
         }
         return messageId;
+    }
+
+    /**
+     * Sets one configuration map entry, leaving the rest alone. This is the only server-side
+     * state a client can write that channel scripts can read back, which makes it the harness's
+     * way to signal a running script.
+     */
+    void setConfigurationProperty(String key, String value) throws ClientException {
+        Map<String, ConfigurationProperty> properties = new LinkedHashMap<>(client.getConfigurationMap());
+        properties.put(key, new ConfigurationProperty(value, null));
+        client.setConfigurationMap(properties);
     }
 
     /** Reads one message back, with content, so assertions can inspect every connector. */

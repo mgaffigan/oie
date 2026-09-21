@@ -33,3 +33,8 @@ so the channels here take the remaining "Respond from" choices plus the response
   `d9`, which no destination owns. The destination answers (`dest01_response`) but nothing is
   selected, so `source_response` is `((NONE))`: an unresolvable name yields no response rather than
   falling back to another one.
+
+The sixth case in this theme is a Java test, `smoketest` `BlockingResponseTransformerTest`: a
+destination whose response transformer has not returned yet sits at PENDING with its sent content
+already stored. The fixture harness retries until the message is terminal, so it cannot see that
+status. Its channel lives in `smoketest/src/test/resources/channels/`.
