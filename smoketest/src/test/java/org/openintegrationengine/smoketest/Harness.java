@@ -6,6 +6,7 @@ package org.openintegrationengine.smoketest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import com.mirth.connect.donkey.model.message.ConnectorMessage;
 import com.mirth.connect.donkey.model.message.Message;
 import com.mirth.connect.donkey.model.message.MessageContent;
 import com.mirth.connect.donkey.model.message.Status;
+import com.mirth.connect.donkey.model.message.attachment.Attachment;
 
 /**
  * The entry points the generated smoke tests call (see :smoketest:generateSmokeTests
@@ -91,6 +93,9 @@ public final class Harness {
 
         // Load the fixtures once; the poll loop below may check them many times.
         List<Map<String, String>> assertions = loadAssertions(base, expectedMessageCount, assertionFiles);
+        // Attachments are a second read against the server, so only pay for it when asked.
+        boolean withAttachments = Arrays.stream(assertionFiles)
+                .anyMatch(path -> MessageAssertions.isAttachmentFixture(bareName(path)));
 
         List<Long> messageIds;
         try {
@@ -108,13 +113,16 @@ public final class Harness {
         long deadline = System.nanoTime() + HarnessConfig.TIMEOUT.toNanos();
         AssertionError lastFailure = null;
         List<Message> lastMessages = List.of();
+        List<List<Attachment>> lastAttachments = List.of();
         long graceDeadline = 0;
         while (System.nanoTime() < deadline) {
             List<Message> messages = fetchMessages(channelId, messageIds);
             lastMessages = messages;
             if (!messages.contains(null)) {
+                List<List<Attachment>> attachments = fetchAttachments(channelId, messageIds, withAttachments);
+                lastAttachments = attachments;
                 try {
-                    assertAll(messages, assertions);
+                    assertAll(messages, attachments, assertions);
                     return;
                 } catch (AssertionError e) {
                     lastFailure = e;
@@ -132,10 +140,10 @@ public final class Harness {
 
         if (lastFailure != null) {
             throw new AssertionError(base + " failed: " + lastFailure.getMessage()
-                    + "\n\n" + describe(lastMessages), lastFailure);
+                    + "\n\n" + describe(lastMessages, lastAttachments), lastFailure);
         }
         throw new AssertionError("Timed out after " + HarnessConfig.TIMEOUT.toSeconds() + "s waiting for message(s) "
-                + messageIds + " for fixture " + base + "\n\n" + describe(lastMessages));
+                + messageIds + " for fixture " + base + "\n\n" + describe(lastMessages, lastAttachments));
     }
 
     /**
@@ -155,7 +163,8 @@ public final class Harness {
         }
 
         throw new AssertionError(base + " failed: expected the server to reject the payload, but it was accepted"
-                + " and produced message(s) " + messageIds + "\n\n" + describe(fetchMessages(channelId, messageIds)));
+                + " and produced message(s) " + messageIds + "\n\n"
+                + describe(fetchMessages(channelId, messageIds), List.of()));
     }
 
     /**
@@ -244,13 +253,22 @@ public final class Harness {
         server().setConfigurationProperty(key, value);
     }
 
-    /** Reads a staged fixture from the classpath. */
+    /** Reads a staged fixture from the classpath as UTF-8 text. */
     static String resource(String path) {
+        return resource(path, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Reads a staged fixture from the classpath. Most fixtures are text and are read as UTF-8;
+     * an attachment's content can be any bytes at all, so it is read as ISO-8859-1, which maps
+     * every byte to one char and back again and so compares byte for byte.
+     */
+    static String resource(String path, Charset charset) {
         try (InputStream in = Harness.class.getClassLoader().getResourceAsStream(path)) {
             if (in == null) {
                 throw new IllegalStateException("Missing fixture resource on the classpath: " + path);
             }
-            return new String(in.readAllBytes(), StandardCharsets.UTF_8);
+            return new String(in.readAllBytes(), charset);
         } catch (IOException e) {
             throw new UncheckedIOException("Could not read fixture resource " + path, e);
         }
@@ -273,17 +291,36 @@ public final class Harness {
         for (String path : assertionFiles) {
             int separator = path.lastIndexOf('/');
             int index = separator < 0 ? 0 : Integer.parseInt(path.substring(0, separator)) - 1;
-            assertions.get(index).put(path.substring(separator + 1), resource(base + "/" + path));
+            String fileName = bareName(path);
+            assertions.get(index).put(fileName,
+                    resource(base + "/" + path, MessageAssertions.charsetFor(fileName)));
         }
         return assertions;
     }
 
-    private static void assertAll(List<Message> messages, List<Map<String, String>> assertions) {
+    /** The assertion file's own name, with the {@code NN/} message prefix a multi-message fixture adds. */
+    private static String bareName(String path) {
+        return path.substring(path.lastIndexOf('/') + 1);
+    }
+
+    private static void assertAll(List<Message> messages, List<List<Attachment>> attachments,
+            List<Map<String, String>> assertions) {
         for (int index = 0; index < messages.size(); index++) {
             for (Map.Entry<String, String> assertion : assertions.get(index).entrySet()) {
-                MessageAssertions.assertFixtureFile(messages.get(index), assertion.getKey(), assertion.getValue());
+                MessageAssertions.assertFixtureFile(messages.get(index), attachments.get(index),
+                        assertion.getKey(), assertion.getValue());
             }
         }
+    }
+
+    /** Reads each message's attachments, or hands back empty lists when no fixture asks for them. */
+    private static List<List<Attachment>> fetchAttachments(String channelId, List<Long> messageIds,
+            boolean withAttachments) throws ClientException {
+        List<List<Attachment>> attachments = new ArrayList<>(messageIds.size());
+        for (Long messageId : messageIds) {
+            attachments.add(withAttachments ? server().fetchAttachments(channelId, messageId) : List.<Attachment>of());
+        }
+        return attachments;
     }
 
     /** Reads each message back, leaving a null in place of one the server has not stored yet. */
@@ -309,7 +346,7 @@ public final class Harness {
     }
 
     /** Renders the messages the way a fixture author needs to see them to fix a mismatch. */
-    private static String describe(List<Message> messages) {
+    private static String describe(List<Message> messages, List<List<Attachment>> attachments) {
         if (messages.isEmpty()) {
             return "No messages were retrieved from the server.";
         }
@@ -322,12 +359,13 @@ public final class Harness {
             if (messages.size() > 1) {
                 detail.append("--- message ").append(index + 1).append(" of ").append(messages.size()).append(" ---\n");
             }
-            detail.append(describeMessage(messages.get(index)));
+            detail.append(describeMessage(messages.get(index),
+                    index < attachments.size() ? attachments.get(index) : List.of()));
         }
         return detail.toString();
     }
 
-    private static String describeMessage(Message message) {
+    private static String describeMessage(Message message, List<Attachment> attachments) {
         if (message == null) {
             return "No message was retrieved from the server.";
         }
@@ -357,6 +395,11 @@ public final class Harness {
                 detail.append("\n        processingError=").append(connectorMessage.getProcessingError());
             }
         });
+        MessageAssertions.order(message, attachments).forEach(attachment -> detail
+                .append("\n  attachment ").append(attachment.getId())
+                .append(" type=").append(attachment.getType())
+                .append(" content=")
+                .append(quote(new String(attachment.getContent(), StandardCharsets.ISO_8859_1))));
         return detail.toString();
     }
 
