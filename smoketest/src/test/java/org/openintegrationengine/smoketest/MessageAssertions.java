@@ -3,6 +3,7 @@
 
 package org.openintegrationengine.smoketest;
 
+import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -311,10 +312,19 @@ final class MessageAssertions {
      * Renders a scalar the way a fixture writes it. A TIMESTAMP custom metadata column comes back
      * as a {@link Calendar}, whose {@code toString} spells out every field and the JVM's time zone,
      * so it is rendered as its UTC instant instead: a fixture writes {@code 2010-01-02T13:01:02Z}.
+     *
+     * <p>A NUMBER column comes back as a {@link BigDecimal} whose scale is the dialect's business:
+     * the column is {@code DECIMAL(31, 15)} everywhere, and derby, postgres, mysql and sqlserver
+     * all return the column's scale, so {@code 1234.5678} arrives as {@code 1234.567800000000000},
+     * while oracle returns the scale the value was stored with. Trailing zeros are therefore
+     * dropped, which leaves a fixture free to write the value it sent.
      */
     private static String scalarText(Object value) {
         if (value instanceof Calendar calendar) {
             return Instant.ofEpochMilli(calendar.getTimeInMillis()).toString();
+        }
+        if (value instanceof BigDecimal number) {
+            return number.stripTrailingZeros().toPlainString();
         }
         return String.valueOf(value);
     }
