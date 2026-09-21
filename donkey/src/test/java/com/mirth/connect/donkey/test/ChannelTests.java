@@ -299,80 +299,10 @@ public class ChannelTests {
         TestUtils.assertChannelDoesNotExist(channelId);
     }
 
-    @Test
-    public final void testEncryption() throws Exception {
-        //TODO UPDATE THIS TEST!
-//        final String prefix = "Encrypted: ";
-//        final int prefixLength = prefix.length();
-//        
-//        TestChannel channel = (TestChannel) TestUtils.createDefaultChannel(channelId, serverId);
-//        channel.setEncryptor(new Encryptor() {
-//            @Override
-//            public String encrypt(String text) {
-//                return prefix + text;
-//            }
-//            
-//            @Override
-//            public String decrypt(String text) {
-//                return text.substring(prefixLength);
-//            }
-//        });
-//        
-//        SourceConnector sourceConnector = channel.getSourceConnector();
-//
-//        channel.deploy();
-//        channel.start();
-//        
-//        DispatchResult dispatchResult = sourceConnector.dispatchRawMessage(new RawMessage(testMessage));
-//        sourceConnector.finishDispatch(dispatchResult);
-//
-//        channel.stop();
-//        channel.undeploy();
-//        
-//        Connection connection = null;
-//        PreparedStatement statement = null;
-//        ResultSet resultSet = null;
-//        
-//        try {
-//            connection = TestUtils.getConnection();
-//            
-//            long messageId = dispatchResult.getProcessedMessage().getMessageId();
-//            
-//            statement = connection.prepareStatement("SELECT content, is_encrypted FROM d_mc" + ChannelController.getInstance().getLocalChannelId(channelId) + " WHERE message_id = ? AND metadata_id = ? AND content_type = ?");
-//            statement.setLong(1, messageId);
-//            
-//            for (ConnectorMessage connectorMessage : dispatchResult.getProcessedMessage().getConnectorMessages().values()) {
-//                int metaDataId = connectorMessage.getMetaDataId();
-//                statement.setInt(2, metaDataId);
-//                
-//                for (ContentType contentType : ContentType.getMessageTypes()) {
-//                    MessageContent messageContent = connectorMessage.getContent(contentType);
-//                    
-//                    if (messageContent != null) {
-//                        assertNotNull(messageContent.getContent());
-//                        //TODO Update this test, no longer valid
-////                        assertEquals(prefix + messageContent.getContent(), messageContent.getEncryptedContent());
-//                    }
-//                    
-//                    statement.setInt(3, contentType.getContentTypeCode());
-//                    resultSet = statement.executeQuery();
-//                    
-//                    if (resultSet.next()) {
-//                        assertEquals(prefix + messageContent.getContent(), resultSet.getString("content"));
-//                        assertTrue(resultSet.getBoolean("is_encrypted"));
-//                    } else if (messageContent != null && (metaDataId == 0 || !contentType.equals(ContentType.RAW))) {
-//                        throw new AssertionError("Message content was not stored in the database (" + messageId + "/" + metaDataId + "/" + contentType.getContentTypeCode() + ")");
-//                    }
-//                    
-//                    resultSet.close();
-//                }
-//            }
-//        } finally {
-//            TestUtils.close(resultSet);
-//            TestUtils.close(statement);
-//            TestUtils.close(connection);
-//        }
-    }
+    /*
+     * Replaced by EncryptionAtRestTest: a channel with encryptData set stores every content stage
+     * as ciphertext, and the decrypting read path hands the original back.
+     */
 
     /*
      * Replaced by the ci/tests/200-custom-metadata-columns fixtures (a column of each type,
