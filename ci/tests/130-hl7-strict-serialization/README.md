@@ -8,3 +8,6 @@ engine does not serialize at all without one.
   `urn:hl7-org:v2xml` document, which is what distinguishes strict parsing from the `<HL7Message>`
   form the non-strict reader produces.
 - `02-not-hl7` - a payload HAPI cannot read gives ERROR rather than being passed through.
+- `03-unknown-message-type` - HAPI reads the message but has no structure class for its
+  MSH-9, so it parses into a `GenericMessage` and serialization fails. Distinct from
+  `02-not-hl7`, where the parse itself fails.
