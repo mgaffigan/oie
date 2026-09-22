@@ -37,6 +37,7 @@ import com.mirth.connect.util.StringUtil;
 import ca.uhn.hl7v2.DefaultHapiContext;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.HapiContext;
+import ca.uhn.hl7v2.model.GenericMessage;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.parser.DefaultXMLParser;
 import ca.uhn.hl7v2.parser.ParserConfiguration;
@@ -78,7 +79,7 @@ public class ER7Serializer implements IMessageSerializer {
 
             if (serializationProperties.isUseStrictParser()) {
                 serializationPipeParser = new CustomPipeParser(context);
-                serializationXmlParser = new CustomDefaultXMLParser(context);
+                serializationXmlParser = new CustomDefaultXMLParser(context, serializationProperties.isAllowUnknownMessageTypes());
 
                 // turn off strict validation if needed
                 if (!serializationProperties.isUseStrictValidation()) {
@@ -97,7 +98,7 @@ public class ER7Serializer implements IMessageSerializer {
 
             if (deserializationProperties.isUseStrictParser()) {
                 deserializationPipeParser = new CustomPipeParser(context);
-                deserializationXmlParser = new CustomDefaultXMLParser(context);
+                deserializationXmlParser = new CustomDefaultXMLParser(context, false);
 
                 // turn off strict validation if needed
                 if (!deserializationProperties.isUseStrictValidation()) {
@@ -510,8 +511,11 @@ public class ER7Serializer implements IMessageSerializer {
 
     private class CustomDefaultXMLParser extends DefaultXMLParser {
 
-        public CustomDefaultXMLParser(HapiContext context) {
+        private final boolean allowUnknownMessageTypes;
+
+        public CustomDefaultXMLParser(HapiContext context, boolean allowUnknownMessageTypes) {
             super(context);
+            this.allowUnknownMessageTypes = allowUnknownMessageTypes;
         }
 
         @Override
@@ -521,6 +525,22 @@ public class ER7Serializer implements IMessageSerializer {
             message.setParser(this);
 
             return message;
+        }
+
+        /*
+         * HAPI 2.4 commented out the GenericMessage check in XMLParser.doEncode (upstream #20 and
+         * PR #21), so a message whose type has no generated structure class now encodes as
+         * <GenericMessageV2x> instead of failing. A channel that rejects an unrecognised type today
+         * would silently start accepting it and hand the transformer a document no filter or step
+         * was written against, so reject it unless the channel opts in.
+         */
+        @Override
+        protected String doEncode(Message source) throws HL7Exception {
+            if (!allowUnknownMessageTypes && source instanceof GenericMessage) {
+                throw new HL7Exception("Can't XML-encode a GenericMessage.  Message must have a recognized structure.");
+            }
+
+            return super.doEncode(source);
         }
     }
 
