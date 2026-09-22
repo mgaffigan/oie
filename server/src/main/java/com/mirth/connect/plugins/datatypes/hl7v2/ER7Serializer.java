@@ -18,9 +18,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
@@ -541,6 +544,34 @@ public class ER7Serializer implements IMessageSerializer {
             }
 
             return super.doEncode(source);
+        }
+
+        /*
+         * Identical to HAPI 2.6.0's XMLUtils.parseDocument apart from setCoalescing(true). Without
+         * it the parser yields CDATA_SECTION nodes and XMLParser.parsePrimitive reads only text
+         * nodes, so a field written as CDATA loses its contents with no error. HAPI 2.3 did not
+         * produce those nodes because it parsed through an LSParser. Every other setting is copied
+         * from upstream so this does not relax the entity restrictions the 2.6.0 upgrade adds.
+         */
+        @Override
+        protected synchronized Document parseStringIntoDocument(String xml) throws HL7Exception {
+            try {
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                factory.setNamespaceAware(true);
+                factory.setCoalescing(true);
+                factory.setXIncludeAware(false);
+                factory.setExpandEntityReferences(false);
+                factory.setValidating(false);
+                factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false);
+                factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+                factory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+                factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+                factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+
+                return factory.newDocumentBuilder().parse(new InputSource(new StringReader(xml)));
+            } catch (Exception e) {
+                throw new HL7Exception("Exception parsing XML", e);
+            }
         }
     }
 
