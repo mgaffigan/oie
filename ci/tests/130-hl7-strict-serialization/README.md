@@ -11,3 +11,7 @@ engine does not serialize at all without one.
 - `03-unknown-message-type` - HAPI reads the message but has no structure class for its
   MSH-9, so it parses into a `GenericMessage` and serialization fails. Distinct from
   `02-not-hl7`, where the parse itself fails.
+
+`02-strict-validating` is the same channel with `useStrictValidation` on as well, running the
+same two messages. Validation changes neither outcome, which is worth pinning: an operator
+reaching for stricter handling does not get different behaviour here.
