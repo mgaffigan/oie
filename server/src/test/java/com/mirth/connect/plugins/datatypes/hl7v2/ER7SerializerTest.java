@@ -101,4 +101,13 @@ public class ER7SerializerTest {
 
 		assertFalse(exceptionThrown);
 	}
+
+	@Test
+	public void testToXmlStrictValidatingKeepsCdataContent() throws Exception {
+		// HAPI reads only text nodes into a field, so CDATA content is silently dropped unless the
+		// parser coalesces it into the surrounding text.
+		String xml = "<ACK xmlns=\"urn:hl7-org:v2xml\"><MSH><MSH.1>|</MSH.1><MSH.2>^~\\&amp;</MSH.2><MSH.3><HD.1><![CDATA[CDATA-APP]]></HD.1></MSH.3><MSH.9><MSG.1>ACK</MSG.1></MSH.9><MSH.10>1</MSH.10><MSH.12><VID.1>2.4</VID.1></MSH.12></MSH><MSA><MSA.1>AA</MSA.1><MSA.2>1</MSA.2></MSA></ACK>";
+
+		assertTrue(strictValidatingSerializer.toXML(xml).contains("CDATA-APP"));
+	}
 }

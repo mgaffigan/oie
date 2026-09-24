@@ -537,6 +537,9 @@ public class ER7Serializer implements IMessageSerializer {
          * This stays stronger than HAPI's own >= 2.4 fix, which permits a DOCTYPE and only disables
          * entity resolution. Remove only once HAPI is upgraded to >= 2.4 AND that weaker posture is
          * deliberately accepted.
+         *
+         * Coalescing is required: HAPI reads only text nodes into a field, so without it CDATA
+         * content is silently dropped, which HAPI's own parser does not do.
          */
         @Override
         protected synchronized Document parseStringIntoDocument(String xml) throws HL7Exception {
@@ -544,6 +547,7 @@ public class ER7Serializer implements IMessageSerializer {
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                 factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
                 factory.setNamespaceAware(true);
+                factory.setCoalescing(true);
                 return factory.newDocumentBuilder().parse(new InputSource(new StringReader(xml)));
             } catch (Exception e) {
                 throw new HL7Exception("Exception parsing XML", e);
