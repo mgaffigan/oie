@@ -31,17 +31,22 @@ final class CommandLineClient {
 
     /** Runs the CLI against the server under test, feeding it {@code statements} as a script. */
     static Result runScript(String... statements) throws Exception {
-        return runScriptAgainst(HarnessConfig.BASE_URL, HarnessConfig.USERNAME, HarnessConfig.PASSWORD,
-                statements);
+        return runScriptAgainst(HarnessConfig.BASE_URL, HarnessConfig.PINNED_CLIENT_TRUST, statements);
     }
 
-    /** As {@link #runScript}, against an address and credentials of the caller's choosing. */
-    static Result runScriptAgainst(String address, String user, String password, String... statements)
+    /**
+     * As {@link #runScript}, against an address and {@code -trust} configuration of the
+     * caller's choosing. The stack's server presents a self-signed certificate for a
+     * hostname no certificate could match, so every run has to say how to trust it: the
+     * CLI's own default (pki,localhost) reaches a server on its own machine, not this one.
+     */
+    static Result runScriptAgainst(String address, String trust, String... statements)
             throws Exception {
         Path script = Files.createTempFile("oie-cli-", ".script");
         try {
             Files.writeString(script, String.join("\n", statements) + "\n", StandardCharsets.UTF_8);
-            return run("-a", address, "-u", user, "-p", password, "-s", script.toString());
+            return run("-a", address, "-u", HarnessConfig.USERNAME, "-p", HarnessConfig.PASSWORD,
+                    "-trust", trust, "-s", script.toString());
         } finally {
             Files.deleteIfExists(script);
         }
