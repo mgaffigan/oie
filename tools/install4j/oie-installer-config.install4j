@@ -27,6 +27,7 @@
       <dirEntry mountPoint="24" file="${compiler:installer:mediaRoot}server/setup" overwriteMode="0" uninstallMode="1" overrideOverwriteMode="true" overrideUninstallMode="true">
         <exclude>
           <entry location="server-lib" />
+          <entry location="configure-from-env" />
           <entry location="oieserver" />
           <entry location="public_html" />
           <entry location="oieserver.ps1" />
