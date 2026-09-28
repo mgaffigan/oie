@@ -803,15 +803,25 @@ def signSetupJars = tasks.register('signSetupJars') {
                 withRetry {
                     ant.signjar(jar: jarFile.absolutePath,
                             alias: signingProp('key.alias'),
+                            keystore: signingProp('key.keystore'),
                             storepass: signingProp('key.storepass'),
                             storetype: signingProp('key.storetype'),
                             providerclass: signingProp('key.providerclass'),
                             providerarg: signingProp('key.providerarg'),
                             tsaurl: tsa) {
+                        // A cloud KMS provider ships as a jar, so it has to go
+                        // on jarsigner's own classpath via -J options.
+                        signingProp('key.jarsignerargs')?.tokenize(' ')?.each { arg(value: it) }
                         arg(value: '-certchain')
-                        arg(value: signingProp('key.certchain'))
-                        sysproperty(key: 'jsse.enableSNIExtension', value: 'false')
-                        sysproperty(key: 'https.protocols', value: 'TLSv1.2,TLSv1.1')
+                        arg(value: rootProject.file(signingProp('key.certchain')).absolutePath)
+                        // Workarounds for old timestamp servers, kept for the
+                        // hardware-token flow. Disabling SNI makes a cloud KMS
+                        // endpoint answer with a default certificate that then
+                        // fails PKIX, so allow them to be turned off.
+                        if (signingProp('key.legacyTls') != 'false') {
+                            sysproperty(key: 'jsse.enableSNIExtension', value: 'false')
+                            sysproperty(key: 'https.protocols', value: 'TLSv1.2,TLSv1.1')
+                        }
                     }
                 }
             }
