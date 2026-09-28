@@ -850,8 +850,9 @@ return console.askYesNo(message, true);
     </windowsArchive>
   </mediaSets>
   <buildIds buildAll="false">
+    <mediaSet refId="44" />
     <mediaSet refId="121" />
     <mediaSet refId="125" />
-    <mediaSet refId="136" />
+    <mediaSet refId="130" />
   </buildIds>
 </install4j>
