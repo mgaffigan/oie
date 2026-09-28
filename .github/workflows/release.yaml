@@ -1,0 +1,182 @@
+name: Release Open Integration Engine
+
+# Builds the signed release artifacts and stages them as a draft GitHub
+# release for a maintainer to review and publish.
+#
+# Versions are NOT set here: a tag must match the version already committed in
+# gradle.properties, and the build fails if it does not. Bump the version in a
+# separate commit, then tag it.
+#
+# Signing requires two repository secrets, documented in tools/signing/README.md:
+#   GCP_LOGIN_JSON   service account with roles/cloudkms.signer on the key
+#   INSTALL4J_KEY    install4j license key
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Two releases building at once would fight over the draft release.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  JSIGN_VERSION: '7.5'
+  JSIGN_SHA256: '602a51c3545a6dc4fb99bd2ea7152b26d1345916d0c93ddfbd5936cb735af91c'
+  # Must be at least the version the install4j project file was saved with;
+  # install4j refuses to open a project from a newer release.
+  INSTALL4J_VERSION: '11_0_5'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve and verify version
+        id: version
+        run: |
+          version=$(sed -n 's/^version=//p' gradle.properties)
+          if [ -z "$version" ]; then
+            echo "::error::no version= line in gradle.properties"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+          if [ "${{ github.event_name }}" = 'push' ]; then
+            tag="${GITHUB_REF_NAME#v}"
+            # v4.6.0 must match 4.6.0 exactly; v4.6.0-rc1 may carry a suffix.
+            case "$tag" in
+              "$version"|"$version"-*) ;;
+              *)
+                echo "::error::tag $GITHUB_REF_NAME does not match gradle.properties version $version."
+                echo "::error::Bump the version in a separate commit before tagging."
+                exit 1
+                ;;
+            esac
+          fi
+          echo "Building version $version"
+
+      # Matches the toolchain the Dockerfile builds with: .sdkmanrc pins a
+      # Zulu JDK with JavaFX, which actions/setup-java cannot provide.
+      - name: Set up JDK from .sdkmanrc
+        run: |
+          curl -s "https://get.sdkman.io?ci=true" | bash
+          source "$HOME/.sdkman/bin/sdkman-init.sh"
+          sdk env install
+          echo "JAVA_HOME=$JAVA_HOME" >> "$GITHUB_ENV"
+          echo "$JAVA_HOME/bin" >> "$GITHUB_PATH"
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_LOGIN_JSON }}
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Download jsign
+        run: |
+          curl -sSfLo "$RUNNER_TEMP/jsign.jar" \
+            "https://github.com/ebourg/jsign/releases/download/${JSIGN_VERSION}/jsign-${JSIGN_VERSION}.jar"
+          echo "${JSIGN_SHA256}  $RUNNER_TEMP/jsign.jar" | sha256sum -c -
+
+      # Unlike the PR build (.github/workflows/build.yaml) this deliberately
+      # does NOT pass -PdisableSigning=true: signSetupJars signs client-lib and
+      # the extensions against the KMS key. The access token is good for an
+      # hour, which comfortably covers signing ~220 jars.
+      - name: Build and sign
+        run: |
+          ./gradlew clean build dist \
+            -Pkeystore_property_file="$PWD/tools/signing/gcp-kms.keystore.properties" \
+            -Pkey.jarsignerargs="-J-cp -J$RUNNER_TEMP/jsign.jar -J--add-modules -Jjava.sql" \
+            -Pkey.storepass="$(gcloud auth print-access-token)"
+
+      # -strict, unlike a plain -verify, exits non-zero on a chain a stock JRE
+      # would not trust. The BouncyCastle jars carry a second, pre-existing
+      # signature whose signer is not in the JDK truststore, so they are
+      # checked without it.
+      - name: Verify jar signatures
+        run: |
+          # shellcheck disable=SC2016  # $1 is the inner sh's argument
+          find server/setup/client-lib server/setup/extensions -name '*.jar' \
+            \! -name 'bcprov-*' \! -name 'bcpkix-*' \! -name 'bcutil-*' -print0 \
+            | xargs -0 -n1 sh -c \
+                'jarsigner -verify -strict "$1" > /dev/null \
+                   || { echo "::error file=$1::signature verification failed"; exit 1; }' sh
+
+      - name: Install install4j
+        env:
+          INSTALL4J_KEY: ${{ secrets.INSTALL4J_KEY }}
+        run: |
+          curl -sSfLo "$RUNNER_TEMP/install4j.tar.gz" \
+            "https://download.ej-technologies.com/install4j/install4j_linux-x64_${INSTALL4J_VERSION}.tar.gz"
+          mkdir -p "$RUNNER_TEMP/install4j"
+          tar xzf "$RUNNER_TEMP/install4j.tar.gz" -C "$RUNNER_TEMP/install4j" --strip-components=1
+          # Setting INSTALL4J_LICENSE_KEY is not enough; install4jc still
+          # refuses to compile without an explicit -L registration.
+          "$RUNNER_TEMP/install4j/bin/install4jc" -L "$INSTALL4J_KEY"
+
+      # Media sets are chosen by the <buildIds> selection in the project file
+      # (--build-selected), so the GUI and CI build the same things. Windows
+      # launchers and installers are Authenticode-signed by the codeSigning
+      # command in the project file; macOS media are built unsigned, because
+      # notarization needs an Apple Developer ID we do not have.
+      - name: Build installers
+        env:
+          JSIGN_JAR: ${{ runner.temp }}/jsign.jar
+        run: |
+          "$RUNNER_TEMP/install4j/bin/install4jc" \
+            --build-selected \
+            --disable-notarization \
+            --release "${{ steps.version.outputs.version }}" \
+            --destination "$RUNNER_TEMP/media" \
+            --verbose \
+            tools/install4j/oie-installer-config.install4j
+
+      # install4j writes md5sums and sha256sums itself, in the same format
+      # previous releases shipped, so they are published as-is. Its build log
+      # and the auto-update descriptor are not release assets.
+      - name: Stage release assets
+        id: media
+        run: |
+          cd "$RUNNER_TEMP/media"
+          rm -f output.txt updates.xml
+          if [ ! -s sha256sums ]; then
+            echo "::error::install4j produced no media"
+            exit 1
+          fi
+          cat sha256sums
+          ls -lh
+          echo "dir=$RUNNER_TEMP/media" >> "$GITHUB_OUTPUT"
+
+      - name: Create draft release
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release create "$GITHUB_REF_NAME" \
+              --draft \
+              --title "$GITHUB_REF_NAME" \
+              --notes 'Draft build. Review the artifacts, then write release notes and publish.'
+          fi
+          gh release upload "$GITHUB_REF_NAME" --clobber "${{ steps.media.outputs.dir }}"/*
+
+      # Nothing to attach a release to on a manual run, so keep the artifacts
+      # on the workflow run instead.
+      - name: Upload media as workflow artifacts
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: oie-media
+          path: ${{ steps.media.outputs.dir }}
+          compression-level: 0
