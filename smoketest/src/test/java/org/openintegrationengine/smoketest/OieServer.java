@@ -140,6 +140,12 @@ final class OieServer implements AutoCloseable {
         return messageIds;
     }
 
+    /** Reads every message the channel holds, newest last, so a refusal can be inspected. */
+    List<Message> fetchMessages(String channelId) throws ClientException {
+        List<Message> messages = client.getMessages(channelId, new MessageFilter(), true, 0, 100);
+        return messages == null ? List.of() : messages;
+    }
+
     /** Reads one message back, with content, so assertions can inspect every connector. */
     Message fetchMessage(String channelId, long messageId) throws ClientException {
         MessageFilter filter = new MessageFilter();

@@ -31,6 +31,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.commons.lang3.StringUtils;
 import org.xml.sax.InputSource;
 
 public class MirthXmlUtil {
@@ -118,6 +119,16 @@ public class MirthXmlUtil {
         return input;
     }
 
+    /**
+     * Why a DOCTYPE was refused, in terms an operator can act on. The parser only says
+     * {@code DOCTYPE is disallowed when the feature "..." set to true}, which does not say that
+     * this is a deliberate security control or that it is new in 4.6.
+     */
+    public static final String DOCTYPE_REFUSED = "This XML declared a DOCTYPE. DOCTYPE declarations are refused because they enable XML external entity (XXE) attacks (CVE-2026-78224, CVE-2026-82578). Remove the DOCTYPE declaration and resubmit.";
+
+    /** The parser's own wording for the refusal, which is all we get to recognise it by. */
+    private static final String DOCTYPE_DISALLOWED = "DOCTYPE is disallowed";
+
     /** Returns a {@link Source} for XML from an untrusted origin. */
     public static Source getSecureSource(Reader reader) throws Exception {
         // Use newDefaultInstance to avoid whatever is on the classpath that might
@@ -128,6 +139,25 @@ public class MirthXmlUtil {
         factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
 
         return new SAXSource(factory.newSAXParser().getXMLReader(), new InputSource(reader));
+    }
+
+    /** True if {@code throwable}, or anything that caused it, is a refused DOCTYPE declaration. */
+    public static boolean isDoctypeRefusal(Throwable throwable) {
+        for (Throwable cause = throwable; cause != null; cause = cause.getCause() == cause ? null : cause.getCause()) {
+            if (StringUtils.contains(cause.getMessage(), DOCTYPE_DISALLOWED) || StringUtils.contains(cause.getMessage(), DOCTYPE_REFUSED)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Prefixes {@code message} with {@link #DOCTYPE_REFUSED} when the failure was a refused
+     * DOCTYPE, so the reason survives however the exception was wrapped on its way here.
+     */
+    public static String explainDoctypeRefusal(String message, Throwable throwable) {
+        return isDoctypeRefusal(throwable) ? DOCTYPE_REFUSED + " " + message : message;
     }
 
     public static String decode(String entity) {

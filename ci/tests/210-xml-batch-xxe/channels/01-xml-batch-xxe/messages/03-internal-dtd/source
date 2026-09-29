@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<!DOCTYPE Batch [ <!ENTITY site "CLINIC-A"> ]>
+<Batch>
+    <Message>&site;</Message>
+    <Message>bravo</Message>
+</Batch>

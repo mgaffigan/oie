@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -38,6 +40,7 @@ import com.mirth.connect.donkey.server.event.DeployedStateEvent;
 import com.mirth.connect.donkey.server.message.batch.BatchAdaptor;
 import com.mirth.connect.donkey.server.message.batch.BatchAdaptorFactory;
 import com.mirth.connect.donkey.server.message.batch.BatchMessageException;
+import com.mirth.connect.donkey.server.message.batch.BatchMessageReader;
 import com.mirth.connect.donkey.server.message.batch.ResponseHandler;
 import com.mirth.connect.donkey.server.message.batch.SimpleResponseHandler;
 
@@ -290,10 +293,16 @@ public abstract class SourceConnector extends Connector {
                     finishDispatch(dispatchResult);
                 }
             }
+        } catch (BatchMessageException e) {
+            // Leave a record of what arrived, then let the caller handle the failure as before.
+            persistRefusedBatch(batchRawMessage, destinationMetaDataIds, e);
+            throw e;
         } finally {
             try {
-                // Cleanup any resources used by the batch adaptor
-                batchAdaptor.cleanup();
+                // Cleanup any resources used by the batch adaptor. It is null if we never got one.
+                if (batchAdaptor != null) {
+                    batchAdaptor.cleanup();
+                }
             } finally {
                 // Finish the batch
                 batchAdaptorFactory.finishBatch();
@@ -301,6 +310,49 @@ public abstract class SourceConnector extends Connector {
         }
 
         return messagesExist;
+    }
+
+    /**
+     * Stores a batch the channel could not read as a single message in ERROR, so it is visible on
+     * the dashboard and queryable rather than vanishing with only a server log line. Best effort:
+     * a failure here must never replace the error that caused it.
+     */
+    private void persistRefusedBatch(BatchRawMessage batchRawMessage, Collection<Integer> destinationMetaDataIds, BatchMessageException cause) {
+        try {
+            String rawData = null;
+
+            if (batchRawMessage.getBatchMessageSource() instanceof BatchMessageReader) {
+                rawData = ((BatchMessageReader) batchRawMessage.getBatchMessageSource()).getMessage();
+            }
+
+            if (rawData == null) {
+                // A streaming source has already been consumed, so the payload is not recoverable.
+                rawData = "";
+            }
+
+            RawMessage rawMessage = new RawMessage(rawData, destinationMetaDataIds, new HashMap<String, Object>(batchRawMessage.getSourceMap()));
+
+            DispatchResult dispatchResult = null;
+            try {
+                dispatchResult = channel.dispatchRawMessage(rawMessage, true, buildBatchProcessingError(cause));
+            } finally {
+                // Releases the channel's process lock, which dispatchRawMessage acquired.
+                finishDispatch(dispatchResult);
+            }
+        } catch (Throwable t) {
+            logger.error("Unable to store the refused batch for channel " + channel.getName() + " (" + channel.getChannelId() + ").", t);
+        }
+    }
+
+    /** Mirrors the shape the server's ErrorMessageBuilder produces, which donkey cannot reach. */
+    private static String buildBatchProcessingError(BatchMessageException cause) {
+        StringBuilder builder = new StringBuilder("Batch error");
+
+        if (StringUtils.isNotBlank(cause.getMessage())) {
+            builder.append(System.lineSeparator()).append("ERROR MESSAGE: ").append(cause.getMessage());
+        }
+
+        return builder.append(System.lineSeparator()).append(ExceptionUtils.getStackTrace(cause)).toString();
     }
 
     /**

@@ -38,6 +38,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import com.mirth.connect.donkey.model.message.BatchRawMessage;
 import com.mirth.connect.donkey.server.channel.SourceConnector;
@@ -58,6 +59,7 @@ import com.mirth.connect.server.util.javascript.JavaScriptScopeUtil;
 import com.mirth.connect.server.util.javascript.JavaScriptTask;
 import com.mirth.connect.server.util.javascript.JavaScriptUtil;
 import com.mirth.connect.server.util.javascript.MirthContextFactory;
+import com.mirth.connect.util.MirthXmlUtil;
 
 public class XMLBatchAdaptor extends DebuggableBatchAdaptor  {
     private Logger logger = LogManager.getLogger(this.getClass());
@@ -133,7 +135,14 @@ public class XMLBatchAdaptor extends DebuggableBatchAdaptor  {
                 // Parse the XML securely to prevent XXE
                 DocumentBuilderFactory documentBuilderFactory = DocumentSerializer.getSecureDocumentBuilderFactory();
                 documentBuilderFactory.setNamespaceAware(true);
-                Document document = documentBuilderFactory.newDocumentBuilder().parse(new InputSource(bufferedReader));
+
+                Document document;
+                try {
+                    document = documentBuilderFactory.newDocumentBuilder().parse(new InputSource(bufferedReader));
+                } catch (SAXException e) {
+                    // The parser reports a refused DOCTYPE as its own feature flag; say what it means.
+                    throw new BatchMessageException(MirthXmlUtil.explainDoctypeRefusal("Unable to parse the XML batch: " + e.getMessage(), e), e);
+                }
 
                 nodeList = (NodeList) xpath.evaluate(query.toString(), document, XPathConstants.NODESET);
             }

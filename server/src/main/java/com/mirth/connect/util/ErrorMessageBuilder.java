@@ -48,6 +48,15 @@ public class ErrorMessageBuilder {
             builder.append(customMessage);
         }
 
+        /*
+         * A refused DOCTYPE otherwise reaches the operator only as the parser's own wording, buried
+         * in the stack trace below, which does not say that this is a deliberate security control.
+         */
+        if (MirthXmlUtil.isDoctypeRefusal(e)) {
+            builder.append(LINE_SEPARATOR);
+            builder.append(MirthXmlUtil.DOCTYPE_REFUSED);
+        }
+
         if (StringUtils.isNotBlank(stackTrace)) {
             builder.append(LINE_SEPARATOR);
             builder.append(stackTrace);

@@ -1247,6 +1247,16 @@ public class Channel implements Runnable {
     }
 
     protected DispatchResult dispatchRawMessage(RawMessage rawMessage, boolean batch) throws ChannelException {
+        return dispatchRawMessage(rawMessage, batch, null);
+    }
+
+    /**
+     * @param rejectionError
+     *            when set, the payload is recorded as a message in ERROR carrying this error rather
+     *            than being processed. Used for a payload the channel refused before it could be
+     *            read, which would otherwise leave no trace of what arrived.
+     */
+    protected DispatchResult dispatchRawMessage(RawMessage rawMessage, boolean batch, String rejectionError) throws ChannelException {
         // Allow messages to continue processing while the channel is stopping if they are part of an existing batch
         if ((currentState == DeployedState.STOPPING && !batch) || currentState == DeployedState.STOPPED) {
             throw new ChannelException(true);
@@ -1291,7 +1301,8 @@ public class Channel implements Runnable {
                 ConnectorMessage sourceMessage = createAndStoreSourceMessage(dao, rawMessage);
                 ThreadUtils.checkInterruptedStatus();
 
-                if (sourceConnector.isRespondAfterProcessing()) {
+                // A rejected payload is errored here and now; queueing it would only defer the error.
+                if (sourceConnector.isRespondAfterProcessing() || rejectionError != null) {
                     dao.commit(storageSettings.isRawDurable());
                     commitSuccess = true;
                     persistedMessageId = sourceMessage.getMessageId();
@@ -1299,7 +1310,7 @@ public class Channel implements Runnable {
 
                     markDeletedQueuedMessages(rawMessage, persistedMessageId);
 
-                    processedMessage = process(sourceMessage, false);
+                    processedMessage = process(sourceMessage, false, rejectionError);
                 } else {
                     // Block other threads from adding to the source queue until both the current commit and queue addition finishes
                     synchronized (sourceQueue) {
@@ -1613,6 +1624,15 @@ public class Channel implements Runnable {
      * @throws InterruptedException
      */
     protected Message process(ConnectorMessage sourceMessage, boolean markAsProcessed) throws InterruptedException {
+        return process(sourceMessage, markAsProcessed, null);
+    }
+
+    /**
+     * @param rejectionError
+     *            when set, the message is stored in ERROR with this error instead of being
+     *            pre-processed and transformed.
+     */
+    protected Message process(ConnectorMessage sourceMessage, boolean markAsProcessed, String rejectionError) throws InterruptedException {
         ThreadUtils.checkInterruptedStatus();
         long messageId = sourceMessage.getMessageId();
 
@@ -1633,11 +1653,21 @@ public class Channel implements Runnable {
 
         ThreadUtils.checkInterruptedStatus();
 
-        try {
-            processedRawContent = preProcessor.doPreProcess(sourceMessage);
-        } catch (DonkeyException e) {
+        if (rejectionError != null) {
+            /*
+             * The payload was refused before it could be read, so there is nothing to pre-process.
+             * Recording it in ERROR is what gives an operator a message to find; the caller still
+             * gets the exception, so the connector's own error handling is unchanged.
+             */
             sourceMessage.setStatus(Status.ERROR);
-            sourceMessage.setProcessingError(e.getFormattedError());
+            sourceMessage.setProcessingError(rejectionError);
+        } else {
+            try {
+                processedRawContent = preProcessor.doPreProcess(sourceMessage);
+            } catch (DonkeyException e) {
+                sourceMessage.setStatus(Status.ERROR);
+                sourceMessage.setProcessingError(e.getFormattedError());
+            }
         }
 
         /*
