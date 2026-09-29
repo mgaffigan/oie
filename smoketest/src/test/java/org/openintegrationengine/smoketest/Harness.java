@@ -13,6 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assumptions;
 
 import com.mirth.connect.client.core.ClientException;
@@ -130,16 +131,70 @@ public final class Harness {
     public static void runRejectedMessage(String channelId, String base, boolean hasSourceMap) throws Exception {
         String source = resource(base + "/source");
         Map<String, Object> sourceMap = sourceMap(base, hasSourceMap);
+        String expectedError = resource(base + "/source_rejected").trim();
+        // Earlier fixtures in this channel have already stored messages; only ours can satisfy the
+        // assertion below, so remember where they end.
+        long lastExistingMessageId = lastMessageId(channelId);
 
         List<Long> messageIds;
         try {
             messageIds = server().submitMessage(channelId, source, sourceMap);
         } catch (ClientException refused) {
+            if (!expectedError.isEmpty()) {
+                assertRefusalWasRecorded(channelId, base, expectedError, lastExistingMessageId);
+            }
             return;
         }
 
         throw new AssertionError(base + " failed: expected the server to reject the payload, but it was accepted"
                 + " and produced message(s) " + messageIds + "\n\n" + describe(fetchMessages(channelId, messageIds)));
+    }
+
+    /**
+     * A refused payload still has to leave a message an operator can find, explaining why. The
+     * refusal reaches the client only as a status line, so the reason lives on the stored message.
+     */
+    private static void assertRefusalWasRecorded(String channelId, String base, String expectedError,
+            long lastExistingMessageId) throws Exception {
+        long deadline = System.nanoTime() + HarnessConfig.TIMEOUT.toNanos();
+        List<Message> messages = List.of();
+
+        while (System.nanoTime() < deadline) {
+            messages = messagesAfter(channelId, lastExistingMessageId);
+            if (!messages.isEmpty() && messages.stream().allMatch(Harness::isTerminal)) {
+                break;
+            }
+            Thread.sleep(500);
+        }
+
+        if (messages.isEmpty()) {
+            throw new AssertionError(base + " failed: the server refused the payload but stored no message"
+                    + " explaining why. A refused payload must still be visible.");
+        }
+
+        for (Message message : messages) {
+            ConnectorMessage source = message.getConnectorMessages().get(0);
+            if (source != null && source.getStatus() == Status.ERROR
+                    && StringUtils.contains(source.getProcessingError(), expectedError)) {
+                return;
+            }
+        }
+
+        throw new AssertionError(base + " failed: no stored message reported the refusal as an error containing "
+                + quoted(expectedError) + "\n\n" + describe(messages));
+    }
+
+    private static String quoted(String value) {
+        return "\"" + value + "\"";
+    }
+
+    /** The highest message id the channel holds, or 0 when it holds none. */
+    private static long lastMessageId(String channelId) throws Exception {
+        return server().fetchMessages(channelId).stream().mapToLong(Message::getMessageId).max().orElse(0L);
+    }
+
+    private static List<Message> messagesAfter(String channelId, long messageId) throws Exception {
+        return server().fetchMessages(channelId).stream().filter(message -> message.getMessageId() > messageId).toList();
     }
 
     /** Reads a staged fixture from the classpath. */

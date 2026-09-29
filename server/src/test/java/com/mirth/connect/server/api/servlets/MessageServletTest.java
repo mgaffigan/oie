@@ -10,6 +10,7 @@
 package com.mirth.connect.server.api.servlets;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -29,6 +30,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -51,9 +53,11 @@ import org.mockito.invocation.InvocationOnMock;
 
 import com.mirth.connect.client.core.Operation;
 import com.mirth.connect.client.core.api.MirthApiException;
+import com.mirth.connect.donkey.model.message.RawMessage;
 import com.mirth.connect.donkey.server.channel.ChannelException;
 import com.mirth.connect.donkey.server.channel.DispatchResult;
 import com.mirth.connect.donkey.server.message.batch.BatchMessageException;
+import com.mirth.connect.donkey.server.message.batch.ResponseHandler;
 import com.mirth.connect.model.LoginStatus;
 import com.mirth.connect.model.LoginStatus.Status;
 import com.mirth.connect.model.User;
@@ -86,6 +90,19 @@ public class MessageServletTest {
         when(engineController.dispatchRawMessage(eq("channel2"), any(), anyBoolean(), anyBoolean())).thenReturn(result2);
         when(engineController.dispatchRawMessage(eq("channelException"), any(), anyBoolean(), anyBoolean())).thenThrow(new ChannelException(false));
         when(engineController.dispatchRawMessage(eq("batchMessageException"), any(), anyBoolean(), anyBoolean())).thenThrow(new BatchMessageException());
+
+        // Batch endpoint. Both shutdown states refuse the batch by throwing; an accepted batch
+        // reports each message it produced through the response handler.
+        when(engineController.dispatchRawMessage(eq("batchStopping"), any(), anyBoolean(), anyBoolean(), any())).thenThrow(new BatchMessageException("Source connector is stopping"));
+        when(engineController.dispatchRawMessage(eq("batchShuttingDown"), any(), anyBoolean(), anyBoolean(), any())).thenThrow(new BatchMessageException("Batch processing is shutting down"));
+        when(engineController.dispatchRawMessage(eq("batchEmpty"), any(), anyBoolean(), anyBoolean(), any())).thenReturn(null);
+        when(engineController.dispatchRawMessage(eq("batchTwoMessages"), any(), anyBoolean(), anyBoolean(), any())).thenAnswer((InvocationOnMock invocation) -> {
+            ResponseHandler responseHandler = invocation.getArgument(4);
+            responseHandler.setDispatchResult(new MessageServletTest().new TestDispatchResult(7L));
+            responseHandler.setDispatchResult(new MessageServletTest().new TestDispatchResult(8L));
+            return responseHandler.getResultForResponse();
+        });
+
         when(controllerFactory.createEngineController()).thenReturn(engineController);
 
         UserController userController = mock(UserController.class);
@@ -147,6 +164,43 @@ public class MessageServletTest {
 
         messageId = servlet.processMessage("batchMessageException", "test data", new HashSet<Integer>(), new HashSet<String>(), false, false, null);
         assertNull(messageId);
+        assertEquals(500, context.getProperty(ResponseCodeFilter.RESPONSE_CODE_PROPERTY));
+    }
+
+    @Test
+    public void testProcessBatchMessageReturnsEveryMessageId() {
+        MessageServlet servlet = new MessageServlet(request, context, sc, controllerFactory);
+
+        List<Long> messageIds = servlet.processBatchMessage("batchTwoMessages", new RawMessage("test data"));
+        assertEquals(Arrays.asList(7L, 8L), messageIds);
+        assertEquals(201, context.getProperty(ResponseCodeFilter.RESPONSE_CODE_PROPERTY));
+    }
+
+    /**
+     * An accepted batch that happened to contain no messages is a success, and has to stay
+     * distinguishable from one the server refused.
+     */
+    @Test
+    public void testProcessBatchMessageAcceptsAnEmptyBatch() {
+        MessageServlet servlet = new MessageServlet(request, context, sc, controllerFactory);
+
+        List<Long> messageIds = servlet.processBatchMessage("batchEmpty", new RawMessage("test data"));
+        assertTrue(String.valueOf(messageIds), messageIds.isEmpty());
+        assertEquals(201, context.getProperty(ResponseCodeFilter.RESPONSE_CODE_PROPERTY));
+    }
+
+    /**
+     * Both shutdown states have to be reported as a failure. Answering 201 with an empty list
+     * would let a caller record the dropped submission as delivered and never retry it.
+     */
+    @Test
+    public void testProcessBatchMessageReportsARefusedBatchAsAFailure() {
+        MessageServlet servlet = new MessageServlet(request, context, sc, controllerFactory);
+
+        assertNull(servlet.processBatchMessage("batchStopping", new RawMessage("test data")));
+        assertEquals(500, context.getProperty(ResponseCodeFilter.RESPONSE_CODE_PROPERTY));
+
+        assertNull(servlet.processBatchMessage("batchShuttingDown", new RawMessage("test data")));
         assertEquals(500, context.getProperty(ResponseCodeFilter.RESPONSE_CODE_PROPERTY));
     }
 

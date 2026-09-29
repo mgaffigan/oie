@@ -29,6 +29,7 @@ import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
 
+import com.mirth.connect.util.MirthXmlUtil;
 import com.mirth.connect.donkey.model.message.ConnectorMessage;
 import com.mirth.connect.util.JavaScriptTestUtil;
 
@@ -79,6 +80,9 @@ public class XsltStepTest {
             fail("expected the DOCTYPE to be refused");
         } catch (Exception e) {
             assertTrue(String.valueOf(e), String.valueOf(e).contains("DOCTYPE is disallowed"));
+            // The operator-facing wording is added by ErrorMessageBuilder, which this test bypasses;
+            // see ErrorMessageBuilderTest.doctypeRefusalIsExplained.
+            assertTrue(String.valueOf(e), MirthXmlUtil.isDoctypeRefusal(e));
         }
     }
 

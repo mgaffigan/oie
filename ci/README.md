@@ -41,7 +41,7 @@ the payload sent to the channel. These files describe the submission:
 | --- | --- |
 | `source` | The payload sent to the channel. Required. |
 | `source_sourcemap.yml` | Source map supplied with `source` |
-| `source_rejected` | The server must refuse the submission. |
+| `source_rejected` | The server must refuse the submission. When the file is not empty, its text must also appear in the processing error of a message the server stored in ERROR, so a refusal still leaves an operator something to find. |
 
 The rest are optional assertions against the message the channel produced:
 
@@ -82,7 +82,7 @@ expected message.
 
 ```text
 messages/
-  03-two-messages/
+  02-two-messages/
     source
     01/
       source_raw
