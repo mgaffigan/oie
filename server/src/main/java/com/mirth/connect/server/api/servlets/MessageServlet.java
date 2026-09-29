@@ -142,10 +142,16 @@ public class MessageServlet extends MirthServlet implements MessageServletInterf
         try {
             engineController.dispatchRawMessage(channelId, rawMessage, true, true, responseHandler);
 
+            /*
+             * An empty list here means the batch was accepted and contained no messages, which is
+             * not a failure. A batch that was refused never reaches this point: dispatchBatchMessage
+             * throws for every shutdown state.
+             */
             containerRequestContext.setProperty(ResponseCodeFilter.RESPONSE_CODE_PROPERTY, Response.Status.CREATED.getStatusCode());
             return responseHandler.getMessageIds();
         } catch (ChannelException e) {
-            // Do nothing. An error should have been logged.
+            // An error should have been logged, but say which channel refused the batch.
+            logger.debug("Channel " + channelId + " did not accept the batch message.", e);
         } catch (BatchMessageException e) {
             logger.error("Error processing batch message for channel " + channelId, e);
         }

@@ -199,9 +199,13 @@ public abstract class SourceConnector extends Connector {
     }
 
     public Boolean dispatchBatchMessage(BatchRawMessage batchRawMessage, ResponseHandler responseHandler, Collection<Integer> destinationMetaDataIds) throws BatchMessageException {
-        // Prevent new batches from starting if the connector is stopping
+        // Refuse new batches if the connector is stopping. This has to be an error rather than a
+        // quiet return: a caller cannot tell an empty batch from one we never accepted, and would
+        // otherwise treat the dropped submission as a success and never retry it.
         if (getCurrentState() == DeployedState.STOPPING) {
-            return null;
+            BatchMessageException e = new BatchMessageException("Source connector is stopping for channel " + channel.getName() + " (" + channel.getChannelId() + ") and did not accept the batch.");
+            logger.warn(e.getMessage(), e);
+            throw e;
         }
 
         // Throw an error if a new batch arrives when the connector is stopped
@@ -218,76 +222,81 @@ public abstract class SourceConnector extends Connector {
 
         BatchAdaptor batchAdaptor = null;
         boolean messagesExist = false;
-        // Attempt to start the batch. It will not start if the batch adaptor factory is in the process of being stopped
-        if (batchAdaptorFactory.startBatch()) {
-            try {
-                // Tell the response handler which response to store
-                responseHandler.setUseFirstResponse(batchAdaptorFactory.isUseFirstReponse());
+        // Attempt to start the batch. It will not start if the batch adaptor factory is in the process
+        // of being stopped, which is a refusal and not an empty batch.
+        if (!batchAdaptorFactory.startBatch()) {
+            BatchMessageException e = new BatchMessageException("Batch processing is shutting down for channel " + channel.getName() + " (" + channel.getChannelId() + ") and did not accept the batch.");
+            logger.warn(e.getMessage(), e);
+            throw e;
+        }
 
-                // Create a new adaptor for this batch
-                batchAdaptor = batchAdaptorFactory.createBatchAdaptor(batchRawMessage);
+        try {
+            // Tell the response handler which response to store
+            responseHandler.setUseFirstResponse(batchAdaptorFactory.isUseFirstReponse());
 
-                Long batchSet = null;
-                String message;
-                // Get the next message for this batch
-                while ((message = batchAdaptor.getMessage()) != null) {
-                    messagesExist = true;
-                    // Create a copy of the source map for this message
-                    Map<String, Object> sourceMap = new HashMap<String, Object>(batchRawMessage.getSourceMap());
+            // Create a new adaptor for this batch
+            batchAdaptor = batchAdaptorFactory.createBatchAdaptor(batchRawMessage);
 
-                    // Add the batchId to identify the message's position in the batch
-                    sourceMap.put(Constants.BATCH_SEQUENCE_ID_KEY, batchAdaptor.getBatchSequenceId());
+            Long batchSet = null;
+            String message;
+            // Get the next message for this batch
+            while ((message = batchAdaptor.getMessage()) != null) {
+                messagesExist = true;
+                // Create a copy of the source map for this message
+                Map<String, Object> sourceMap = new HashMap<String, Object>(batchRawMessage.getSourceMap());
 
-                    // Add the message Id of the first message in the batch
-                    if (batchSet != null) {
-                        sourceMap.put(Constants.BATCH_ID_KEY, batchSet);
-                    }
+                // Add the batchId to identify the message's position in the batch
+                sourceMap.put(Constants.BATCH_SEQUENCE_ID_KEY, batchAdaptor.getBatchSequenceId());
 
-                    if (batchAdaptor.isLookAhead()) {
-                        sourceMap.put(Constants.BATCH_COMPLETE_KEY, batchAdaptor.isBatchComplete());
-                    }
-
-                    // Create a new RawMessage to be dispatched
-                    RawMessage rawMessage = new RawMessage(message, destinationMetaDataIds, sourceMap, batchRawMessage.getAttachments());
-
-                    DispatchResult dispatchResult = null;
-                    try {
-                        // Dispatch the message
-                        dispatchResult = channel.dispatchRawMessage(rawMessage, true);
-                        // Set the dispatch result for this message into the response handler
-                        responseHandler.setDispatchResult(dispatchResult);
-
-                        // If this was the first message in the batch, keep track of the message Id
-                        if (batchAdaptor.getBatchSequenceId() == 1) {
-                            batchSet = dispatchResult.getMessageId();
-                        }
-
-                        // Clear attachments from the batch raw message
-                        batchRawMessage.setAttachments(null);
-
-                        try {
-                            // Allow the response handler to process the result
-                            responseHandler.responseProcess(batchAdaptor.getBatchSequenceId(), batchAdaptor.isBatchComplete());
-                        } catch (Exception e) {
-                            // Stop the entire batch if an exceptions occurs processing a response
-                            throw new BatchMessageException("Failed to process response for batch message at message " + batchAdaptor.getBatchSequenceId(), e);
-                        }
-                    } catch (ChannelException e) {
-                        // Call back to the response handler if a channel exception occurred. The message should not have been persisted
-                        responseHandler.responseError(e);
-                        throw new BatchMessageException("Failed to process batch message at message " + batchAdaptor.getBatchSequenceId(), e);
-                    } finally {
-                        finishDispatch(dispatchResult);
-                    }
+                // Add the message Id of the first message in the batch
+                if (batchSet != null) {
+                    sourceMap.put(Constants.BATCH_ID_KEY, batchSet);
                 }
-            } finally {
+
+                if (batchAdaptor.isLookAhead()) {
+                    sourceMap.put(Constants.BATCH_COMPLETE_KEY, batchAdaptor.isBatchComplete());
+                }
+
+                // Create a new RawMessage to be dispatched
+                RawMessage rawMessage = new RawMessage(message, destinationMetaDataIds, sourceMap, batchRawMessage.getAttachments());
+
+                DispatchResult dispatchResult = null;
                 try {
-                    // Cleanup any resources used by the batch adaptor
-                    batchAdaptor.cleanup();
+                    // Dispatch the message
+                    dispatchResult = channel.dispatchRawMessage(rawMessage, true);
+                    // Set the dispatch result for this message into the response handler
+                    responseHandler.setDispatchResult(dispatchResult);
+
+                    // If this was the first message in the batch, keep track of the message Id
+                    if (batchAdaptor.getBatchSequenceId() == 1) {
+                        batchSet = dispatchResult.getMessageId();
+                    }
+
+                    // Clear attachments from the batch raw message
+                    batchRawMessage.setAttachments(null);
+
+                    try {
+                        // Allow the response handler to process the result
+                        responseHandler.responseProcess(batchAdaptor.getBatchSequenceId(), batchAdaptor.isBatchComplete());
+                    } catch (Exception e) {
+                        // Stop the entire batch if an exceptions occurs processing a response
+                        throw new BatchMessageException("Failed to process response for batch message at message " + batchAdaptor.getBatchSequenceId(), e);
+                    }
+                } catch (ChannelException e) {
+                    // Call back to the response handler if a channel exception occurred. The message should not have been persisted
+                    responseHandler.responseError(e);
+                    throw new BatchMessageException("Failed to process batch message at message " + batchAdaptor.getBatchSequenceId(), e);
                 } finally {
-                    // Finish the batch
-                    batchAdaptorFactory.finishBatch();
+                    finishDispatch(dispatchResult);
                 }
+            }
+        } finally {
+            try {
+                // Cleanup any resources used by the batch adaptor
+                batchAdaptor.cleanup();
+            } finally {
+                // Finish the batch
+                batchAdaptorFactory.finishBatch();
             }
         }
 
