@@ -49,31 +49,7 @@ public class DICOMMessageUtil {
     private static Logger logger = LogManager.getLogger(DICOMMessageUtil.class);
 
     public static String getDICOMRawData(ImmutableConnectorMessage message) {
-        String mergedMessage = null;
-
-        List<Attachment> attachments = MessageController.getInstance().getMessageAttachment(message.getChannelId(), message.getMessageId(), false);
-
-        if (attachments != null && attachments.size() > 0) {
-            try {
-                if (attachments.get(0).getType().equals("DICOM")) {
-                    byte[] mergedMessageBytes = mergeHeaderAttachments(message, attachments);
-
-                    // Replace the raw binary with the encoded binary to free up the memory
-                    mergedMessageBytes = Base64Util.encodeBase64(mergedMessageBytes);
-
-                    mergedMessage = StringUtils.newStringUsAscii(mergedMessageBytes);
-                } else {
-                    mergedMessage = message.getRaw().getContent();
-                }
-            } catch (Exception e) {
-                logger.error("Error merging DICOM data", e);
-                mergedMessage = message.getRaw().getContent();
-            }
-        } else {
-            mergedMessage = message.getRaw().getContent();
-        }
-
-        return mergedMessage;
+        return MessageAttachmentUtil.getDICOMRawData(message);
     }
 
     public static String getDICOMRawData(ConnectorMessage message) {
@@ -81,26 +57,7 @@ public class DICOMMessageUtil {
     }
 
     public static byte[] getDICOMRawBytes(ImmutableConnectorMessage message) {
-        byte[] mergedMessage = null;
-
-        List<Attachment> attachments = MessageController.getInstance().getMessageAttachment(message.getChannelId(), message.getMessageId(), false);
-
-        if (attachments != null && attachments.size() > 0) {
-            try {
-                if (attachments.get(0).getType().equals("DICOM")) {
-                    mergedMessage = mergeHeaderAttachments(message, attachments);
-                } else {
-                    mergedMessage = Base64.decodeBase64(StringUtils.getBytesUsAscii(message.getRaw().getContent()));
-                }
-            } catch (Exception e) {
-                logger.error("Error merging DICOM data", e);
-                mergedMessage = Base64.decodeBase64(StringUtils.getBytesUsAscii(message.getRaw().getContent()));
-            }
-        } else {
-            mergedMessage = Base64.decodeBase64(StringUtils.getBytesUsAscii(message.getRaw().getContent()));
-        }
-
-        return mergedMessage;
+        return MessageAttachmentUtil.getDICOMRawBytes(message);
     }
 
     public static byte[] getDICOMRawBytes(ConnectorMessage message) {
