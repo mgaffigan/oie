@@ -1,0 +1,24 @@
+// plugins/<name>/server: server-side classes (extension jar <name>-server.jar), their tests.
+
+apply from: rootProject.file('gradle/plugin-base.gradle')
+
+dependencies {
+    compileOnly libs.bundles.server.main
+    testImplementation libs.bundles.server.test
+    // shared fixtures (TestUtils, ServletTestBase, ...)
+    testImplementation project(':server').sourceSets.test.output
+}
+
+tasks.named('jar') {
+    archiveFileName = "${pluginName}-server.jar"
+}
+
+tasks.named('compileTestJava') {
+    options.compilerArgs += project(':server').tasks.named('compileTestJava').get().options.compilerArgs
+}
+
+tasks.named('test') {
+    jvmArgs project(':server').tasks.named('test').get().jvmArgs
+    // fixtures such as tests/filereader are addressed relative to the server directory
+    workingDir = project(':server').projectDir
+}

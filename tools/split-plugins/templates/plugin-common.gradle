@@ -1,0 +1,13 @@
+// plugins/<name>/common: classes shared by the server and the Administrator
+// (extension jar <name>-shared.jar). Must not depend on the plugin's server or client tier.
+
+apply from: rootProject.file('gradle/plugin-base.gradle')
+
+dependencies {
+    compileOnly libs.bundles.server.main
+    compileOnly libs.bundles.client.main
+}
+
+tasks.named('jar') {
+    archiveFileName = "${pluginName}-shared.jar"
+}

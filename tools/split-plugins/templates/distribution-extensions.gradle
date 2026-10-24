@@ -1,0 +1,49 @@
+// ---------------------------------------------------------------------
+// Extensions: plugins/<name> -> build/extensions/<name>
+// ---------------------------------------------------------------------
+
+// One directory per plugin: descriptor xml, <name>-{shared,server,client}.jar for the
+// tiers that exist, lib/ and any userutil sources.
+def extensionTasks = []
+rootProject.file('plugins').listFiles().sort().findAll { it.directory }.each { pluginDir ->
+    def name = pluginDir.name
+    def tier = { String t -> rootProject.findProject(":plugins:${name}:${t}") }
+    if (!['common', 'server', 'client'].any { tier(it) }) {
+        return
+    }
+    extensionTasks << tasks.register("ext_${name.replace('-', '_')}", Sync) {
+        into "build/extensions/${name}"
+        // The replaced version is part of the output; without this input a
+        // version bump would leave stale @mirthversion XML on disk.
+        inputs.property 'version', projectVersion
+        from(pluginDir) { include '*.xml' }
+        ['common', 'server', 'client'].each { t ->
+            if (tier(t)) {
+                from(tier(t).tasks.named('jar'))
+            }
+        }
+        ['common', 'server', 'client'].each { t ->
+            if (tier(t)) {
+                into('lib') { from(tier(t).tasks.named('extensionLibs')) }
+            }
+        }
+        if (tier('server')) {
+            def userutil = tier('server').tasks.findByName('userutilSourcesJar')
+            if (userutil) {
+                into('src') { from(userutil) }
+            }
+        }
+        // In-place token replace after copying, like the Ant <replace>
+        // task; a content filter would normalize line endings.
+        doLast {
+            ant.replace(dir: "build/extensions/${name}", includes: '*.xml',
+                    token: '@mirthversion', value: projectVersion)
+        }
+    }
+}
+
+def createExtensions = tasks.register('createExtensions') {
+    description = 'Assembles every plugin into build/extensions.'
+    dependsOn extensionTasks
+}
+

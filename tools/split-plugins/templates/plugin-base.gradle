@@ -1,0 +1,38 @@
+// Conventions shared by every plugin tier (plugins/<name>/{common,server,client}).
+// A tier is a plain Java project: it compiles against core, which it can see but
+// which cannot see it, and builds a single jar. The distribution project assembles
+// the jars into extensions/<name>.
+
+evaluationDependsOn(':server')
+
+ext.pluginName = project.parent.name
+
+// The tiers of different plugins share project names; a group per plugin keeps their module ids distinct
+// (otherwise Gradle conflict resolution maps :plugins:a:server and :plugins:b:server onto one project).
+group = "${group}.plugins.${pluginName}"
+
+dependencies {
+    // model, client-core, util and server classes, plus the donkey and vendored jars they ship with
+    compileOnly project(':server').sourceSets.main.output
+    compileOnly fileTree(dir: rootProject.file('server/lib'), include: '**/*.jar')
+}
+
+// compileOnly is not on the test classpath by default
+configurations.testImplementation.extendsFrom configurations.compileOnly
+
+// The extension's libraries are carried by one tier (the server tier, or the only one there is):
+// Maven artifacts placed by gradle/vendored-layout.json ('server-extensions') and jars with no
+// Maven coordinates vendored in that tier's lib/. The other tiers are empty here.
+def libPrefix = "extensions/${pluginName}"
+def libPlacements = rootProject.stagedArtifacts(configurations.runtimeClasspath, 'server-extensions',
+        { dir -> dir == libPrefix || dir.startsWith(libPrefix + '/') })
+
+tasks.register('extensionLibs', Copy) {
+    description = 'Collects the libraries shipped in extensions/<name>/lib.'
+    from 'lib'
+    from(files({ libPlacements().keySet() })) {
+        eachFile { it.path = libPlacements()[it.file].substring(libPrefix.length() + 1) }
+        includeEmptyDirs = false
+    }
+    into layout.buildDirectory.dir('extension-lib')
+}
