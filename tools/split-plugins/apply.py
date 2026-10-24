@@ -83,12 +83,13 @@ def write_plugin_builds(repo, plan):
             if body:
                 text += '\ndependencies {\n' + ''.join(f'    {l}\n' for l in body) + '}\n'
             if tier == 'server':
-                for e_name, root, pkgdir, own in plan.userutil:
-                    if e_name == ext.name and own:
-                        text += (f"\n// userutil sources are distributed next to the extension for the code-template editor\n"
-                                 f"tasks.register('userutilSourcesJar', Jar) {{\n"
-                                 f"    archiveFileName = '{ext.name}-userutil-sources.jar'\n"
-                                 f"    from('src/main/java') {{ include '{pkgdir}/**' }}\n}}\n")
+                pkgdirs = [pkgdir for e_name, _, pkgdir in plan.userutil if e_name == ext.name]
+                if pkgdirs:
+                    text += (f"\n// user API sources, shipped next to the extension for the Administrator's code template editor\n"
+                             f"tasks.register('userutilSourcesJar', Jar) {{\n"
+                             f"    archiveFileName = '{ext.name}-userutil-sources.jar'\n"
+                             f"    from('src/main/java') {{\n"
+                             + ''.join(f"        include '{d}/**'\n" for d in pkgdirs) + "    }\n}\n")
             if not {'common': ext.shared, 'server': ext.server, 'client': ext.client_pkg}[tier]:
                 text += "\n// the extension has no " + tier + " jar; this tier only holds tests\ntasks.named('jar') { enabled = false }\n"
             text += _cycle_snippet(plan, ext, tier)
@@ -123,6 +124,23 @@ def _cycle_snippet(plan, ext, tier):
                 f"    from(project(':plugins:{host[0]}:{host[1]}').sourceSets.main.output) {{\n"
                 + ''.join(f"        include '{p}/**'\n" for p in pkgs(node)) + "    }\n}\n")
     return ''
+
+
+def register_userutil_sources(repo, plan):
+    """Descriptors name the jars the Administrator loads; add each plugin's user API sources."""
+    for ext in dict.fromkeys(e for e, _, _ in plan.userutil):
+        line_name = f'src/{ext}-userutil-sources.jar'
+        files = sorted((repo / 'plugins' / ext).glob('*.xml'))
+        if any(line_name in be.read(f) for f in files):
+            continue
+        target = next((f for f in files if f.name == 'plugin.xml'), None) or next((f for f in files if f.name == 'source.xml'), files[0])
+        text = be.read(target)
+        m = re.search(r'^([ \t]*)<library type="CLIENT" path="' + re.escape(ext) + r'-client\.jar" />([ \t]*\r?\n)', text, re.M)
+        if not m:
+            raise SystemExit(f'{target}: no client library line to register {line_name} after')
+        eol = m.group(2)
+        new = f'{m.group(1)}<library type="CLIENT" path="{line_name}" />{eol}'
+        be.write(target, text[:m.end()] + new + text[m.end():])
 
 
 def write_settings(repo):
@@ -245,18 +263,13 @@ def _core_test_deps(plan):
     return out
 
 
-def _distribution_userutil_jar(plan, block):
-    """userutil-sources.jar feeds the code template editor: core's userutil packages plus the
-    classes that live in plugins under the same package names."""
-    block = be.replace(block, "destinationDirectory = file('setup/client-lib')", "destinationDirectory = layout.buildDirectory.dir('libs')") \
-        if "destinationDirectory = file('setup/client-lib')" in block else block
+def _distribution_userutil_jar(block):
+    """userutil-sources.jar feeds the Administrator's code template editor with core's user API; the
+    plugins ship their own (see write_plugin_builds)."""
+    if "destinationDirectory = file('setup/client-lib')" in block:
+        block = be.replace(block, "destinationDirectory = file('setup/client-lib')", "destinationDirectory = layout.buildDirectory.dir('libs')")
     block = be.replace(block, "    from('src/main/java') {", "    from(serverFile('src/main/java')) {")
-    extra = ''.join(f"    from(rootProject.file('{root}')) {{ include '{pkgdir}/**.java' }}\n"
-                    for _, root, pkgdir, own in plan.userutil if not own)
-    block = block.rstrip('\n')
-    assert block.endswith('}')
-    return ("// Sources of the user API, for the Administrator's code template editor\n"
-            + block[:-1] + ("    // classes that moved to plugins but keep their package\n" + extra if extra else '') + '}\n')
+    return "// Sources of core's user API, for the Administrator's code template editor\n" + block
 
 
 def _javadoc_libs(plan):
@@ -274,12 +287,12 @@ def _distribution(repo, plan, javadoc, stage, content_to_tests, derby, launcher,
 
     # javadoc: sources/classpath come from the server project, plugin userutil from plugins/
     # a userutil class may use the rest of its plugin (DICOMUtil -> DICOMConverter) and the plugin's jars
-    userutil_exts = list(dict.fromkeys(e for e, _, _, _ in plan.userutil))
+    userutil_exts = list(dict.fromkeys(e for e, _, _ in plan.userutil))
     roots = [f"rootProject.file('plugins/{e}/{t}/src/main/java')" for e in userutil_exts for t in ('common', 'server')
              if any(v.startswith(f'plugins/{e}/{t}/src/main/java/') for v in plan.moves.values())]
     plugin_libs = [f"rootProject.file('plugins/{e}/lib')" for e in userutil_exts if e in plan.vendored_libs]
-    pkgs = [pkgdir for _, _, pkgdir, _ in plan.userutil]
-    pkg_roots = [f"rootProject.file('{root}')" for _, root, _, _ in plan.userutil]
+    pkgs = [pkgdir for _, _, pkgdir in plan.userutil]
+    pkg_roots = [f"rootProject.file('{root}')" for _, root, _ in plan.userutil]
     javadoc = be.replace(javadoc, "def outDir = file('docs/javadocs/user-api')", "def outDir = file('build/javadocs/user-api')")
     javadoc = be.sub(javadoc, r"    inputs\.files\(fileTree\('src/main/java'\) \{\n(.*?)        include 'com/mirth/connect/plugins/httpauth/userutil/\*\*'\n    \}\)",
                      lambda m: "    inputs.files(fileTree(serverDir.file('src/main/java')) {\n" + m.group(1) + "    })\n"
@@ -360,7 +373,7 @@ def serverJars = ['serverJar', 'dbconfJar', 'cryptoJar', 'clientCoreJar'].collec
 
 '''
     # the launcher and userutil sources have their own destinations in the tree
-    out = head + _distribution_userutil_jar(plan, userutil_jar) + '\n' + ext_snippet + javadoc + '\n' + stage
+    out = head + _distribution_userutil_jar(userutil_jar) + '\n' + ext_snippet + javadoc + '\n' + stage
     out = be.replace(out, "        copy {\n            from rootProject.file('command/build/mirth-cli-launcher.jar')\n            into 'setup'\n        }\n",
                      "        copy {\n            from rootProject.file('command/build/mirth-cli-launcher.jar')\n            into 'setup'\n        }\n"
                      "        copy {\n            from project(':server').tasks.named('launcherJar')\n            into 'setup'\n        }\n")
@@ -460,6 +473,7 @@ def apply(repo, plan):
     move_files(repo, plan)
     delete_swagger(repo, plan)
     write_plugin_builds(repo, plan)
+    register_userutil_sources(repo, plan)
     write_settings(repo)
     rewrite_server(repo, plan)
     rewrite_client(repo, plan)

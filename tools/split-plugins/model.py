@@ -123,6 +123,7 @@ def load_extensions(root):
 # Classes that belong to a plugin although their package says otherwise. Core no longer
 # references them (see the commit that removes core references to plugins); they ship in
 # the plugin's jars, under the same package names so scripts and serialized data are unaffected.
+# Tests are listed too: a test belongs with its subject.
 OWNERSHIP_OVERRIDES = {
     'com/mirth/connect/server/attachments/dicom/DICOMAttachmentHandler': ('dicom', 'server'),
     'com/mirth/connect/server/attachments/dicom/DICOMAttachmentHandlerProvider': ('dicom', 'server'),
@@ -131,6 +132,9 @@ OWNERSHIP_OVERRIDES = {
     'com/mirth/connect/model/converters/DICOMConverter': ('dicom', 'common'),
     'com/mirth/connect/server/userutil/HTTPUtil': ('http', 'server'),
     'com/mirth/connect/server/userutil/DatabaseConnectionFactory': ('jdbc', 'server'),
+    # tests whose subject is a plugin class belong with it
+    'com/mirth/connect/userutil/HTTPUtilTest': ('http', 'server'),
+    'com/mirth/connect/connectors/ConnectorTests': ('js', 'server'),
 }
 
 @dataclass
@@ -170,7 +174,7 @@ def classify(root, exts):
                 rel = f.relative_to(base).as_posix()
                 e, _ = owner_of(rel, sub)
                 repo_rel = f.relative_to(root).as_posix()
-                override = OWNERSHIP_OVERRIDES.get(rel[:-5]) if module == 'server' and kind == 'main' else None
+                override = OWNERSHIP_OVERRIDES.get(rel[:-5]) if module == 'server' and kind in ('main', 'test') else None
                 if override:
                     sources.append(Source(repo_rel, kind, module, override[0], override[1], _fqcn(rel)))
                     continue

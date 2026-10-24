@@ -47,7 +47,10 @@ def render(plan, tiers):
 
     out += ['\n## Core tests that use plugins\n',
             'Core tests exercise plugin classes, either directly or through core code that names them (migrations, default\n'
-            'configuration, XStream documents), so `server` has a test-scope dependency on these. Main code is unaffected.\n\n']
+            'configuration, XStream documents), so `server` has a test-scope dependency on these. Main code is unaffected.\n'
+            'A test whose subject is a plugin class lives with the plugin (`model.OWNERSHIP_OVERRIDES`). These stay because the\n'
+            'subject is core and the plugin class is its input: the script builders need real step and rule types, the JSON and\n'
+            'XML serializers need real connector properties, and the shared fixtures (`TestUtils`, `TestServer`) wire up a VM channel.\n\n']
     out += [f'- `testImplementation :plugins:{e}:{t}`\n' for e, t in sorted(plan.core_test_deps)] or ['- none\n']
 
     out += ['\n## Other structural changes\n',
@@ -58,5 +61,6 @@ def render(plan, tiers):
             '  core class, only that it would fail to load in the Administrator.\n'
             '- Third-party libraries still come from the shared `server-main`/`client-main` bundles; only the libraries that\n'
             '  were already per extension (`server-extensions`) moved into the owning plugin.\n'
-            '- The javadoc for plugin userutil packages is built by `:distribution` from `plugins/<name>/server`.\n']
+            '- Plugins ship their own user API sources (`extensions/<name>/src/<name>-userutil-sources.jar`, registered in their\n'
+            '  descriptor); the javadoc for those packages is built by `:distribution` from `plugins/<name>`.\n']
     return ''.join(out)

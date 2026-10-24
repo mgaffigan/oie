@@ -32,7 +32,7 @@ class Plan:
     kept_vendored: dict = field(default_factory=dict)  # ext -> lib dir whose jars stay in server/lib/extensions
     foreign_libs: dict = field(default_factory=dict)   # (ext, tier) -> {'maven': {alias}, 'vendored': {ext}} owned by other plugins
     jar_packages: dict = field(default_factory=dict)   # ('maven', alias) | ('vendored', ext) -> packages
-    userutil: list = field(default_factory=list)       # (ext, source root, userutil package dir, in the plugin's own package)
+    userutil: list = field(default_factory=list)       # (ext, source root, userutil package dir) the plugin ships sources for
     violations: list = field(default_factory=list)
     problems: list = field(default_factory=list)
 
@@ -248,8 +248,7 @@ def _plan_moves(repo, plan, by_path, keep):
                'resource': 'src/main/resources', 'testresource': 'src/test/resources'}[s.kind]
         plan.moves[s.path] = f'plugins/{ext}/{tier}/{sub}/{rel}'
         if s.kind == 'main' and tier == 'server' and '/userutil/' in rel:
-            e = next(e for e in plan.exts if e.name == ext)
-            entry = (ext, f'plugins/{ext}/server/src/main/java', rel.split('/userutil/')[0] + '/userutil', rel.startswith(e.pkg + '/'))
+            entry = (ext, f'plugins/{ext}/server/src/main/java', rel.split('/userutil/')[0] + '/userutil')
             if entry not in plan.userutil:
                 plan.userutil.append(entry)
     tiers = tiers_of(plan)
