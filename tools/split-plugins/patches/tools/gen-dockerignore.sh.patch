@@ -1,0 +1,11 @@
+--- a/tools/gen-dockerignore.sh
++++ b/tools/gen-dockerignore.sh
+@@ -5,7 +5,7 @@
+ # Dockerfile builds via `COPY . .`, so anything git ignores (and that a clean CI
+ # checkout therefore never has) must also be kept out of the image build context;
+ # otherwise stale local artifacts leak into the image (this is how a leftover
+-# server/setup/appdata/keystore.jks once broke TLS startup).
++# distribution/setup/appdata/keystore.jks once broke TLS startup).
+ #
+ # .gitignore and Docker's .dockerignore use *opposite* default anchoring:
+ #

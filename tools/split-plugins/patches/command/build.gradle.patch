@@ -1,0 +1,13 @@
+--- a/command/build.gradle
++++ b/command/build.gradle
+@@ -12,8 +12,8 @@
+ def prepareCliLibs = tasks.register('prepareCliLibs', Copy) {
+     description = 'Copies donkey/server jars into command/lib (mirrors mirth-build build-cli).'
+     from rootProject.file('donkey/setup/donkey-model.jar')
+-    from rootProject.file('server/setup/server-lib/mirth-client-core.jar')
+-    from rootProject.file('server/setup/server-lib/mirth-crypto.jar')
++    from rootProject.file('server/build/libs/mirth-client-core.jar')
++    from rootProject.file('server/build/libs/mirth-crypto.jar')
+     into 'lib'
+     dependsOn ':donkey:donkeyModelJar', ':server:clientCoreJar', ':server:cryptoJar'
+ }

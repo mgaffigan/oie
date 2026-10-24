@@ -1,0 +1,15 @@
+// plugins/<name>/client: Administrator (Swing) classes (extension jar <name>-client.jar).
+
+apply from: rootProject.file('gradle/plugin-base.gradle')
+
+evaluationDependsOn(':client')
+
+dependencies {
+    compileOnly libs.bundles.client.main
+    compileOnly project(':client').sourceSets.main.output
+    compileOnly fileTree(dir: rootProject.file('client/lib'), include: '*.jar')
+}
+
+tasks.named('jar') {
+    archiveFileName = "${pluginName}-client.jar"
+}

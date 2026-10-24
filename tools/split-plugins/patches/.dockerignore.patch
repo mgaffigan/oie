@@ -1,0 +1,24 @@
+--- a/.dockerignore
++++ b/.dockerignore
+@@ -178,10 +178,10 @@
+ server/mirthdb
+ server/logs
+ server/classes
+-server/setup
++distribution/setup
+ server/bin
+ server/derby.log
+-server/dist
++distribution/dist
+ server/.settings
+ server/build
+ server/appdata
+@@ -227,7 +227,7 @@
+ 
+ server/src/main/java/com/mirth/connect/util/GenerateExtensionUpdate.java
+ 
+-server/setup.tar.gz
++distribution/setup.tar.gz
+ **/dependency-check-report.html
+ **/dependency-check-report.json
+ 

@@ -1,0 +1,2 @@
+// the extension has no ${tier} jar; this tier only holds tests
+tasks.named('jar') { enabled = false }

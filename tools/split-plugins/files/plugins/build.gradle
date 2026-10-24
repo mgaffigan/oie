@@ -1,0 +1,16 @@
+// Aggregates every plugin tier, so `./gradlew :plugins:assemble` and
+// `./gradlew :plugins:test` build and test the plugins without the distribution.
+// Layout: plugins/<name>/{common,server,client}/build.gradle, one project per tier
+// that exists (settings.gradle discovers them), each applying gradle/plugin-<tier>.gradle.
+
+def tiers = { subprojects.findAll { it.childProjects.isEmpty() } }
+
+tasks.named('assemble') {
+    dependsOn { tiers().collect { "${it.path}:assemble" } }
+}
+
+tasks.register('test') {
+    group = 'verification'
+    description = 'Runs the unit tests of every plugin.'
+    dependsOn { tiers().collect { "${it.path}:test" } }
+}

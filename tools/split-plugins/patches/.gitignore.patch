@@ -1,0 +1,23 @@
+--- a/.gitignore
++++ b/.gitignore
+@@ -413,10 +413,10 @@
+ /server/mirthdb
+ /server/logs
+ /server/classes
+-/server/setup
++/distribution/setup
+ /server/bin
+ /server/derby.log
+-/server/dist
++/distribution/dist
+ /server/.settings
+ /server/build
+ /server/appdata
+@@ -653,6 +653,6 @@
+ # /server/src/org/mozilla/javascript/
+ 
+ # /server/src/org/mozilla/javascript/xmlimpl/
+-server/setup.tar.gz
++distribution/setup.tar.gz
+ dependency-check-report.html
+ dependency-check-report.json

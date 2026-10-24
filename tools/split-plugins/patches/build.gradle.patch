@@ -1,0 +1,129 @@
+--- a/build.gradle
++++ b/build.gradle
+@@ -2,7 +2,7 @@
+  * Gradle build for the Open Integration Engine.
+  *
+  * Replaced the historical Ant build in June 2026 with verified output
+- * parity: server/setup is the assembled distribution, server/dist holds
++ * parity: distribution/setup is the assembled distribution, distribution/dist holds
+  * the extension zips, and every archive's entry contents were verified
+  * byte-identical against an Ant baseline (reproducible with the
+  * oie-build-parity tooling). The only
+@@ -36,7 +36,7 @@
+  *   ./gradlew clean                          clean all modules
+  *
+  * For release artifacts run a clean build (./gradlew clean build dist):
+- * the staging into server/setup removes stale files where it owns the
++ * the staging into distribution/setup removes stale files where it owns the
+  * directory, but artifacts renamed or removed from intermediate build
+  * directories are only guaranteed gone after a clean.
+  */
+@@ -150,6 +150,12 @@
+ }
+ 
+ subprojects {
++    // plugins/ and plugins/<name> only group the tier projects
++    if (!childProjects.isEmpty()) {
++        apply plugin: 'base'
++        return
++    }
++
+     apply plugin: 'java'
+ 
+     repositories {
+@@ -194,7 +200,7 @@
+ 
+     // Legacy modules assemble their published archives explicitly. 
+     // Newer modules use Gradle's normal JAR convention.
+-    if (project.name in ['donkey', 'server', 'client', 'command', 'generator']) {
++    if (project.path in [':donkey', ':server', ':client', ':command', ':generator', ':distribution']) {
+         tasks.named('jar') { enabled = false }
+     }
+ 
+@@ -209,7 +215,7 @@
+     def inventoryFile = layout.buildDirectory.file('placement/artifacts.json')
+     tasks.register('writeArtifactInventory') {
+         description = 'Records this project\'s resolved runtime artifacts to build/placement/artifacts.json so ' +
+-                ':server:stageSetup can place foreign-module jars without resolving their configurations cross-project (Gradle-9-safe).'
++                ':distribution:stageSetup can place foreign-module jars without resolving their configurations cross-project (Gradle-9-safe).'
+         def cfg = configurations.runtimeClasspath
+         dependsOn cfg
+         outputs.file inventoryFile
+@@ -235,7 +241,7 @@
+         dependsOn cfg
+         doLast {
+             def layoutMap = rootProject.vendoredLayout
+-            def sections = (project.name in ['server', 'client']) ? [project.name, 'server-extensions'] : [project.name]
++            def sections = project.path.startsWith(':plugins:') ? ['server-extensions'] : [project.name]
+             def missing = []
+             int checked = 0
+             cfg.incoming.artifacts.each { a ->
+@@ -294,46 +300,47 @@
+ // destinations overlap the extension build outputs.
+ def copyFinalArtifactsBack = tasks.register('copyFinalArtifactsBack') {
+     description = 'Copies the final (possibly signed) extensions and client-lib back into server/build.'
+-    dependsOn ':server:createSetup'
++    dependsOn ':distribution:createSetup'
+     outputs.upToDateWhen { false }
+     doLast {
+         sync { s ->
+-            s.from 'server/setup/extensions'
+-            s.into 'server/build/extensions'
++            s.from 'distribution/setup/extensions'
++            s.into 'distribution/build/extensions'
+         }
+         sync { s ->
+-            s.from 'server/setup/client-lib'
+-            s.into 'server/build/client-lib'
++            s.from 'distribution/setup/client-lib'
++            s.into 'distribution/build/client-lib'
+         }
+     }
+ }
+ 
+ tasks.register('build') {
+     group = 'build'
+-    description = 'Builds donkey, the server and its extensions, the client, and the CLI, then assembles server/setup.'
+-    dependsOn ':donkey:assemble', ':command:assemble', ':server:createSetup',
++    description = 'Builds donkey, the server and its extensions, the client, and the CLI, then assembles distribution/setup.'
++    dependsOn ':donkey:assemble', ':command:assemble', ':distribution:createSetup',
+             copyFinalArtifactsBack, 'verifyVendoredParity'
+     if (!rootProject.disableTests) {
+-        dependsOn ':donkey:test', ':server:test', ':client:test', ':command:test'
++        dependsOn ':donkey:test', ':server:test', ':client:test', ':command:test', ':plugins:test'
+     }
+ }
+ 
+ tasks.register('dist') {
+     group = 'build'
+-    description = 'Builds everything and creates the distribution extension zips in server/dist.'
+-    dependsOn ':server:createExtensionZips'
++    description = 'Builds everything and creates the distribution extension zips in distribution/dist.'
++    dependsOn ':distribution:createExtensionZips'
+ }
+ 
+ tasks.register('test') {
+     group = 'verification'
+     description = 'Runs the unit tests of every module (pass -Pcoverage=true for JaCoCo).'
+-    dependsOn ':donkey:test', ':server:test', ':client:test', ':command:test'
++    dependsOn ':donkey:test', ':server:test', ':client:test', ':command:test', ':plugins:test'
+ }
+ 
+ tasks.register('clean') {
+     group = 'build'
+     description = 'Cleans every module.'
+-    dependsOn ':donkey:clean', ':server:clean', ':client:clean', ':command:clean', ':generator:clean'
++    dependsOn ':donkey:clean', ':server:clean', ':client:clean', ':command:clean', ':generator:clean',
++            ':distribution:clean', ':plugins:clean'
+ }
+ 
+ // Aggregate: the per-project checks resolve each configuration in its
+@@ -342,7 +349,7 @@
+     group = 'verification'
+     description = 'Verifies every resolved runtime artifact has a distribution placement ' +
+             '(checksums are enforced separately by gradle/verification-metadata.xml).'
+-    dependsOn subprojects.collect { ":${it.name}:verifyDistributionPlacement" }
++    dependsOn subprojects.findAll { it.childProjects.isEmpty() }.collect { "${it.path}:verifyDistributionPlacement" }
+ }
+ 
+ // Note: the Ant build's append-license target was already broken at the

@@ -1,0 +1,12 @@
+// compiled together with :plugins:${host} (see plugins/gaps.md); this project packages and tests its part
+evaluationDependsOn(':plugins:${host}')
+sourceSets.main.java.srcDirs = []
+sourceSets.main.resources.srcDirs = []
+dependencies {
+    compileOnly project(':plugins:${host}').sourceSets.main.output
+}
+tasks.named('jar') {
+    from(project(':plugins:${host}').sourceSets.main.output) {
+        include '${packages}/**'
+    }
+}

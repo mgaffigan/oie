@@ -1,0 +1,10 @@
+--- a/plugins/dicom/source.xml
++++ b/plugins/dicom/source.xml
+@@ -9,6 +9,7 @@
+ 	<serverClassName>com.mirth.connect.connectors.dimse.DICOMReceiver</serverClassName>
+ 	<sharedClassName>com.mirth.connect.connectors.dimse.DICOMReceiverProperties</sharedClassName>
+ 	<library type="CLIENT" path="dicom-client.jar" />
++	<library type="CLIENT" path="src/dicom-userutil-sources.jar" />
+ 	<library type="SHARED" path="dicom-shared.jar" />
+ 	<library type="SHARED" path="lib/dcm4che-core-2.0.29.jar" />
+ 	<library type="SERVER" path="dicom-server.jar" />

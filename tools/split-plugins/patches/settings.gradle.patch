@@ -1,0 +1,19 @@
+--- a/settings.gradle
++++ b/settings.gradle
+@@ -3,6 +3,16 @@
+ include 'donkey'
+ include 'server'
+ include 'client'
++include 'distribution'
+ include 'command'
+ include 'generator'
+ include 'smoketest'
++
++// plugins/<name>/{common,server,client}: one project per tier that exists
++file('plugins').listFiles().sort().findAll { it.directory }.each { plugin ->
++    ['common', 'server', 'client'].each { tier ->
++        if (new File(plugin, "${tier}/build.gradle").exists()) {
++            include ":plugins:${plugin.name}:${tier}"
++        }
++    }
++}
