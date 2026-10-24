@@ -116,7 +116,6 @@ import com.mirth.connect.model.ServerSettings;
 import com.mirth.connect.model.UpdateSettings;
 import com.mirth.connect.model.converters.DocumentSerializer;
 import com.mirth.connect.model.converters.ObjectXMLSerializer;
-import com.mirth.connect.plugins.directoryresource.DirectoryResourceProperties;
 import com.mirth.connect.server.ExtensionLoader;
 import com.mirth.connect.server.mybatis.KeyValuePair;
 import com.mirth.connect.server.tools.ClassPathResource;
@@ -1106,17 +1105,7 @@ public class DefaultConfigurationController extends ConfigurationController {
         String resources = getProperty(PROPERTIES_CORE, PROPERTIES_RESOURCES);
 
         if (StringUtils.isBlank(resources)) {
-            ResourcePropertiesList list = new ResourcePropertiesList();
-
-            DirectoryResourceProperties defaultResource = new DirectoryResourceProperties();
-            defaultResource.setId(ResourceProperties.DEFAULT_RESOURCE_ID);
-            defaultResource.setName(ResourceProperties.DEFAULT_RESOURCE_NAME);
-            defaultResource.setDescription(String.format("Loads libraries from the custom-lib folder in the %s home directory.", BrandingConstants.PRODUCT_NAME));
-            defaultResource.setIncludeWithGlobalScripts(true);
-            defaultResource.setDirectory("custom-lib");
-
-            list.getList().add(defaultResource);
-            resources = ObjectXMLSerializer.getInstance().serialize(list);
+            resources = ResourceProperties.createDefaultResourcePropertiesElement();
         }
 
         return resources;

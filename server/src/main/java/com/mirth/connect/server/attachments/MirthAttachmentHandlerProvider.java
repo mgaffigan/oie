@@ -29,7 +29,7 @@ import com.mirth.connect.donkey.server.Constants;
 import com.mirth.connect.donkey.util.Base64Util;
 import com.mirth.connect.donkey.util.StringUtil;
 import com.mirth.connect.server.controllers.MessageController;
-import com.mirth.connect.server.util.DICOMMessageUtil;
+import com.mirth.connect.server.util.MessageAttachmentUtil;
 import com.mirth.connect.userutil.ImmutableConnectorMessage;
 import com.mirth.connect.util.AttachmentUtil;
 
@@ -150,7 +150,7 @@ public abstract class MirthAttachmentHandlerProvider implements AttachmentHandle
             // In this case we can skip any byte appending and thus do not need to base64 encode the dicom object
             // if the type is binary.
             if (reattach && raw.trim().equals(PREFIX + DICOM_KEY + SUFFIX)) {
-                dicomObject = DICOMMessageUtil.getDICOMRawBytes(connectorMessage);
+                dicomObject = MessageAttachmentUtil.getDICOMRawBytes(connectorMessage);
 
                 if (!binary) {
                     dicomObject = Base64Util.encodeBase64(dicomObject);
@@ -170,7 +170,7 @@ public abstract class MirthAttachmentHandlerProvider implements AttachmentHandle
                     if (reattach) {
                         if (dicomObject == null) {
                             // Unfortunately, if the dicom data needs to appended to other base64 data, it must be done so in base64.
-                            dicomObject = Base64Util.encodeBase64(DICOMMessageUtil.getDICOMRawBytes(connectorMessage));
+                            dicomObject = Base64Util.encodeBase64(MessageAttachmentUtil.getDICOMRawBytes(connectorMessage));
                         }
 
                         Map<Integer, Object> replacementMap = new HashMap<Integer, Object>();

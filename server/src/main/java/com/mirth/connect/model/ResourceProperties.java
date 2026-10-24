@@ -16,6 +16,7 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
+import com.mirth.connect.client.core.BrandingConstants;
 import com.mirth.connect.donkey.util.DonkeyElement;
 import com.mirth.connect.donkey.util.migration.Migratable;
 import com.mirth.connect.donkey.util.purge.Purgable;
@@ -24,6 +25,29 @@ public abstract class ResourceProperties implements Serializable, Migratable, Pu
 
     public static final String DEFAULT_RESOURCE_ID = "Default Resource";
     public static final String DEFAULT_RESOURCE_NAME = "[Default Resource]";
+
+    /**
+     * Creates a DonkeyElement representing the default resource properties list.
+     * This is used during migration and when no resources have been configured.
+     */
+    public static String createDefaultResourcePropertiesElement() {
+        try {
+            DonkeyElement resourcePropertiesElement = new DonkeyElement("<resourcePropertiesList/>");
+            DonkeyElement listElement = resourcePropertiesElement.addChildElement("list");
+            DonkeyElement resourceElement = listElement.addChildElement("com.mirth.connect.plugins.directoryresource.DirectoryResourceProperties");
+            resourceElement.addChildElement("pluginPointName", "Directory Resource");
+            resourceElement.addChildElement("type", "Directory");
+            resourceElement.addChildElement("id", DEFAULT_RESOURCE_ID);
+            resourceElement.addChildElement("name", DEFAULT_RESOURCE_NAME);
+            resourceElement.addChildElement("description", String.format("Loads libraries from the custom-lib folder in the %s home directory.", BrandingConstants.PRODUCT_NAME));
+            resourceElement.addChildElement("includeWithGlobalScripts", "true");
+            resourceElement.addChildElement("directory", "custom-lib");
+            resourceElement.addChildElement("directoryRecursion", "true");
+            return resourcePropertiesElement.toXml();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create default resource properties element.", e);
+        }
+    }
 
     private String pluginPointName;
     private String type;

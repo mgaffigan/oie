@@ -61,7 +61,7 @@ import com.mirth.connect.server.controllers.ControllerFactory;
 import com.mirth.connect.server.controllers.EngineController;
 import com.mirth.connect.server.controllers.EventController;
 import com.mirth.connect.server.controllers.MessageController;
-import com.mirth.connect.server.util.DICOMMessageUtil;
+import com.mirth.connect.server.util.MessageAttachmentUtil;
 import com.mirth.connect.util.MessageImporter.MessageImportException;
 import com.mirth.connect.util.messagewriter.EncryptionType;
 import com.mirth.connect.util.messagewriter.MessageWriterOptions;
@@ -157,7 +157,7 @@ public class MessageServlet extends MirthServlet implements MessageServletInterf
     @Override
     @CheckAuthorizedChannelId
     public String getDICOMMessage(String channelId, Long messageId, ConnectorMessage message) {
-        return DICOMMessageUtil.getDICOMRawData(message);
+        return MessageAttachmentUtil.getDICOMRawData(message);
     }
 
     @Override
