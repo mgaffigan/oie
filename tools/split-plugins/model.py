@@ -120,6 +120,19 @@ def load_extensions(root):
 
 # ---------------------------------------------------------------- source files
 
+# Classes that belong to a plugin although their package says otherwise. Core no longer
+# references them (see the commit that removes core references to plugins); they ship in
+# the plugin's jars, under the same package names so scripts and serialized data are unaffected.
+OWNERSHIP_OVERRIDES = {
+    'com/mirth/connect/server/attachments/dicom/DICOMAttachmentHandler': ('dicom', 'server'),
+    'com/mirth/connect/server/attachments/dicom/DICOMAttachmentHandlerProvider': ('dicom', 'server'),
+    'com/mirth/connect/server/userutil/DICOMUtil': ('dicom', 'server'),
+    'com/mirth/connect/server/util/DICOMMessageUtil': ('dicom', 'server'),
+    'com/mirth/connect/model/converters/DICOMConverter': ('dicom', 'common'),
+    'com/mirth/connect/server/userutil/HTTPUtil': ('http', 'server'),
+    'com/mirth/connect/server/userutil/DatabaseConnectionFactory': ('jdbc', 'server'),
+}
+
 @dataclass
 class Source:
     path: str            # repo-relative
@@ -157,6 +170,10 @@ def classify(root, exts):
                 rel = f.relative_to(base).as_posix()
                 e, _ = owner_of(rel, sub)
                 repo_rel = f.relative_to(root).as_posix()
+                override = OWNERSHIP_OVERRIDES.get(rel[:-5]) if module == 'server' and kind == 'main' else None
+                if override:
+                    sources.append(Source(repo_rel, kind, module, override[0], override[1], _fqcn(rel)))
+                    continue
                 if e is None:
                     sources.append(Source(repo_rel, kind, module, 'core', None, _fqcn(rel)))
                     continue

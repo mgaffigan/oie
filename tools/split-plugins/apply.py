@@ -15,8 +15,8 @@ TIERS = ('common', 'server', 'client')
 
 
 def check_clean(repo):
-    if (repo / 'plugins').exists():
-        raise SystemExit('plugins/ already exists; the split has been applied')
+    if (repo / 'plugins/build.gradle').exists():
+        raise SystemExit('plugins/build.gradle exists; the split has been applied')
     out = subprocess.run(['git', 'status', '--porcelain', '--untracked-files=no'], cwd=repo,
                          capture_output=True, text=True, check=True).stdout
     dirty = [l for l in out.splitlines() if not l[3:].startswith('tools/split-plugins')]
@@ -39,11 +39,15 @@ def move_files(repo, plan):
 
 
 def delete_swagger(repo, plan):
+    """The commit that removes core references to plugins already did this; trees without it get it here."""
     import plan as plan_mod
     for path in plan_mod.DELETED:
-        (repo / path).unlink()
+        if (repo / path).exists():
+            (repo / path).unlink()
     p = repo / 'server/src/main/java/com/mirth/connect/server/MirthWebServer.java'
     t = be.read(p)
+    if 'SwaggerExamplesServlet' not in t:
+        return
     t = be.sub(t, r'        // Add Swagger examples servlet\n.*?addServlet\(swaggerExamplesServlet, "/\*"\);\n[ \t]*\n', '')
     t = be.replace(t, '        handlers.addHandler(swaggerExamplesServletContextHandler);\n', '')
     t = be.replace(t, 'import com.mirth.connect.server.servlets.SwaggerExamplesServlet;\n', '')
@@ -72,15 +76,19 @@ def write_plugin_builds(repo, plan):
             for alias in aliases:
                 conf = 'implementation' if tier == carrier else 'compileOnly'
                 body.append(f'{conf} libs.{alias.replace("-", ".")}')
+            foreign = plan.foreign_libs.get((ext.name, tier), {'maven': set(), 'vendored': set()})
+            body += [f'compileOnly libs.{a.replace("-", ".")}' for a in sorted(foreign['maven'])]
+            body += [f"compileOnly fileTree(dir: rootProject.file('plugins/{e}/lib'), include: '*.jar')" for e in sorted(foreign['vendored'])]
             text = f"apply from: rootProject.file('gradle/plugin-{tier}.gradle')\n"
             if body:
                 text += '\ndependencies {\n' + ''.join(f'    {l}\n' for l in body) + '}\n'
-            if tier == 'server' and ext.name in plan.userutil_dirs:
-                pkg = plan.userutil_dirs[ext.name].split('src/main/java/')[1]
-                text += (f"\n// userutil sources are distributed next to the extension for the code-template editor\n"
-                         f"tasks.register('userutilSourcesJar', Jar) {{\n"
-                         f"    archiveFileName = '{ext.name}-userutil-sources.jar'\n"
-                         f"    from('src/main/java') {{ include '{pkg}/**' }}\n}}\n")
+            if tier == 'server':
+                for e_name, root, pkgdir, own in plan.userutil:
+                    if e_name == ext.name and own:
+                        text += (f"\n// userutil sources are distributed next to the extension for the code-template editor\n"
+                                 f"tasks.register('userutilSourcesJar', Jar) {{\n"
+                                 f"    archiveFileName = '{ext.name}-userutil-sources.jar'\n"
+                                 f"    from('src/main/java') {{ include '{pkgdir}/**' }}\n}}\n")
             if not {'common': ext.shared, 'server': ext.server, 'client': ext.client_pkg}[tier]:
                 text += "\n// the extension has no " + tier + " jar; this tier only holds tests\ntasks.named('jar') { enabled = false }\n"
             text += _cycle_snippet(plan, ext, tier)
@@ -201,9 +209,15 @@ def rewrite_server(repo, plan):
                              + _jar_includes(plan, 'server'))
     server_jars = be.replace(server_jars, "        exclude 'org/dcm4che2/**'\n", '')
 
+    m = re.search(r"def userutilSourcesJar = tasks\.register\('userutilSourcesJar', Jar\) \{\n.*?\n\}\n", server_jars, re.S)
+    if not m:
+        raise SystemExit('userutilSourcesJar not found in server/build.gradle')
+    userutil_jar = m.group(0)
+    server_jars = server_jars.replace(userutil_jar, '').rstrip('\n') + '\n'
+
     core_deps = _core_test_deps(plan)
     server = (header + '\n' + core_deps + '\n' if core_deps else header + '\n') + server_jars + '\n' \
-        + 'assemble.dependsOn serverJar, dbconfJar, launcherJar, userutilSourcesJar, cryptoJar, clientCoreJar\n\n' \
+        + 'assemble.dependsOn serverJar, dbconfJar, launcherJar, cryptoJar, clientCoreJar\n\n' \
         + tests + '\n' + dev_banner + '\n' + flags + '\n' + devrun + '\n'
     server += be.sub(clean, r"delete 'classes', 'test_classes', 'setup', 'dist', 'testdist', 'docs/javadocs', 'logs'",
                      "delete 'classes', 'test_classes', 'testdist', 'logs'")
@@ -214,7 +228,7 @@ def rewrite_server(repo, plan):
     be.write(repo / 'server/build.gradle', server)
 
     # ---- distribution
-    dist = _distribution(repo, plan, javadoc, stage, content_to_tests, derby, launcher)
+    dist = _distribution(repo, plan, javadoc, stage, content_to_tests, derby, launcher, userutil_jar)
     be.write(repo / 'distribution/build.gradle', dist)
 
 
@@ -231,6 +245,20 @@ def _core_test_deps(plan):
     return out
 
 
+def _distribution_userutil_jar(plan, block):
+    """userutil-sources.jar feeds the code template editor: core's userutil packages plus the
+    classes that live in plugins under the same package names."""
+    block = be.replace(block, "destinationDirectory = file('setup/client-lib')", "destinationDirectory = layout.buildDirectory.dir('libs')") \
+        if "destinationDirectory = file('setup/client-lib')" in block else block
+    block = be.replace(block, "    from('src/main/java') {", "    from(serverFile('src/main/java')) {")
+    extra = ''.join(f"    from(rootProject.file('{root}')) {{ include '{pkgdir}/**.java' }}\n"
+                    for _, root, pkgdir, own in plan.userutil if not own)
+    block = block.rstrip('\n')
+    assert block.endswith('}')
+    return ("// Sources of the user API, for the Administrator's code template editor\n"
+            + block[:-1] + ("    // classes that moved to plugins but keep their package\n" + extra if extra else '') + '}\n')
+
+
 def _javadoc_libs(plan):
     aliases = [a for a in sorted(plan.core_libs) if not a.startswith('server/')]
     if not aliases:
@@ -241,30 +269,35 @@ def _javadoc_libs(plan):
             "javadocLibs.transitive = false\n")
 
 
-def _distribution(repo, plan, javadoc, stage, content_to_tests, derby, launcher):
+def _distribution(repo, plan, javadoc, stage, content_to_tests, derby, launcher, userutil_jar):
     ext_snippet = (TEMPLATES / 'distribution-extensions.gradle').read_text()
 
     # javadoc: sources/classpath come from the server project, plugin userutil from plugins/
-    roots = [f"rootProject.file('{d.split('/src/main/java/')[0]}/src/main/java')"
-             for d in plan.userutil_dirs.values()]
-    pkgs = [d.split('src/main/java/')[1] for d in plan.userutil_dirs.values()]
+    # a userutil class may use the rest of its plugin (DICOMUtil -> DICOMConverter) and the plugin's jars
+    userutil_exts = list(dict.fromkeys(e for e, _, _, _ in plan.userutil))
+    roots = [f"rootProject.file('plugins/{e}/{t}/src/main/java')" for e in userutil_exts for t in ('common', 'server')
+             if any(v.startswith(f'plugins/{e}/{t}/src/main/java/') for v in plan.moves.values())]
+    plugin_libs = [f"rootProject.file('plugins/{e}/lib')" for e in userutil_exts if e in plan.vendored_libs]
+    pkgs = [pkgdir for _, _, pkgdir, _ in plan.userutil]
+    pkg_roots = [f"rootProject.file('{root}')" for _, root, _, _ in plan.userutil]
     javadoc = be.replace(javadoc, "def outDir = file('docs/javadocs/user-api')", "def outDir = file('build/javadocs/user-api')")
     javadoc = be.sub(javadoc, r"    inputs\.files\(fileTree\('src/main/java'\) \{\n(.*?)        include 'com/mirth/connect/plugins/httpauth/userutil/\*\*'\n    \}\)",
                      lambda m: "    inputs.files(fileTree(serverDir.file('src/main/java')) {\n" + m.group(1) + "    })\n"
-                     + ''.join(f"    inputs.files(fileTree({r}) {{ include '{p}/**' }})\n" for r, p in zip(roots, pkgs)))
+                     + ''.join(f"    inputs.files(fileTree({r}) {{ include '{p}/**' }})\n" for r, p in zip(pkg_roots, pkgs)))
     javadoc = be.replace(javadoc, '    dependsOn syncDonkeyLibs\n', "    dependsOn ':server:syncDonkeyLibs', ':server:writeArtifactInventory'\n")
     javadoc = be.replace(javadoc, "(configurations.compileClasspath + fileTree(dir: 'lib', include: '**/*.jar')).asPath", 'javadocClasspath().asPath')
     javadoc = be.replace(javadoc, "file('src/main/java').absolutePath,",
                          "([serverDir.file('src/main/java')] + javadocSourceRoots)*.absolutePath.join(File.pathSeparator),")
     javadoc = be.replace(javadoc, "def userApiJavadoc = tasks.register('userApiJavadoc') {",
                          "// userutil sources shipped by plugins\n"
-                         f"def javadocSourceRoots = [{', '.join(roots)}]\n"
+                         f"def javadocSourceRoots = [{', '.join(dict.fromkeys(roots))}]\n"
                          + _javadoc_libs(plan) +
                          "// the server's resolved runtime artifacts, from the inventory its own project wrote\n"
                          "def javadocClasspath = {\n"
                          "    files(new groovy.json.JsonSlurper().parse(rootProject.file('server/build/placement/artifacts.json'))*.path) +\n"
                          "            fileTree(dir: serverDir.file('lib'), include: '**/*.jar')"
-                         + (' +\n            files(javadocLibs)' if _javadoc_libs(plan) else '') + "\n"
+                         + (' +\n            files(javadocLibs)' if _javadoc_libs(plan) else '')
+                         + ''.join(f" +\n            fileTree(dir: {l}, include: '*.jar')" for l in plugin_libs) + "\n"
                          "}\n\n"
                          "def userApiJavadoc = tasks.register('userApiJavadoc') {")
 
@@ -327,15 +360,15 @@ def serverJars = ['serverJar', 'dbconfJar', 'cryptoJar', 'clientCoreJar'].collec
 
 '''
     # the launcher and userutil sources have their own destinations in the tree
-    out = head + ext_snippet + javadoc + '\n' + stage
+    out = head + _distribution_userutil_jar(plan, userutil_jar) + '\n' + ext_snippet + javadoc + '\n' + stage
     out = be.replace(out, "        copy {\n            from rootProject.file('command/build/mirth-cli-launcher.jar')\n            into 'setup'\n        }\n",
                      "        copy {\n            from rootProject.file('command/build/mirth-cli-launcher.jar')\n            into 'setup'\n        }\n"
                      "        copy {\n            from project(':server').tasks.named('launcherJar')\n            into 'setup'\n        }\n")
     out = be.replace(out, "            s.preserve { p ->\n                p.include 'userutil-sources.jar'\n            }\n",
-                     "            s.from(project(':server').tasks.named('userutilSourcesJar'))\n")
+                     "            s.from(userutilSourcesJar)\n")
     out = be.replace(out, "              serverJars, ':client:assemble',",
                      "              serverJars, project(':server').tasks.named('launcherJar'),\n"
-                     "              project(':server').tasks.named('userutilSourcesJar'), ':client:assemble',")
+                     "              userutilSourcesJar, ':client:assemble',")
     out += '\n' + content + '\n' + '// ---------------------------------------------------------------------\n' \
         '// Development helpers (create-derby-db, dev-launcher)\n' \
         '// ---------------------------------------------------------------------\n\n' + derby + '\n' + flags + '\n' + launcher

@@ -25,7 +25,8 @@ tools/split-plugins/split_plugins.py apply     # needs a clean tree (apart from 
 
 `apply` leaves everything unstaged; review with `git add -A && git diff --cached -M --stat`. It writes
 `plugins/gaps.md` with what moving files could not separate (classes core still uses, plugin cycles, core tests that
-use plugins).
+use plugins). The core -> plugin references that need real code changes (DICOM, jdbc, directory resource, vm, swagger)
+are in the commit before this tool's; `model.OWNERSHIP_OVERRIDES` lists the classes it frees up to move.
 
 ## Checking the result without the full build
 
@@ -58,7 +59,7 @@ servlet.
 
 ## What `apply` changes outside `plugins/`
 
-- Deletes `SwaggerExamplesServlet` and its registration in `MirthWebServer` (it listed ~20 plugin classes).
+- Deletes `SwaggerExamplesServlet` and its registration in `MirthWebServer` if the commit that removes core references to plugins has not already.
 - `server/build.gradle`: extension tasks, staging, signing, zips and dev launcher move to `distribution/build.gradle`;
   core jars are built into `server/build/libs`.
 - `client/build.gradle`, `command/build.gradle`, root `build.gradle`, `settings.gradle`: plugin discovery, paths, aggregate tasks.

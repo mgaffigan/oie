@@ -22,6 +22,7 @@ rootProject.file('plugins').listFiles().sort().findAll { it.directory }.each { p
                 from(tier(t).tasks.named('jar'))
             }
         }
+        into('lib') { from(new File(pluginDir, 'lib')) }
         ['common', 'server', 'client'].each { t ->
             if (tier(t)) {
                 into('lib') { from(tier(t).tasks.named('extensionLibs')) }

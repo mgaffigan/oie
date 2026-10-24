@@ -30,7 +30,9 @@ class Plan:
     vendored_libs: dict = field(default_factory=dict)  # ext -> [jar paths] that move into the plugin
     core_libs: dict = field(default_factory=dict)      # catalog alias or vendored jar path -> core classes using it
     kept_vendored: dict = field(default_factory=dict)  # ext -> lib dir whose jars stay in server/lib/extensions
-    userutil_dirs: dict = field(default_factory=dict)  # ext -> repo-relative userutil source dir
+    foreign_libs: dict = field(default_factory=dict)   # (ext, tier) -> {'maven': {alias}, 'vendored': {ext}} owned by other plugins
+    jar_packages: dict = field(default_factory=dict)   # ('maven', alias) | ('vendored', ext) -> packages
+    userutil: list = field(default_factory=list)       # (ext, source root, userutil package dir, in the plugin's own package)
     violations: list = field(default_factory=list)
     problems: list = field(default_factory=list)
 
@@ -151,8 +153,49 @@ def make_plan(repo):
 
     _plan_libs(repo, plan, by_path, keep)
     _plan_moves(repo, plan, by_path, keep)
+    _plan_runtime_class_names(repo, plan, index, keep)
     _add_common_deps(plan)
+    _plan_foreign_libs(repo, plan, keep)
     return plan
+
+
+_QUOTED_FQCN = re.compile(r'"((?:com|org|net|de)(?:\.[a-z]\w*)+\.[A-Z]\w*)')
+
+
+def _plan_runtime_class_names(repo, plan, index, keep):
+    """Core and its tests load plugin classes by name (XStream documents, migrations, default configuration).
+    Imports cannot show that, so class names quoted in core code count as test dependencies too: a test that
+    reaches such a path needs the plugin on its classpath."""
+    for s in plan.sources:
+        if s.owner != 'core' or s.kind not in ('main', 'test') or not s.path.endswith('.java'):
+            continue
+        for m in _QUOTED_FQCN.finditer(Path(repo, s.path).read_text(errors='replace')):
+            name = m.group(1)
+            while name and name not in index:
+                name = name.rsplit('.', 1)[0] if '.' in name else ''
+            if name and index[name].owner != 'core' and index[name].path not in keep:
+                plan.core_test_deps.add((index[name].owner, index[name].tier))
+
+
+def _plan_foreign_libs(repo, plan, keep):
+    """A tier that imports a library another plugin ships (datatype-dicom uses dicom's dcm4che jars) has to
+    compile against it too. A plugin's own libraries are visible to all its tiers already."""
+    owner_of = {}
+    for (kind, name), pkgs in plan.jar_packages.items():
+        owner = name if kind == 'vendored' else next((e for e, aliases in plan.libs.items() if name in aliases), None)
+        for pkg in pkgs:
+            owner_of.setdefault(pkg, set()).add((kind, name, owner))
+    imports = re.compile(r'^import\s+(?:static\s+)?([\w.]+?)(?:\.\*)?;', re.M)
+    for s in plan.sources:
+        if s.owner == 'core' or s.path in keep or not s.path.endswith('.java'):
+            continue
+        for m in imports.finditer(Path(repo, s.path).read_text(errors='replace')):
+            parts = m.group(1).split('.')
+            for i in range(1, len(parts) + 1):
+                for kind, name, owner in owner_of.get('.'.join(parts[:i]), ()):
+                    if owner != s.owner and (kind, name) not in [('vendored', k) for k in plan.kept_vendored]:
+                        entry = plan.foreign_libs.setdefault((s.owner, s.tier), {'maven': set(), 'vendored': set()})
+                        entry[kind].add(name)
 
 
 def _add_common_deps(plan):
@@ -205,7 +248,10 @@ def _plan_moves(repo, plan, by_path, keep):
                'resource': 'src/main/resources', 'testresource': 'src/test/resources'}[s.kind]
         plan.moves[s.path] = f'plugins/{ext}/{tier}/{sub}/{rel}'
         if s.kind == 'main' and tier == 'server' and '/userutil/' in rel:
-            plan.userutil_dirs[ext] = f'plugins/{ext}/server/src/main/java/' + rel.split('/userutil/')[0] + '/userutil'
+            e = next(e for e in plan.exts if e.name == ext)
+            entry = (ext, f'plugins/{ext}/server/src/main/java', rel.split('/userutil/')[0] + '/userutil', rel.startswith(e.pkg + '/'))
+            if entry not in plan.userutil:
+                plan.userutil.append(entry)
     tiers = tiers_of(plan)
     for e in plan.exts:
         d = repo / 'server/lib/extensions' / e.lib
@@ -213,7 +259,7 @@ def _plan_moves(repo, plan, by_path, keep):
             for jar in sorted(d.glob('*')):
                 if jar.is_file():
                     src = jar.relative_to(repo).as_posix()
-                    plan.moves[src] = f'plugins/{e.name}/{lib_tier(tiers[e.name])}/lib/{jar.name}'
+                    plan.moves[src] = f'plugins/{e.name}/lib/{jar.name}'
                     plan.vendored_libs.setdefault(e.name, []).append(src)
 
 
@@ -271,12 +317,15 @@ def _plan_libs(repo, plan, by_path, keep):
             raise SystemExit(f'cannot attribute {ga} ({d}) to an extension')
         plan.libs.setdefault(ext_of_lib[parts[1]], []).append(alias_of[ga])
         jar = _cached_jar(ga, version_of[ga])
+        if jar:
+            plan.jar_packages[('maven', alias_of[ga])] = _jar_packages(jar)
         users = used_by_core(jar) if jar else ['(jar not in the Gradle cache; assumed)']
         if users:
             plan.core_libs[alias_of[ga]] = users
     for e in plan.exts:
         d = repo / 'server/lib/extensions' / e.lib
         if d.is_dir():
+            plan.jar_packages[('vendored', e.name)] = {p for jar in d.glob('*.jar') for p in _jar_packages(jar)}
             users = sorted({u for jar in d.glob('*.jar') for u in used_by_core(jar)})
             if users:
                 plan.kept_vendored[e.name] = e.lib

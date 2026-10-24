@@ -39,7 +39,8 @@ def analyze(repo):
                                        for p, a, b, fq in plan.violations], sep='\n  ')
     print('\nlibs:', {k: v for k, v in plan.libs.items()})
     print('vendored:', plan.vendored_libs)
-    print('userutil:', plan.userutil_dirs)
+    print('userutil:', plan.userutil)
+    print('libraries from other plugins:', {plan_mod.node_name(k): {a: sorted(b) for a, b in v.items() if b} for k, v in plan.foreign_libs.items()})
 
 
 def main():
