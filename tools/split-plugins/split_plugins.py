@@ -4,6 +4,9 @@ projects into self-contained plugins/<name>/{common,server,client} builds.
 
   split_plugins.py analyze [--repo DIR]   report only; changes nothing
   split_plugins.py apply   [--repo DIR]   perform the split (needs a clean tree)
+  split_plugins.py emit    [--repo DIR] --out DIR
+                                          write the reviewable script that performs the same split, and check
+                                          that it does (DIR becomes tools/split-plugins of the pre-split tree)
 
 See tools/split-plugins/README.md.
 """
@@ -16,6 +19,7 @@ import analysis
 import model
 import plan as plan_mod
 import apply as apply_mod
+import emit as emit_mod
 
 
 def analyze(repo):
@@ -45,12 +49,17 @@ def analyze(repo):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('command', choices=['analyze', 'apply'])
+    ap.add_argument('command', choices=['analyze', 'apply', 'emit'])
     ap.add_argument('--repo', default='.', type=Path)
+    ap.add_argument('--out', type=Path)
     args = ap.parse_args()
     repo = args.repo.resolve()
     if args.command == 'analyze':
         analyze(repo)
+    elif args.command == 'emit':
+        if not args.out:
+            ap.error('emit needs --out')
+        emit_mod.emit(repo, args.out.resolve())
     else:
         apply_mod.check_clean(repo)
         apply_mod.apply(repo, plan_mod.make_plan(repo))

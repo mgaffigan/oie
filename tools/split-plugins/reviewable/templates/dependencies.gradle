@@ -1,0 +1,7 @@
+dependencies {
+    compileOnly project(':plugins:${compile}')
+    testImplementation project(':plugins:${test}')
+    implementation libs.${implementation}
+    compileOnly libs.${compile_only}
+    compileOnly fileTree(dir: rootProject.file('plugins/${vendored}/lib'), include: '*.jar')
+}

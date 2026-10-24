@@ -1,0 +1,5 @@
+// ${members} use each other, so they compile together here (see plugins/gaps.md)
+sourceSets.main.java.srcDir rootProject.file('plugins/${guest}/src/main/java')
+tasks.named('jar') {
+    exclude '${excluded}/**'
+}

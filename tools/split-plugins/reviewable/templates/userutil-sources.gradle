@@ -1,0 +1,7 @@
+// user API sources, shipped next to the extension for the Administrator's code template editor
+tasks.register('userutilSourcesJar', Jar) {
+    archiveFileName = '${plugin}-userutil-sources.jar'
+    from('src/main/java') {
+        include '${packages}/**'
+    }
+}

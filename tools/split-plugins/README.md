@@ -28,6 +28,20 @@ tools/split-plugins/split_plugins.py apply     # needs a clean tree (apart from 
 use plugins). The core -> plugin references that need real code changes (DICOM, jdbc, directory resource, vm, swagger)
 are in the commit before this tool's; `model.OWNERSHIP_OVERRIDES` lists the classes it frees up to move.
 
+## Reviewing the split: `emit`
+
+`apply` works the split out from the build files and the sources, which is too much logic to review and its effects
+too many to read in a diff. `emit` writes the same split as something reviewable instead:
+
+```
+tools/split-plugins/split_plugins.py emit --out DIR     # DIR becomes tools/split-plugins of the pre-split tree
+```
+
+`DIR` holds `manifest.py` (what moves where, and which Gradle templates with which parameters each plugin project
+uses), `templates/`, `files/`, `patches/` for the edits to existing files, and `split.py`, which only carries those out.
+`emit` runs the result on a fresh clone and fails unless the tree is identical to what `apply` produces. `apply` stays
+as that reference; `reviewable/` holds the parts of the output that are written by hand.
+
 ## Checking the result without the full build
 
 The slow parts are signing (needs a timestamp server) and javadoc (needs the network); neither is needed to check a
