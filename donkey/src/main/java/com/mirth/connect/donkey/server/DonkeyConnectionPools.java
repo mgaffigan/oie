@@ -15,7 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.google.inject.Inject;
+import com.google.common.annotations.VisibleForTesting;
 import com.mirth.connect.donkey.model.DatabaseConstants;
 import com.mirth.connect.donkey.server.data.jdbc.ConnectionPool;
 import com.mirth.connect.donkey.server.data.jdbc.HikariConnectionPool;
@@ -24,7 +24,6 @@ public class DonkeyConnectionPools {
 
     private static final Logger logger = LogManager.getLogger(DonkeyConnectionPools.class);
 
-    @Inject
     private static volatile DonkeyConnectionPools instance = null;
 
     private ConnectionPool connectionPool;
@@ -43,6 +42,26 @@ public class DonkeyConnectionPools {
         }
 
         return connectionPools;
+    }
+
+    /** Replaces the instance {@link #getInstance()} hands out until the returned handle is closed. */
+    @VisibleForTesting
+    public static AutoCloseable setInstanceForTesting(DonkeyConnectionPools newInstance) {
+        synchronized (DonkeyConnectionPools.class) {
+            DonkeyConnectionPools previous = instance;
+            instance = newInstance;
+
+            return () -> {
+                synchronized (DonkeyConnectionPools.class) {
+                    if (instance != newInstance) {
+                        throw new IllegalStateException("The DonkeyConnectionPools instance was replaced by " + instance
+                                + " while " + newInstance + " was installed for testing.");
+                    }
+
+                    instance = previous;
+                }
+            };
+        }
     }
 
     DonkeyConnectionPools() {}
