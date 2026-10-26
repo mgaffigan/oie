@@ -65,7 +65,7 @@ class PersistedStatisticsTest {
     @Test
     void theStoredCountersAreTheOnesTheRunningChannelReported() throws Exception {
         for (int i = 0; i < MESSAGE_COUNT; i++) {
-            long messageId = SharedServer.get().submitMessage(channelId, "persisted", new LinkedHashMap<>());
+            long messageId = SharedServer.get().submitOneMessage(channelId, "persisted", new LinkedHashMap<>());
             Harness.awaitProcessed(channelId, messageId);
         }
 

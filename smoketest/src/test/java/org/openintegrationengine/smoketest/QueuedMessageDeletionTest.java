@@ -61,7 +61,7 @@ class QueuedMessageDeletionTest {
 
         try {
             for (int i = 1; i <= MESSAGE_COUNT; i++) {
-                messageIds.add(server.submitMessage(channelId, token, new LinkedHashMap<>()));
+                messageIds.add(server.submitOneMessage(channelId, token, new LinkedHashMap<>()));
             }
             Harness.awaitQueueSizeAtLeast(channelId, DESTINATION, MESSAGE_COUNT);
 

@@ -78,10 +78,10 @@ class DestinationQueueRotationTest {
         List<Long> sendableMessageIds = new ArrayList<>();
 
         try {
-            stuckMessageId = SharedServer.get().submitMessage(channelId, token + "#stuck", new LinkedHashMap<>());
+            stuckMessageId = SharedServer.get().submitOneMessage(channelId, token + "#stuck", new LinkedHashMap<>());
             for (int i = 1; i <= SENDABLE_COUNT; i++) {
                 sendableMessageIds.add(
-                        SharedServer.get().submitMessage(channelId, token + "#" + i, new LinkedHashMap<>()));
+                        SharedServer.get().submitOneMessage(channelId, token + "#" + i, new LinkedHashMap<>()));
             }
 
             Harness.awaitQueueSizeAtLeast(channelId, DESTINATION, SENDABLE_COUNT + 1);

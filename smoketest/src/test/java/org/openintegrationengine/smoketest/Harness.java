@@ -211,7 +211,8 @@ public final class Harness {
         } while (System.nanoTime() < deadline);
 
         throw new AssertionError("Timed out after " + HarnessConfig.TIMEOUT.toSeconds() + "s waiting for message "
-                + messageId + " of channel " + channelId + " to be processed\n\n" + describe(message, List.of()));
+                + messageId + " of channel " + channelId + " to be processed\n\n"
+                + describe(message == null ? List.of() : List.of(message), List.of()));
     }
 
     /**

@@ -89,7 +89,7 @@ class EncryptionAtRestTest {
     /** Submits one message and returns it as stored, once the destination has finished with it. */
     private Message process() throws Exception {
         OieServer server = SharedServer.get();
-        long messageId = server.submitMessage(channelId, RAW, new LinkedHashMap<>());
+        long messageId = server.submitOneMessage(channelId, RAW, new LinkedHashMap<>());
         Harness.awaitConnectorStatus(channelId, messageId, DESTINATION, Status.SENT);
         return server.fetchMessage(channelId, messageId);
     }

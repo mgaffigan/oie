@@ -170,7 +170,7 @@ class MessageDeletionTest {
     private long submit(String label) throws Exception {
         Map<String, Object> sourceMap = new LinkedHashMap<>();
         sourceMap.put("mdstring", label);
-        long messageId = SharedServer.get().submitMessage(channelId, PAYLOAD, sourceMap);
+        long messageId = SharedServer.get().submitOneMessage(channelId, PAYLOAD, sourceMap);
         Harness.awaitConnectorStatus(channelId, messageId, LAST_DESTINATION, Status.SENT);
         // The statistics assertions read a channel-wide total, so wait for the commit that
         // finishes the message rather than only for its last destination.

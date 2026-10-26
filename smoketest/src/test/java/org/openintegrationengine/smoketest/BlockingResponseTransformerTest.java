@@ -59,7 +59,7 @@ class BlockingResponseTransformerTest {
         // The payload is this run's token: the destination echoes it back, so it is also the
         // response the transformer parks on and the content it rewrites.
         String token = UUID.randomUUID().toString();
-        long messageId = SharedServer.get().submitMessage(channelId, token, new LinkedHashMap<>());
+        long messageId = SharedServer.get().submitOneMessage(channelId, token, new LinkedHashMap<>());
 
         try {
             ConnectorMessage blocked = Harness.awaitConnectorStatus(channelId, messageId, DESTINATION, Status.PENDING);

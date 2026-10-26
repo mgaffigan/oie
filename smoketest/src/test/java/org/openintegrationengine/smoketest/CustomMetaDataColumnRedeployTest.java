@@ -90,7 +90,7 @@ class CustomMetaDataColumnRedeployTest {
         for (int i = 0; i < sourceMapEntries.length; i += 2) {
             sourceMap.put(sourceMapEntries[i], sourceMapEntries[i + 1]);
         }
-        return server.submitMessage(channelId, "Hello world!", sourceMap);
+        return server.submitOneMessage(channelId, "Hello world!", sourceMap);
     }
 
     /** Reads one message's source custom metadata back off the server. */

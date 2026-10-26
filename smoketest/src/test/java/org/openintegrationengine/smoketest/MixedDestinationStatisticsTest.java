@@ -51,7 +51,7 @@ class MixedDestinationStatisticsTest {
     @Test
     void eachDestinationCreditsItsOwnOutcome() throws Exception {
         for (int i = 0; i < 3; i++) {
-            long messageId = SharedServer.get().submitMessage(channelId, "mixed", new LinkedHashMap<>());
+            long messageId = SharedServer.get().submitOneMessage(channelId, "mixed", new LinkedHashMap<>());
             Harness.awaitProcessed(channelId, messageId);
         }
 

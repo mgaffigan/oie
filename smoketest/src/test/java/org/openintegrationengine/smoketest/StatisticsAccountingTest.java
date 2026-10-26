@@ -70,7 +70,7 @@ class StatisticsAccountingTest {
 
     /** Submits one message and waits for the server to finish with it, counters included. */
     private void submit() throws Exception {
-        long messageId = SharedServer.get().submitMessage(channelId, "counted", new LinkedHashMap<>());
+        long messageId = SharedServer.get().submitOneMessage(channelId, "counted", new LinkedHashMap<>());
         Harness.awaitProcessed(channelId, messageId);
     }
 }

@@ -85,7 +85,7 @@ class SourceQueueTest {
 
         try {
             for (int i = 1; i <= MESSAGE_COUNT; i++) {
-                messageIds.add(SharedServer.get().submitMessage(channelId, token + "#" + i, new LinkedHashMap<>()));
+                messageIds.add(SharedServer.get().submitOneMessage(channelId, token + "#" + i, new LinkedHashMap<>()));
             }
 
             // The first message is parked in the destination and the rest are behind it. Waiting
@@ -117,7 +117,7 @@ class SourceQueueTest {
 
         try {
             for (int i = 1; i <= MESSAGE_COUNT; i++) {
-                messageIds.add(SharedServer.get().submitMessage(channelId, token + "#" + i, new LinkedHashMap<>()));
+                messageIds.add(SharedServer.get().submitOneMessage(channelId, token + "#" + i, new LinkedHashMap<>()));
             }
             // One message is in the destination, so the rest are the queue.
             int queued = MESSAGE_COUNT - 1;
@@ -170,7 +170,7 @@ class SourceQueueTest {
                 submitted.add(submitterPool.submit(() -> {
                     List<Long> mine = new ArrayList<>();
                     for (int i = 1; i <= perSubmitter; i++) {
-                        mine.add(connection.submitMessage(channelId, prefix + i, new LinkedHashMap<>()));
+                        mine.add(connection.submitOneMessage(channelId, prefix + i, new LinkedHashMap<>()));
                     }
                     return mine;
                 }));

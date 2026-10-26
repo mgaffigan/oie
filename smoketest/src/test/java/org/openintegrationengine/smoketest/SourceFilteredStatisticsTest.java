@@ -48,7 +48,7 @@ class SourceFilteredStatisticsTest {
     @Test
     void aMessageFilteredAtTheSourceIsCountedThereAndNowhereElse() throws Exception {
         for (int i = 0; i < 3; i++) {
-            long messageId = SharedServer.get().submitMessage(channelId, "rejected", new LinkedHashMap<>());
+            long messageId = SharedServer.get().submitOneMessage(channelId, "rejected", new LinkedHashMap<>());
             Harness.awaitProcessed(channelId, messageId);
         }
 

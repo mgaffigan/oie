@@ -68,7 +68,7 @@ class DestinationQueueTest {
 
         try {
             for (int i = 1; i <= MESSAGE_COUNT; i++) {
-                messageIds.add(SharedServer.get().submitMessage(channelId, token + "#" + i, new LinkedHashMap<>()));
+                messageIds.add(SharedServer.get().submitOneMessage(channelId, token + "#" + i, new LinkedHashMap<>()));
             }
             // The destination leaves every message on the queue while the gate is shut, so the
             // queue is at its full depth - past the buffer it holds in memory - before the stop.

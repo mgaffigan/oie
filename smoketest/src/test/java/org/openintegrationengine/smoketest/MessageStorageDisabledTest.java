@@ -42,7 +42,7 @@ class MessageStorageDisabledTest {
     @Test
     void storesNoMessage() throws Exception {
         OieServer server = SharedServer.get();
-        long messageId = server.submitMessage(channelId, "Hello world!", new LinkedHashMap<>());
+        long messageId = server.submitOneMessage(channelId, "Hello world!", new LinkedHashMap<>());
         Message stored = server.fetchMessage(channelId, messageId);
         assertNull(stored, () -> "DISABLED storage wrote a row for message " + messageId);
     }

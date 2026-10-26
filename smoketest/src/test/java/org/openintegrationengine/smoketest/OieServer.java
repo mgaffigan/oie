@@ -209,6 +209,19 @@ final class OieServer implements AutoCloseable {
         awaitState(channelId, DeployedState.STARTED);
     }
 
+    /**
+     * Submits a source payload that produces exactly one message and returns its id, for the Java
+     * tests that follow a single message through the server rather than asserting over fixtures.
+     */
+    long submitOneMessage(String channelId, String rawData, Map<String, Object> sourceMap) throws ClientException {
+        List<Long> messageIds = submitMessage(channelId, rawData, sourceMap);
+        if (messageIds.size() != 1) {
+            throw new AssertionError("Expected the payload to produce one message, found "
+                    + messageIds.size() + " " + messageIds);
+        }
+        return messageIds.get(0);
+    }
+
     /** Submits a source payload and returns the id of every message it produced, in dispatch order. */
     List<Long> submitMessage(String channelId, String rawData, Map<String, Object> sourceMap) throws ClientException {
         RawMessage rawMessage = new RawMessage(rawData, null, sourceMap);
