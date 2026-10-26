@@ -10,18 +10,44 @@
 package com.mirth.connect.server.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.velocity.VelocityContext;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.mirth.connect.server.controllers.ConfigurationController;
+import com.mirth.connect.server.controllers.ControllerFactory;
 
 public class TemplateValueReplacerTest {
 
     private TemplateValueReplacer templateReplacer;
+
+    private static AutoCloseable factoryOverride;
+
+    /** replaceValues reads the configuration map off the ControllerFactory singleton. */
+    @BeforeClass
+    public static void setUpBeforeClass() {
+        ConfigurationController configurationController = mock(ConfigurationController.class);
+        when(configurationController.getConfigurationMap()).thenReturn(new HashMap<String, String>());
+
+        ControllerFactory controllerFactory = mock(ControllerFactory.class);
+        when(controllerFactory.createConfigurationController()).thenReturn(configurationController);
+
+        factoryOverride = ControllerFactory.setFactoryForTesting(controllerFactory);
+    }
+
+    @AfterClass
+    public static void restoreControllerFactory() throws Exception {
+        factoryOverride.close();
+    }
 
     @Before
     public void setUp() throws Exception {

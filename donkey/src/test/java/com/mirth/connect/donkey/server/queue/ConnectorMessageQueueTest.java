@@ -16,12 +16,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import com.mirth.connect.donkey.model.message.ConnectorMessage;
 import com.mirth.connect.donkey.model.message.Status;
 import com.mirth.connect.donkey.server.Donkey;
@@ -38,6 +36,8 @@ import com.mirth.connect.donkey.server.event.EventDispatcher;
  * makes the buffer boundaries exact instead of a race against a live channel.
  */
 public class ConnectorMessageQueueTest {
+
+    private static AutoCloseable donkeyOverride;
 
     private static final String CHANNEL_ID = "ConnectorMessageQueueTest";
     private static final String CHANNEL_NAME = "ConnectorMessageQueueTest";
@@ -60,16 +60,14 @@ public class ConnectorMessageQueueTest {
         Donkey donkey = mock(Donkey.class);
         when(donkey.getEventDispatcher()).thenReturn(mock(EventDispatcher.class));
 
-        Injector injector = Guice.createInjector(new AbstractModule() {
-            @Override
-            protected void configure() {
-                requestStaticInjection(Donkey.class);
-                bind(Donkey.class).toInstance(donkey);
-            }
-        });
-        injector.getInstance(Donkey.class);
+        donkeyOverride = Donkey.setInstanceForTesting(donkey);
 
         assertTrue("Donkey singleton injection failed", donkey == Donkey.getInstance());
+    }
+
+    @AfterClass
+    public static void restoreDonkey() throws Exception {
+        donkeyOverride.close();
     }
 
     @Before
