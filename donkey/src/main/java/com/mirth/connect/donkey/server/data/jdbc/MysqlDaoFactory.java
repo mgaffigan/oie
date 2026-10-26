@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.mirth.connect.donkey.server.data.DonkeyDaoException;
 import com.mirth.connect.donkey.util.SerializerProvider;
 
 public class MysqlDaoFactory extends JdbcDaoFactory {
@@ -27,6 +28,19 @@ public class MysqlDaoFactory extends JdbcDaoFactory {
         dao.setQuoteChar('`');
         checkTransactionIsolation(dao);
         return dao;
+    }
+
+    @Override
+    public void checkNewDatabase(Connection connection) {
+        try {
+            if (connection.getTransactionIsolation() == Connection.TRANSACTION_REPEATABLE_READ) {
+                throw new DonkeyDaoException("Creating a new database with REPEATABLE-READ transaction " 
+                    + "isolation is not allowed.  Set the transaction isolation level in the database "
+                    + "URL or the database server to READ-COMMITTED.");
+            }
+        } catch (SQLException e) {
+            throw new DonkeyDaoException("Failed to check the transaction isolation level for this MySQL connection.", e);
+        }
     }
 
     /**
