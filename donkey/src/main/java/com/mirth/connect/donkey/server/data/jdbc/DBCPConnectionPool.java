@@ -11,6 +11,7 @@ package com.mirth.connect.donkey.server.data.jdbc;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Properties;
 
 import javax.sql.DataSource;
 
@@ -26,10 +27,19 @@ public class DBCPConnectionPool implements ConnectionPool {
     private DataSource dataSource;
     private int maxConnections;
 
-    public DBCPConnectionPool(String url, String username, String password, int maxConnections, boolean readOnly) {
+    public DBCPConnectionPool(String url, String username, String password, Properties driverProperties, int maxConnections, boolean readOnly) {
         this.maxConnections = maxConnections;
 
-        ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(url, username, password);
+        Properties connectionProperties = new Properties();
+        connectionProperties.putAll(driverProperties);
+        if (username != null) {
+            connectionProperties.setProperty("user", username);
+        }
+        if (password != null) {
+            connectionProperties.setProperty("password", password);
+        }
+
+        ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(url, connectionProperties);
         PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory, null);
         poolableConnectionFactory.setDefaultAutoCommit(false);
         poolableConnectionFactory.setDefaultReadOnly(readOnly);

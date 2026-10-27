@@ -47,6 +47,7 @@ public class DatabaseSettings extends AbstractSettings implements Serializable, 
         databaseDriverMap.put("oracle", "oracle.jdbc.OracleDriver");
         databaseDriverMap.put("postgres", "org.postgresql.Driver");
         databaseDriverMap.put("sqlserver", "net.sourceforge.jtds.jdbc.Driver");
+        databaseDriverMap.put("sqlite", "org.sqlite.JDBC");
 
         databaseJdbc4Map = new HashMap<String, Boolean>();
         databaseJdbc4Map.put("derby", true);
@@ -55,6 +56,7 @@ public class DatabaseSettings extends AbstractSettings implements Serializable, 
         databaseJdbc4Map.put("postgres", true);
         // JTDS does not support JDBC 4.0 operations
         databaseJdbc4Map.put("sqlserver", false);
+        databaseJdbc4Map.put("sqlite", true);
 
         databaseTestQueryMap = new HashMap<String, String>();
         databaseTestQueryMap.put("derby", "SELECT 1");
@@ -62,6 +64,7 @@ public class DatabaseSettings extends AbstractSettings implements Serializable, 
         databaseTestQueryMap.put("oracle", "SELECT 1 FROM DUAL");
         databaseTestQueryMap.put("postgres", "SELECT 1");
         databaseTestQueryMap.put("sqlserver", "SELECT 1");
+        databaseTestQueryMap.put("sqlite", "SELECT 1");
     }
 
     private boolean splitReadWrite;

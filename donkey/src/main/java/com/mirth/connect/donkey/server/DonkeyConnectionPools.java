@@ -12,6 +12,7 @@ package com.mirth.connect.donkey.server;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
+import org.sqlite.SQLiteConfig;
 
 import com.google.inject.Inject;
 import com.mirth.connect.donkey.model.DatabaseConstants;
@@ -105,10 +106,33 @@ public class DonkeyConnectionPools {
             Class.forName(driver);
         }
 
+        Properties driverProperties = getDriverProperties(database, readOnly);
+
         if (StringUtils.equalsIgnoreCase(pool, "DBCP")) {
-            return new DBCPConnectionPool(url, username, password, maxConnections, readOnly);
+            return new DBCPConnectionPool(url, username, password, driverProperties, maxConnections, readOnly);
         } else {
-            return new HikariConnectionPool(driver, url, username, password, maxConnections, jdbc4, testQuery, readOnly);
+            return new HikariConnectionPool(driver, url, username, password, driverProperties, maxConnections, jdbc4, testQuery, readOnly);
         }
+    }
+
+    private Properties getDriverProperties(String database, boolean readOnly) {
+        if (!"sqlite".equals(database)) {
+            return new Properties();
+        }
+
+        SQLiteConfig config = new SQLiteConfig();
+        config.setJournalMode(SQLiteConfig.JournalMode.WAL);
+        config.setSynchronous(SQLiteConfig.SynchronousMode.FULL);
+        config.enforceForeignKeys(true);
+        // Matches Derby's default lock wait
+        config.setBusyTimeout(60000);
+        // The SQL mappers write timestamps with strftime('%Y-%m-%d %H:%M:%f', 'now', 'localtime'), which must match this format
+        config.setDateClass(SQLiteConfig.DateClass.TEXT.name());
+        config.setDateStringFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+        // Hikari and DBCP call setReadOnly on each connection, which xerial rejects otherwise
+        config.setExplicitReadOnly(readOnly);
+
+        return config.toProperties();
     }
 }

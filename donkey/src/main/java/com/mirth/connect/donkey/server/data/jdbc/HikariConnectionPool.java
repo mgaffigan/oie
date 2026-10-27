@@ -11,6 +11,7 @@ package com.mirth.connect.donkey.server.data.jdbc;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Properties;
 
 import javax.sql.DataSource;
 
@@ -20,7 +21,7 @@ public class HikariConnectionPool implements ConnectionPool {
     private HikariDataSource dataSource;
     private int maxConnections;
 
-    public HikariConnectionPool(String driver, String url, String username, String password, int maxConnections, boolean jdbc4, String testQuery, boolean readOnly) {
+    public HikariConnectionPool(String driver, String url, String username, String password, Properties driverProperties, int maxConnections, boolean jdbc4, String testQuery, boolean readOnly) {
         this.maxConnections = maxConnections;
 
         dataSource = new HikariDataSource();
@@ -28,6 +29,7 @@ public class HikariConnectionPool implements ConnectionPool {
         dataSource.setJdbcUrl(url);
         dataSource.setUsername(username);
         dataSource.setPassword(password);
+        dataSource.setDataSourceProperties(driverProperties);
         dataSource.setConnectionTimeout(0);
         dataSource.setAutoCommit(false);
         dataSource.setMaximumPoolSize(maxConnections);

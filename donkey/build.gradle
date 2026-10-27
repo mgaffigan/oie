@@ -6,6 +6,9 @@ dependencies {
     testImplementation libs.bundles.donkey.test
 }
 
+// Tests load the query files from the classpath root, as donkey-server.jar provides them
+sourceSets.test.resources.srcDir 'donkeydbconf'
+
 def donkeyModelJar = tasks.register('donkeyModelJar', Jar) {
     archiveFileName = 'donkey-model.jar'
     destinationDirectory = file('setup')
