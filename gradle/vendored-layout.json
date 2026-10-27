@@ -157,6 +157,7 @@
   "org.quartz-scheduler:quartz": "",
   "org.slf4j:slf4j-api": "",
   "org.slf4j:slf4j-log4j12": "",
+  "org.xerial:sqlite-jdbc": "database",
   "xpp3:xpp3": "xstream"
  },
  "generator": {
@@ -356,6 +357,7 @@
   "org.quartz-scheduler:quartz": "",
   "org.reactivestreams:reactive-streams": "aws/ext",
   "org.reflections:reflections": "swagger/ext",
+  "org.xerial:sqlite-jdbc": "database",
   "org.yaml:snakeyaml": "jackson",
   "software.amazon.awssdk:annotations": "aws",
   "software.amazon.awssdk:apache-client": "aws",
