@@ -58,7 +58,6 @@ Only the changes you intended should appear.
 ### Run and debug
 
 ```bash
-./gradlew :server:createDerbyDb     # one-time: create the embedded database
 ./gradlew :server:devRun            # run the server from the development tree
 ./gradlew :server:devLauncher       # run the server the way production starts it (from server/setup)
 ./gradlew :client:devClient         # run the administrator client against https://localhost:8443

@@ -1,6 +1,9 @@
 services:
   oie:
     image: ${OIE_IMAGE}
+    environment:
+      DATABASE: derby
+      DATABASE_URL: "jdbc:derby:$${dir.appdata}/mirthdb;create=true"
     ports:
       - "8443:8443"
     healthcheck:

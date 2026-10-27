@@ -21,6 +21,15 @@ KEYSTORE_PASS=changeme
 sed -i "s/^keystore\.storepass\s*=\s*.*\$/keystore.storepass = ${KEYSTORE_PASS//\//\\/}/" "$APP_DIR/conf/mirth.properties"
 sed -i "s/^keystore\.keypass\s*=\s*.*\$/keystore.keypass = ${KEYSTORE_PASS//\//\\/}/" "$APP_DIR/conf/mirth.properties"
 
+# Images from before SQLite became the default stored a Derby database in appdata. Keep using
+# it unless a database is chosen explicitly.
+if [ -z "${DATABASE+x}" ] && [ -z "${DATABASE_URL+x}" ] && [ -z "${_MP_DATABASE+x}" ] && [ -z "${_MP_DATABASE_URL+x}" ] \
+	&& [ -d "$APP_DIR/appdata/mirthdb" ] && ! [ -e "$APP_DIR/appdata/mirthdb.sqlite" ]; then
+	echo "Using the existing Derby database in appdata/mirthdb. Set DATABASE and DATABASE_URL to use a different database."
+	DATABASE=derby
+	DATABASE_URL='jdbc:derby:${dir.appdata}/mirthdb;create=true'
+fi
+
 # merge the environment variables into /opt/engine/conf/mirth.properties
 # db type
 if ! [ -z "${DATABASE+x}" ]; then

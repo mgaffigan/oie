@@ -26,7 +26,7 @@ An optional Mirth Connect Command Line Interface can be installed, allowing you 
 
 After the installation, the Mirth Connect directory layout will look as follows:
 
-/appdata/mirthdb: The embedded database (Do NOT delete if you specify Derby as your database). This will be created when the Mirth Connect Server is started. The path for appdata is defined by the dir.appdata property in mirth.properties.
+/appdata/mirthdb.sqlite: The embedded SQLite database (Do NOT delete if you specify SQLite as your database). Derby, if specified instead, keeps its database in /appdata/mirthdb. This will be created when the Mirth Connect Server is started. The path for appdata is defined by the dir.appdata property in mirth.properties.
 /cli-lib: Libraries for the Mirth Connect Command Line Interface (if installed)
 /client-lib: Libraries for the Mirth Connect Administrator
 /conf: Configuration files

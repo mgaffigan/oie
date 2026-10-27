@@ -98,7 +98,7 @@ ci/runtests.sh
 Run one configuration:
 
 ```sh
-ci/runtests.sh alpine-temurin21-derby
+ci/runtests.sh alpine-temurin21-sqlite
 ```
 
 To iterate against an already-running server:
