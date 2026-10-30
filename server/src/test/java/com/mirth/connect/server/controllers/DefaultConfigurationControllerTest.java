@@ -43,11 +43,12 @@ import org.mockito.invocation.Invocation;
 import org.xml.sax.SAXParseException;
 
 import com.mirth.connect.client.core.ControllerException;
+import com.mirth.connect.donkey.testing.StaticOverride;
 import com.mirth.connect.model.DriverInfo;
 
 public class DefaultConfigurationControllerTest {
 
-    private static AutoCloseable factoryOverride;
+    private static StaticOverride factoryOverride;
 
     @BeforeClass
     public static void setup() throws Exception {
@@ -56,12 +57,14 @@ public class DefaultConfigurationControllerTest {
         ScriptController scriptController = mock(ScriptController.class);
         when(controllerFactory.createScriptController()).thenReturn(scriptController);
 
-        factoryOverride = ControllerFactory.setFactoryForTesting(controllerFactory);
+        factoryOverride = StaticOverride.install(ControllerFactory.class, "factory", controllerFactory);
     }
 
     @AfterClass
-    public static void restoreControllerFactory() throws Exception {
-        factoryOverride.close();
+    public static void restoreControllerFactory() {
+        if (factoryOverride != null) {
+            factoryOverride.close();
+        }
     }
 
     @Test

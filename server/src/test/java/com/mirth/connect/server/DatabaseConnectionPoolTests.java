@@ -28,13 +28,16 @@ import static org.mockito.Mockito.when;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.HashMap;
 
 import javax.sql.DataSource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.io.Resources;
+import org.junit.After;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.Invocation;
@@ -45,6 +48,7 @@ import com.mirth.connect.donkey.server.DonkeyConfiguration;
 import com.mirth.connect.donkey.server.DonkeyConnectionPools;
 import com.mirth.connect.donkey.server.data.ChannelDoesNotExistException;
 import com.mirth.connect.donkey.server.data.jdbc.ConnectionPool;
+import com.mirth.connect.donkey.testing.StaticOverride;
 import com.mirth.connect.model.Channel;
 import com.mirth.connect.model.ChannelGroup;
 import com.mirth.connect.model.ChannelHeader;
@@ -102,6 +106,15 @@ public class DatabaseConnectionPoolTests {
 
     private Connection connection;
     private Connection readOnlyConnection;
+
+    private final Deque<StaticOverride> overrides = new ArrayDeque<>();
+
+    @After
+    public void restoreOverrides() {
+        while (!overrides.isEmpty()) {
+            overrides.pop().close();
+        }
+    }
 
     @Test
     public void testCachesReadPool() throws Exception {
@@ -231,8 +244,7 @@ public class DatabaseConnectionPoolTests {
         if (!USE_REAL_DATABASE_CONNECTIONS) {
             com.mirth.connect.donkey.server.controllers.ChannelController channelController = spy(com.mirth.connect.donkey.server.controllers.ChannelController.class);
             doReturn(1L).when(channelController).getLocalChannelId(eq("test"), anyBoolean());
-            // TODO: this leaks channelController into global state and could cause flaky tests
-            com.mirth.connect.donkey.server.controllers.ChannelController.setInstanceForTesting(channelController);
+            overrides.push(StaticOverride.install(com.mirth.connect.donkey.server.controllers.ChannelController.class, "instance", channelController));
         }
 
         MessageController messageController = DonkeyMessageController.create();
@@ -326,15 +338,13 @@ public class DatabaseConnectionPoolTests {
             doReturn(createPool(readOnlyConnection)).when(donkeyCP).createConnectionPool(anyString(), anyString(), anyString(), anyString(), anyString(), anyBoolean(), anyString(), anyInt(), eq(true));
         }
 
-        // TODO: this leaks channelController into global state and could cause flaky tests
-        DonkeyConnectionPools.setInstanceForTesting(donkeyCP);
+        overrides.push(StaticOverride.install(DonkeyConnectionPools.class, "instance", donkeyCP));
 
         DonkeyConnectionPools.getInstance().init(databaseSettings.getProperties());
 
         donkey = spy(Donkey.class);
 
-        // TODO: this leaks channelController into global state and could cause flaky tests
-        Donkey.setInstanceForTesting(donkey);
+        overrides.push(StaticOverride.install(Donkey.class, "instance", donkey));
 
         ControllerFactory controllerFactory = spy(new DefaultControllerFactory());
 
@@ -349,13 +359,11 @@ public class DatabaseConnectionPoolTests {
         ExtensionController extensionController = mock(ExtensionController.class);
         doReturn(extensionController).when(controllerFactory).createExtensionController();
 
-        // TODO: this leaks channelController into global state and could cause flaky tests
-        ControllerFactory.setFactoryForTesting(controllerFactory);
+        overrides.push(StaticOverride.install(ControllerFactory.class, "factory", controllerFactory));
 
         sqlConfig = spy(new SqlConfig());
 
-        // TODO: this leaks channelController into global state and could cause flaky tests
-        SqlConfig.setInstanceForTesting(sqlConfig);
+        overrides.push(StaticOverride.install(SqlConfig.class, "instance", sqlConfig));
 
         donkey.startEngine(new DonkeyConfiguration("appdata", databaseSettings.getProperties(), null, null, "testserverid"));
 

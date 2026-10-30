@@ -26,6 +26,7 @@ import com.mirth.connect.donkey.server.channel.ChannelException;
 import com.mirth.connect.donkey.server.channel.DispatchResult;
 import com.mirth.connect.donkey.server.channel.FilterTransformerExecutor;
 import com.mirth.connect.donkey.server.event.EventDispatcher;
+import com.mirth.connect.donkey.testing.StaticOverride;
 import com.mirth.connect.server.TestUtils.DummyChannel;
 import com.mirth.connect.server.channel.MirthMetaDataReplacer;
 import com.mirth.connect.server.controllers.ConfigurationController;
@@ -37,7 +38,7 @@ import com.mirth.connect.server.util.javascript.MirthContextFactory;
 
 public class DatabaseReceiverInvalidColumnNameTests {
 
-    private static AutoCloseable factoryOverride;
+    private static StaticOverride factoryOverride;
 
     private final static String DB_DRIVER = "org.postgresql.Driver";
     private final static String DB_URL = "jdbc:postgresql://localhost:5432/test";
@@ -63,12 +64,14 @@ public class DatabaseReceiverInvalidColumnNameTests {
         when(contextFactoryController.getContextFactory(any())).thenReturn(new MirthContextFactory(null, null, false));
         when(controllerFactory.createContextFactoryController()).thenReturn(contextFactoryController);
 
-        factoryOverride = ControllerFactory.setFactoryForTesting(controllerFactory);
+        factoryOverride = StaticOverride.install(ControllerFactory.class, "factory", controllerFactory);
     }
 
     @AfterClass
-    public static void restoreControllerFactory() throws Exception {
-        factoryOverride.close();
+    public static void restoreControllerFactory() {
+        if (factoryOverride != null) {
+            factoryOverride.close();
+        }
     }
 
     @Test

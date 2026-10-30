@@ -28,6 +28,7 @@ import org.junit.Test;
 
 import com.mirth.connect.donkey.model.message.ConnectorMessage;
 import com.mirth.connect.donkey.model.message.MessageContent;
+import com.mirth.connect.donkey.testing.StaticOverride;
 import com.mirth.connect.model.codetemplates.ContextType;
 import com.mirth.connect.server.builders.JavaScriptBuilder;
 import com.mirth.connect.server.controllers.CodeTemplateController;
@@ -40,7 +41,7 @@ import com.mirth.connect.server.util.CompiledScriptCache;
 
 public class JavaScriptUtilTest {
 
-    private static AutoCloseable factoryOverride;
+    private static StaticOverride factoryOverride;
 
     private static final String SCRIPT_ID = "JavaScriptUtilTest-script";
 
@@ -62,7 +63,7 @@ public class JavaScriptUtilTest {
         CodeTemplateController codeTemplateController = mock(CodeTemplateController.class);
         when(controllerFactory.createCodeTemplateController()).thenReturn(codeTemplateController);
 
-        factoryOverride = ControllerFactory.setFactoryForTesting(controllerFactory);
+        factoryOverride = StaticOverride.install(ControllerFactory.class, "factory", controllerFactory);
 
         /*
          * JavaScriptBuilder captures its controllers in static fields at class-load time. If an
@@ -73,8 +74,10 @@ public class JavaScriptUtilTest {
     }
 
     @AfterClass
-    public static void restoreControllerFactory() throws Exception {
-        factoryOverride.close();
+    public static void restoreControllerFactory() {
+        if (factoryOverride != null) {
+            factoryOverride.close();
+        }
         // JavaScriptBuilder's cached controllers are left alone: reading them back to restore
         // them would initialize it against the real factory, which rewrites mirth.properties.
     }

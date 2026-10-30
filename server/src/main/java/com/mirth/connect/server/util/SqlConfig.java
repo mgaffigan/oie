@@ -29,7 +29,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.mirth.connect.donkey.model.DatabaseConstants;
 import com.mirth.connect.donkey.util.DonkeyElement;
 import com.mirth.connect.model.DatabaseSettings;
@@ -64,26 +63,6 @@ public class SqlConfig {
         }
 
         return sqlConfig;
-    }
-
-    /** Replaces the instance {@link #getInstance()} hands out until the returned handle is closed. */
-    @VisibleForTesting
-    public static AutoCloseable setInstanceForTesting(SqlConfig newInstance) {
-        synchronized (SqlConfig.class) {
-            SqlConfig previous = instance;
-            instance = newInstance;
-
-            return () -> {
-                synchronized (SqlConfig.class) {
-                    if (instance != newInstance) {
-                        throw new IllegalStateException("The SqlConfig instance was replaced by " + instance
-                                + " while " + newInstance + " was installed for testing.");
-                    }
-
-                    instance = previous;
-                }
-            };
-        }
     }
 
     public SqlConfig() {

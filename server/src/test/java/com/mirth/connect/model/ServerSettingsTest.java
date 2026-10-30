@@ -12,12 +12,13 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import com.mirth.connect.donkey.testing.StaticOverride;
 import com.mirth.connect.server.controllers.ControllerFactory;
 import com.mirth.connect.server.controllers.ScriptController;
 
 public class ServerSettingsTest {
 
-    private static AutoCloseable factoryOverride;
+    private static StaticOverride factoryOverride;
 
     public static ServerSettings serverSettings = new ServerSettings();
     
@@ -28,7 +29,7 @@ public class ServerSettingsTest {
         ScriptController scriptController = mock(ScriptController.class);
         when(controllerFactory.createScriptController()).thenReturn(scriptController);
 
-        factoryOverride = ControllerFactory.setFactoryForTesting(controllerFactory);
+        factoryOverride = StaticOverride.install(ControllerFactory.class, "factory", controllerFactory);
         serverSettings.setEnvironmentName("envName");
         serverSettings.setServerName("serverName");
         serverSettings.setDefaultMetaDataColumns(null);
@@ -37,8 +38,10 @@ public class ServerSettingsTest {
     }
 
     @AfterClass
-    public static void restoreControllerFactory() throws Exception {
-        factoryOverride.close();
+    public static void restoreControllerFactory() {
+        if (factoryOverride != null) {
+            factoryOverride.close();
+        }
     }
     
     @Test

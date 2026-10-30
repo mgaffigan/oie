@@ -28,6 +28,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.mirth.connect.donkey.testing.StaticOverride;
 import com.mirth.connect.server.controllers.ConfigurationController;
 import com.mirth.connect.server.controllers.ControllerFactory;
 
@@ -37,7 +38,7 @@ import com.mirth.connect.server.controllers.ControllerFactory;
  */
 public class DefaultHttpConfigurationTest {
 
-    private static AutoCloseable factoryOverride;
+    private static StaticOverride factoryOverride;
 
     private static final int LARGE_HEADER_BYTES = 16384;
 
@@ -48,12 +49,14 @@ public class DefaultHttpConfigurationTest {
         ControllerFactory controllerFactory = mock(ControllerFactory.class);
         when(controllerFactory.createConfigurationController()).thenReturn(mock(ConfigurationController.class));
 
-        factoryOverride = ControllerFactory.setFactoryForTesting(controllerFactory);
+        factoryOverride = StaticOverride.install(ControllerFactory.class, "factory", controllerFactory);
     }
 
     @AfterClass
-    public static void restoreControllerFactory() throws Exception {
-        factoryOverride.close();
+    public static void restoreControllerFactory() {
+        if (factoryOverride != null) {
+            factoryOverride.close();
+        }
     }
 
     @After

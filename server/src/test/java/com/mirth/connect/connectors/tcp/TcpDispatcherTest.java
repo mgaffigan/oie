@@ -32,6 +32,7 @@ import com.mirth.connect.donkey.server.channel.Channel;
 import com.mirth.connect.donkey.server.data.passthru.PassthruDaoFactory;
 import com.mirth.connect.donkey.server.event.EventDispatcher;
 import com.mirth.connect.donkey.server.queue.ConnectorMessageQueueDataSource;
+import com.mirth.connect.donkey.testing.StaticOverride;
 import com.mirth.connect.model.transmission.batch.DefaultBatchStreamReader;
 import com.mirth.connect.model.transmission.framemode.FrameModeProperties;
 import com.mirth.connect.model.transmission.framemode.FrameStreamHandler;
@@ -44,7 +45,7 @@ import com.mirth.connect.server.controllers.ExtensionController;
 
 public class TcpDispatcherTest {
 
-    private static AutoCloseable factoryOverride;
+    private static StaticOverride factoryOverride;
 	private static final String TEST_CHANNEL_ID = UUID.randomUUID().toString();
 	private static final String TEST_SERVER_ID = UUID.randomUUID().toString();
 	private static final String TEST_CHANNEL_NAME = "Test TCP Sender Channel";
@@ -83,12 +84,14 @@ public class TcpDispatcherTest {
         when(extensionController.getTransmissionModeProviders()).thenReturn(transmissionModeProviders);
         when(controllerFactory.createExtensionController()).thenReturn(extensionController);
         
-        factoryOverride = ControllerFactory.setFactoryForTesting(controllerFactory);
+        factoryOverride = StaticOverride.install(ControllerFactory.class, "factory", controllerFactory);
 	}
 
 	@AfterClass
-	public static void restoreControllerFactory() throws Exception {
-		factoryOverride.close();
+	public static void restoreControllerFactory() {
+		if (factoryOverride != null) {
+			factoryOverride.close();
+		}
 	}
 
 	@After

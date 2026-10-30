@@ -17,6 +17,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.mirth.connect.donkey.testing.StaticOverride;
 import com.mirth.connect.server.builders.JavaScriptBuilder;
 import com.mirth.connect.server.controllers.CodeTemplateController;
 import com.mirth.connect.server.controllers.ConfigurationController;
@@ -26,7 +27,7 @@ import com.mirth.connect.server.controllers.ExtensionController;
 
 public class MirthContextFactoryTest {
 
-    private static AutoCloseable factoryOverride;
+    private static StaticOverride factoryOverride;
 
     @BeforeClass
     public static void setUpBeforeClass() {
@@ -46,14 +47,16 @@ public class MirthContextFactoryTest {
         CodeTemplateController codeTemplateController = mock(CodeTemplateController.class);
         when(controllerFactory.createCodeTemplateController()).thenReturn(codeTemplateController);
 
-        factoryOverride = ControllerFactory.setFactoryForTesting(controllerFactory);
+        factoryOverride = StaticOverride.install(ControllerFactory.class, "factory", controllerFactory);
 
         JavaScriptBuilder.setControllersForTesting(extensionController, codeTemplateController);
     }
 
     @AfterClass
-    public static void restoreControllerFactory() throws Exception {
-        factoryOverride.close();
+    public static void restoreControllerFactory() {
+        if (factoryOverride != null) {
+            factoryOverride.close();
+        }
         // JavaScriptBuilder's cached controllers are left alone: reading them back to restore
         // them would initialize it against the real factory, which rewrites mirth.properties.
     }

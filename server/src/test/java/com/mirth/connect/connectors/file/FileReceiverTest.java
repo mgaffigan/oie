@@ -50,6 +50,7 @@ import com.mirth.connect.donkey.server.channel.ChannelException;
 import com.mirth.connect.donkey.server.channel.DispatchResult;
 import com.mirth.connect.donkey.server.event.EventDispatcher;
 import com.mirth.connect.donkey.server.message.batch.BatchAdaptorFactory;
+import com.mirth.connect.donkey.testing.StaticOverride;
 import com.mirth.connect.model.datatype.SerializerProperties;
 import com.mirth.connect.plugins.datatypes.hl7v2.ER7BatchAdaptorFactory;
 import com.mirth.connect.plugins.datatypes.hl7v2.HL7v2BatchProperties;
@@ -62,7 +63,7 @@ import com.mirth.connect.server.controllers.ExtensionController;
 
 public class FileReceiverTest {
 
-    private static AutoCloseable factoryOverride;
+    private static StaticOverride factoryOverride;
 
     private static final String POLL_ID = "pollId";
     private static final String POLL_SEQUENCE_ID = "pollSequenceId";
@@ -82,15 +83,17 @@ public class FileReceiverTest {
         ExtensionController extensionController = mock(ExtensionController.class);
         when(controllerFactory.createExtensionController()).thenReturn(extensionController);
 
-        factoryOverride = ControllerFactory.setFactoryForTesting(controllerFactory);
+        factoryOverride = StaticOverride.install(ControllerFactory.class, "factory", controllerFactory);
 
         Logger logger = LogManager.getLogger(RuntimeConstants.DEFAULT_RUNTIME_LOG_NAME);
         Configurator.setLevel(logger.getName(), Level.OFF);
     }
 
     @AfterClass
-    public static void restoreControllerFactory() throws Exception {
-        factoryOverride.close();
+    public static void restoreControllerFactory() {
+        if (factoryOverride != null) {
+            factoryOverride.close();
+        }
     }
 
     /*

@@ -17,7 +17,6 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.mirth.connect.donkey.model.channel.Ports;
 import com.mirth.connect.donkey.model.message.Status;
 import com.mirth.connect.donkey.server.Donkey;
@@ -36,26 +35,6 @@ public class ChannelController {
             }
 
             return instance;
-        }
-    }
-
-    /** Replaces the instance {@link #getInstance()} hands out until the returned handle is closed. */
-    @VisibleForTesting
-    public static AutoCloseable setInstanceForTesting(ChannelController newInstance) {
-        synchronized (ChannelController.class) {
-            ChannelController previous = instance;
-            instance = newInstance;
-
-            return () -> {
-                synchronized (ChannelController.class) {
-                    if (instance != newInstance) {
-                        throw new IllegalStateException("The ChannelController instance was replaced by " + instance
-                                + " while " + newInstance + " was installed for testing.");
-                    }
-
-                    instance = previous;
-                }
-            };
         }
     }
 

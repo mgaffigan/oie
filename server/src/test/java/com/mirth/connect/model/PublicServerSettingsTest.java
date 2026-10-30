@@ -14,12 +14,13 @@ import org.junit.Test;
 
 import com.mirth.connect.donkey.model.channel.MetaDataColumn;
 import com.mirth.connect.donkey.model.channel.MetaDataColumnType;
+import com.mirth.connect.donkey.testing.StaticOverride;
 import com.mirth.connect.server.controllers.ControllerFactory;
 import com.mirth.connect.server.controllers.ScriptController;
 
 public class PublicServerSettingsTest {
 
-    private static AutoCloseable factoryOverride;
+    private static StaticOverride factoryOverride;
 
     public static ServerSettings serverSettings = new ServerSettings();
     public static List<MetaDataColumn> COLUMNS;
@@ -31,7 +32,7 @@ public class PublicServerSettingsTest {
         ScriptController scriptController = mock(ScriptController.class);
         when(controllerFactory.createScriptController()).thenReturn(scriptController);
 
-        factoryOverride = ControllerFactory.setFactoryForTesting(controllerFactory);
+        factoryOverride = StaticOverride.install(ControllerFactory.class, "factory", controllerFactory);
         serverSettings.setEnvironmentName("envName");
         serverSettings.setServerName("serverName");
         serverSettings.setDefaultMetaDataColumns(null);
@@ -43,8 +44,10 @@ public class PublicServerSettingsTest {
     }
 
     @AfterClass
-    public static void restoreControllerFactory() throws Exception {
-        factoryOverride.close();
+    public static void restoreControllerFactory() {
+        if (factoryOverride != null) {
+            factoryOverride.close();
+        }
     }
     
     @Test

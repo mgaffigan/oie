@@ -32,11 +32,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import com.mirth.connect.client.core.ControllerException;
+import com.mirth.connect.donkey.testing.StaticOverride;
 import com.mirth.connect.model.ServerEvent;
 import com.mirth.connect.model.filters.EventFilter;
 public class DefaultEventControllerTest {
 
-    private AutoCloseable factoryOverride;
+    private StaticOverride factoryOverride;
     private EventController eventController;
     private final String SERVER_ID = "0000-0000-0000";
     private final String CHANNEL_ID = "d243960c-7de3-4059-b60c-399991df1cdc";
@@ -52,15 +53,17 @@ public class DefaultEventControllerTest {
         ControllerFactory controllerFactory = mock(ControllerFactory.class);
         ConfigurationController configurationController = mock(ConfigurationController.class);
         when(controllerFactory.createConfigurationController()).thenReturn(configurationController);
-        factoryOverride = ControllerFactory.setFactoryForTesting(controllerFactory);
+        factoryOverride = StaticOverride.install(ControllerFactory.class, "factory", controllerFactory);
         Logger logger = LogManager.getLogger(RuntimeConstants.DEFAULT_RUNTIME_LOG_NAME);
         Configurator.setLevel(logger.getName(), Level.OFF);
         eventController = new TestDefaultEventController();
     }
 
     @After
-    public void restoreControllerFactory() throws Exception {
-        factoryOverride.close();
+    public void restoreControllerFactory() {
+        if (factoryOverride != null) {
+            factoryOverride.close();
+        }
     }
     
     @SuppressWarnings("deprecation")

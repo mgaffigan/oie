@@ -42,26 +42,29 @@ import com.mirth.connect.donkey.server.data.DonkeyDaoFactory;
 import com.mirth.connect.donkey.server.event.EventDispatcher;
 import com.mirth.connect.donkey.server.message.DataType;
 import com.mirth.connect.donkey.server.queue.SourceQueue;
+import com.mirth.connect.donkey.testing.StaticOverride;
 import com.mirth.connect.donkey.util.SerializerProvider;
 
 public class ChannelTest {
 
-    private static AutoCloseable donkeyOverride;
+    private static StaticOverride donkeyOverride;
 
     @BeforeClass
     public static void setupControllers() throws Exception {
         Donkey donkey = mock(Donkey.class);
         when(donkey.getEventDispatcher()).thenReturn(mock(EventDispatcher.class));
 
-        donkeyOverride = Donkey.setInstanceForTesting(donkey);
+        donkeyOverride = StaticOverride.install(Donkey.class, "instance", donkey);
 
         // Make sure injection succeeded
         assertTrue(donkey == Donkey.getInstance());
     }
 
     @AfterClass
-    public static void restoreDonkey() throws Exception {
-        donkeyOverride.close();
+    public static void restoreDonkey() {
+        if (donkeyOverride != null) {
+            donkeyOverride.close();
+        }
     }
 
     @Test

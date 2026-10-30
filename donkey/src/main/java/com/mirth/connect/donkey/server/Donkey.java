@@ -23,7 +23,6 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.mirth.connect.donkey.model.DatabaseConstants;
 import com.mirth.connect.donkey.server.channel.Channel;
 import com.mirth.connect.donkey.server.controllers.ChannelController;
@@ -48,26 +47,6 @@ public class Donkey {
             }
 
             return instance;
-        }
-    }
-
-    /** Replaces the instance {@link #getInstance()} hands out until the returned handle is closed. */
-    @VisibleForTesting
-    public static AutoCloseable setInstanceForTesting(Donkey newInstance) {
-        synchronized (Donkey.class) {
-            Donkey previous = instance;
-            instance = newInstance;
-
-            return () -> {
-                synchronized (Donkey.class) {
-                    if (instance != newInstance) {
-                        throw new IllegalStateException("The Donkey instance was replaced by " + instance
-                                + " while " + newInstance + " was installed for testing.");
-                    }
-
-                    instance = previous;
-                }
-            };
         }
     }
 
