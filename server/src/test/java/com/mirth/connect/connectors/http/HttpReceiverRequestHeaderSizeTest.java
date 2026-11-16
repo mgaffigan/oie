@@ -24,6 +24,9 @@ import com.mirth.connect.donkey.server.event.EventDispatcher;
 import com.mirth.connect.server.controllers.ConfigurationController;
 import com.mirth.connect.server.controllers.ControllerFactory;
 import com.mirth.connect.server.controllers.EventController;
+import com.mirth.connect.server.controllers.ExtensionController;
+
+import org.openintegrationengine.engine.tls.DefaultTlsContextProvider;
 
 /**
  * Covers what HttpReceiver.onStart() does with the configured request header size before Jetty ever
@@ -42,6 +45,10 @@ public class HttpReceiverRequestHeaderSizeTest {
         ControllerFactory controllerFactory = mock(ControllerFactory.class);
         when(controllerFactory.createConfigurationController()).thenReturn(mock(ConfigurationController.class));
         when(controllerFactory.createEventController()).thenReturn(mock(EventController.class));
+
+        ExtensionController extensionController = mock(ExtensionController.class);
+        when(extensionController.getTlsContextProvider()).thenReturn(new DefaultTlsContextProvider(mock(ConfigurationController.class)));
+        when(controllerFactory.createExtensionController()).thenReturn(extensionController);
 
         Injector injector = Guice.createInjector(new AbstractModule() {
             @Override

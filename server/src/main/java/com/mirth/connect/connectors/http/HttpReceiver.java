@@ -110,7 +110,6 @@ import com.mirth.connect.plugins.httpauth.HttpAuthConnectorPluginProperties.Auth
 import com.mirth.connect.plugins.httpauth.RequestInfo;
 import com.mirth.connect.plugins.httpauth.RequestInfo.EntityProvider;
 import com.mirth.connect.server.controllers.ChannelController;
-import com.mirth.connect.server.controllers.ConfigurationController;
 import com.mirth.connect.server.controllers.ControllerFactory;
 import com.mirth.connect.server.controllers.EventController;
 import com.mirth.connect.server.util.ResourceUtil;
@@ -122,7 +121,6 @@ import com.mirth.connect.util.HttpUtil;
 
 public class HttpReceiver extends SourceConnector implements BinaryContentTypeResolver {
     private Logger logger = LogManager.getLogger(this.getClass());
-    private ConfigurationController configurationController = ControllerFactory.getFactory().createConfigurationController();
     private EventController eventController = ControllerFactory.getFactory().createEventController();
     private final TemplateValueReplacer replacer = new TemplateValueReplacer();
     private HttpConfiguration configuration = null;
@@ -142,15 +140,7 @@ public class HttpReceiver extends SourceConnector implements BinaryContentTypeRe
             throw new ConnectorTaskException("Batch processing is not supported for Xml Body.");
         }
 
-        // load the default configuration
-        String configurationClass = getConfigurationClass();
-
-        try {
-            configuration = (HttpConfiguration) Class.forName(configurationClass).newInstance();
-        } catch (Exception e) {
-            logger.trace("could not find custom configuration class, using default");
-            configuration = new DefaultHttpConfiguration();
-        }
+        configuration = new DefaultHttpConfiguration();
 
         try {
             configuration.configureConnectorDeploy(this);
@@ -339,11 +329,6 @@ public class HttpReceiver extends SourceConnector implements BinaryContentTypeRe
     @Override
     public void onHalt() throws ConnectorTaskException {
         onStop();
-    }
-
-    @Override
-    protected String getConfigurationClass() {
-        return configurationController.getProperty(getConnectorProperties().getProtocol(), "httpConfigurationClass");
     }
 
     private class RequestHandler extends AbstractHandler {

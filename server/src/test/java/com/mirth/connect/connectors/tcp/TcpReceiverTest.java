@@ -27,7 +27,9 @@ import com.mirth.connect.plugins.TransmissionModeProvider;
 import com.mirth.connect.plugins.datatypes.hl7v2.HL7v2DataTypeServerPlugin;
 import com.mirth.connect.plugins.mllpmode.MLLPModeProvider;
 import com.mirth.connect.server.attachments.passthru.PassthruAttachmentHandlerProvider;
+import com.mirth.connect.server.controllers.ConfigurationController;
 import com.mirth.connect.server.controllers.ControllerFactory;
+import org.openintegrationengine.engine.tls.DefaultTlsContextProvider;
 import com.mirth.connect.server.controllers.EventController;
 import com.mirth.connect.server.controllers.ExtensionController;
 
@@ -60,6 +62,7 @@ public class TcpReceiverTest {
         dataTypePlugins.put("HL7V2", mock(HL7v2DataTypeServerPlugin.class));
         when(extensionController.getTransmissionModeProviders()).thenReturn(transmissionModeProviders);
         when(extensionController.getDataTypePlugins()).thenReturn(dataTypePlugins);
+        when(extensionController.getTlsContextProvider()).thenReturn(new DefaultTlsContextProvider(mock(ConfigurationController.class)));
         when(controllerFactory.createExtensionController()).thenReturn(extensionController);
         
         Injector injector = Guice.createInjector(new AbstractModule() {

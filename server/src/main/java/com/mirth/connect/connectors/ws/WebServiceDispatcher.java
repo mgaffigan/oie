@@ -103,7 +103,6 @@ import com.mirth.connect.donkey.server.event.ConnectionStatusEvent;
 import com.mirth.connect.donkey.server.event.ErrorEvent;
 import com.mirth.connect.donkey.util.DonkeyElement;
 import com.mirth.connect.donkey.util.DonkeyElement.DonkeyElementException;
-import com.mirth.connect.server.controllers.ConfigurationController;
 import com.mirth.connect.server.controllers.ControllerFactory;
 import com.mirth.connect.server.controllers.EventController;
 import com.mirth.connect.server.util.TemplateValueReplacer;
@@ -118,7 +117,6 @@ public class WebServiceDispatcher extends DestinationConnector {
 
     private Logger logger = LogManager.getLogger(this.getClass());
     private EventController eventController = ControllerFactory.getFactory().createEventController();
-    private ConfigurationController configurationController = ControllerFactory.getFactory().createConfigurationController();
     private TemplateValueReplacer replacer = new TemplateValueReplacer();
     private WebServiceConfiguration configuration;
     private RegistryBuilder<ConnectionSocketFactory> socketFactoryRegistry;
@@ -139,14 +137,7 @@ public class WebServiceDispatcher extends DestinationConnector {
     @Override
     public void onDeploy() throws ConnectorTaskException {
         // load the default configuration
-        String configurationClass = getConfigurationClass();
-
-        try {
-            configuration = (WebServiceConfiguration) Class.forName(configurationClass).newInstance();
-        } catch (Exception e) {
-            logger.trace("could not find custom configuration class, using default");
-            configuration = new DefaultWebServiceConfiguration();
-        }
+        configuration = new DefaultWebServiceConfiguration();
 
         try {
             socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory> create().register("http", PlainConnectionSocketFactory.getSocketFactory());
@@ -221,11 +212,6 @@ public class WebServiceDispatcher extends DestinationConnector {
             }
         }
         dispatchContainers.clear();
-    }
-
-    @Override
-    protected String getConfigurationClass() {
-        return configurationController.getProperty(getConnectorProperties().getProtocol(), "wsConfigurationClass");
     }
 
     private String sourceToXmlString(Source source) throws TransformerConfigurationException, TransformerException {

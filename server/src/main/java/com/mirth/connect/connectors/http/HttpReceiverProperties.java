@@ -23,8 +23,10 @@ import com.mirth.connect.donkey.model.channel.SourceConnectorProperties;
 import com.mirth.connect.donkey.model.channel.SourceConnectorPropertiesInterface;
 import com.mirth.connect.donkey.util.DonkeyElement;
 import com.mirth.connect.donkey.util.purge.PurgeUtil;
+import org.openintegrationengine.engine.tls.TlsCapableConnectorPropertiesInterface;
+import org.openintegrationengine.engine.tls.TlsRole;
 
-public class HttpReceiverProperties extends ConnectorProperties implements ListenerConnectorPropertiesInterface, SourceConnectorPropertiesInterface {
+public class HttpReceiverProperties extends ConnectorProperties implements ListenerConnectorPropertiesInterface, SourceConnectorPropertiesInterface, TlsCapableConnectorPropertiesInterface {
     /**
      * Jetty's own default for HttpConfiguration.setRequestHeaderSize. Channels saved before this
      * property existed have no requestHeaderSize element, so the getter falls back to this and
@@ -215,6 +217,11 @@ public class HttpReceiverProperties extends ConnectorProperties implements Liste
     @Override
     public String toFormattedString() {
         return null;
+    }
+
+    @Override
+    public TlsRole getTlsRole() {
+        return TlsRole.SERVER;
     }
 
     @Override

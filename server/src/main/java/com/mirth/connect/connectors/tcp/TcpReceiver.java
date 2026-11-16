@@ -66,7 +66,6 @@ import com.mirth.connect.model.transmission.batch.DefaultBatchStreamReader;
 import com.mirth.connect.plugins.BasicModeProvider;
 import com.mirth.connect.plugins.DataTypeServerPlugin;
 import com.mirth.connect.plugins.TransmissionModeProvider;
-import com.mirth.connect.server.controllers.ConfigurationController;
 import com.mirth.connect.server.controllers.ControllerFactory;
 import com.mirth.connect.server.controllers.EventController;
 import com.mirth.connect.server.controllers.ExtensionController;
@@ -80,7 +79,6 @@ public class TcpReceiver extends SourceConnector {
     private static final int DEFAULT_BACKLOG = 256;
 
     private Logger logger = LogManager.getLogger(this.getClass());
-    private ConfigurationController configurationController = ControllerFactory.getFactory().createConfigurationController();
     private EventController eventController = ControllerFactory.getFactory().createEventController();
     protected TcpReceiverProperties connectorProperties;
     private TemplateValueReplacer replacer = new TemplateValueReplacer();
@@ -111,14 +109,7 @@ public class TcpReceiver extends SourceConnector {
         }
 
         // load the default configuration
-        String configurationClass = getConfigurationClass();
-
-        try {
-            configuration = (TcpConfiguration) Class.forName(configurationClass).newInstance();
-        } catch (Throwable t) {
-            logger.trace("could not find custom configuration class, using default");
-            configuration = new DefaultTcpConfiguration();
-        }
+        configuration = new DefaultTcpConfiguration();
 
         try {
             configuration.configureConnectorDeploy(this);
@@ -501,11 +492,6 @@ public class TcpReceiver extends SourceConnector {
         } finally {
             finishDispatch(dispatchResult);
         }
-    }
-
-    @Override
-    protected String getConfigurationClass() {
-        return configurationController.getProperty(connectorProperties.getProtocol(), "tcpConfigurationClass");
     }
 
     protected class TcpReader implements Callable<Throwable>, BatchMessageReceiver {

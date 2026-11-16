@@ -72,6 +72,16 @@ public abstract class AbstractConnectorPropertiesPanel extends JPanel {
      * 
      * @param connectorPanel
      */
+    /**
+     * Notification that a field on the host connector's own settings panel changed, forwarded from
+     * {@link ConnectorPanel#updatedField(String)}. The default does nothing.
+     * <p>
+     * Implementations must not call {@link ConnectorPanel#getProperties()} from here: that would
+     * re-enter every properties panel, including this one. Read the connector's current state from
+     * {@link ConnectorPanel#getConnectorSettingsPanel()} instead.
+     */
+    public void updatedField(String field) {}
+
     public final void setConnectorPanel(ConnectorPanel connectorPanel) {
         this.connectorPanel = connectorPanel;
     }

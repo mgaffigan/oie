@@ -85,6 +85,10 @@ def clientCoreJar = tasks.register('clientCoreJar', Jar) {
         include 'com/mirth/connect/client/core/**'
         include 'com/mirth/connect/model/**'
         include 'org/openintegrationengine/engine/plugins/datatypes/AbstractXMLReader.class'
+        // TLS vocabulary shared with the Administrator. The rest of the tls package is server-side.
+        include 'org/openintegrationengine/engine/tls/TlsCapableConnectorPropertiesInterface.class'
+        include 'org/openintegrationengine/engine/tls/TlsRole.class'
+        include 'org/openintegrationengine/engine/tls/ClientAuth.class'
         include 'com/mirth/connect/userutil/**'
         include 'com/mirth/connect/util/**'
         include 'com/mirth/connect/server/util/ResourceUtil.class'

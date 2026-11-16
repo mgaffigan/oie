@@ -29,6 +29,7 @@ import com.mirth.connect.plugins.ResourcePlugin;
 import com.mirth.connect.plugins.ServerPlugin;
 import com.mirth.connect.plugins.ServicePlugin;
 import com.mirth.connect.plugins.TransmissionModeProvider;
+import org.openintegrationengine.engine.tls.TlsContextProvider;
 import com.mirth.connect.server.tools.ClassPathResource;
 
 public abstract class ExtensionController extends Controller {
@@ -219,6 +220,13 @@ public abstract class ExtensionController extends Controller {
     public abstract Map<String, TransmissionModeProvider> getTransmissionModeProviders();
 
     public abstract AuthorizationPlugin getAuthorizationPlugin();
+
+    /**
+     * The active TLS configuration source. Never null: when no extension supplies one, this is the
+     * engine's own implementation, which behaves the way these connectors did before the extension
+     * point existed. Installing more than one is a startup failure.
+     */
+    public abstract TlsContextProvider getTlsContextProvider();
 
     public abstract MultiFactorAuthenticationPlugin getMultiFactorAuthenticationPlugin();
 

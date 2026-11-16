@@ -17,6 +17,11 @@ import org.apache.commons.lang3.math.NumberUtils;
 
 import com.mirth.connect.client.core.api.MirthApiException;
 import com.mirth.connect.server.api.MirthServlet;
+import org.openintegrationengine.engine.tls.TlsContext;
+import org.openintegrationengine.engine.tls.TlsContextProvider;
+import org.openintegrationengine.engine.tls.TlsContextRequest;
+
+import com.mirth.connect.server.controllers.ControllerFactory;
 import com.mirth.connect.server.util.ConnectorUtil;
 import com.mirth.connect.server.util.TemplateValueReplacer;
 import com.mirth.connect.util.ConnectionTestResponse;
@@ -36,13 +41,23 @@ public class TcpConnectorServlet extends MirthServlet implements TcpConnectorSer
             int port = NumberUtils.toInt(replacer.replaceValues(properties.getRemotePort(), channelId, channelName));
             int timeout = NumberUtils.toInt(replacer.replaceValues(properties.getResponseTimeout(), channelId, channelName));
 
-            if (!properties.isOverrideLocalBinding()) {
-                return ConnectorUtil.testConnection(host, port, timeout);
-            } else {
-                String localAddr = replacer.replaceValues(properties.getLocalAddress(), channelId, channelName);
-                int localPort = NumberUtils.toInt(replacer.replaceValues(properties.getLocalPort(), channelId, channelName));
-                return ConnectorUtil.testConnection(host, port, timeout, localAddr, localPort);
+            /*
+             * Unlike HTTP there is no scheme to go on, so the configuration decides; this is the
+             * same question the dispatcher asks when it creates its socket.
+             */
+            TlsContextProvider tlsContextProvider = ControllerFactory.getFactory().createExtensionController().getTlsContextProvider();
+            TlsContextRequest tlsContextRequest = TlsContextRequest.forConnectorProperties(channelId, channelName, properties);
+            TlsContext tlsContext = tlsContextProvider.isTlsEnabled(tlsContextRequest) ? tlsContextProvider.createTlsContext(tlsContextRequest) : null;
+
+            String localAddr = null;
+            int localPort = 0;
+
+            if (properties.isOverrideLocalBinding()) {
+                localAddr = replacer.replaceValues(properties.getLocalAddress(), channelId, channelName);
+                localPort = NumberUtils.toInt(replacer.replaceValues(properties.getLocalPort(), channelId, channelName));
             }
+
+            return ConnectorUtil.testConnection(host, port, timeout, localAddr, localPort, tlsContext);
         } catch (Exception e) {
             throw new MirthApiException(e);
         }

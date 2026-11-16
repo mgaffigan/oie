@@ -32,6 +32,9 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.mirth.connect.server.controllers.ConfigurationController;
 import com.mirth.connect.server.controllers.ControllerFactory;
+import com.mirth.connect.server.controllers.ExtensionController;
+
+import org.openintegrationengine.engine.tls.DefaultTlsContextProvider;
 
 /**
  * Exercises the request header size setting against a real Jetty connector, since the whole point
@@ -47,6 +50,10 @@ public class DefaultHttpConfigurationTest {
     public static void setupBeforeClass() {
         ControllerFactory controllerFactory = mock(ControllerFactory.class);
         when(controllerFactory.createConfigurationController()).thenReturn(mock(ConfigurationController.class));
+
+        ExtensionController extensionController = mock(ExtensionController.class);
+        when(extensionController.getTlsContextProvider()).thenReturn(new DefaultTlsContextProvider(mock(ConfigurationController.class)));
+        when(controllerFactory.createExtensionController()).thenReturn(extensionController);
 
         Injector injector = Guice.createInjector(new AbstractModule() {
             @Override
@@ -98,6 +105,8 @@ public class DefaultHttpConfigurationTest {
         when(receiver.getPort()).thenReturn(0);
         when(receiver.getTimeout()).thenReturn(30000);
         when(receiver.getRequestHeaderSize()).thenReturn(requestHeaderSize);
+        // The configuration asks the properties whether TLS is wanted, so they cannot be a bare mock.
+        when(receiver.getConnectorProperties()).thenReturn(new HttpReceiverProperties());
 
         new DefaultHttpConfiguration().configureReceiver(receiver);
 

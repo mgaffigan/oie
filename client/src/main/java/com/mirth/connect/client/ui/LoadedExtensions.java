@@ -40,6 +40,7 @@ import com.mirth.connect.plugins.ClientPlugin;
 import com.mirth.connect.plugins.CodeTemplatePlugin;
 import com.mirth.connect.plugins.CodeTemplateTypePlugin;
 import com.mirth.connect.plugins.ConnectorPropertiesPlugin;
+import org.openintegrationengine.engine.tls.TlsSettingsPanelProvider;
 import com.mirth.connect.plugins.DashboardColumnPlugin;
 import com.mirth.connect.plugins.DashboardTabPlugin;
 import com.mirth.connect.plugins.DashboardTablePlugin;
@@ -74,6 +75,11 @@ public class LoadedExtensions {
     private Map<String, ResourceClientPlugin> resourceClientPlugins = new LinkedHashMap<String, ResourceClientPlugin>();
     private Map<String, LibraryClientPlugin> libraryClientPlugins = new LinkedHashMap<String, LibraryClientPlugin>();
     private Map<String, ConnectorPropertiesPlugin> connectorPropertiesPlugins = new LinkedHashMap<String, ConnectorPropertiesPlugin>();
+    /*
+     * Singular rather than a map: a TLS panel replaces whatever came before it instead of being
+     * stacked alongside it, and the server refuses to start with more than one TLS provider.
+     */
+    private TlsSettingsPanelProvider tlsSettingsPanelProvider = null;
     private Map<String, ChannelTabPlugin> channelTabPlugins = new LinkedHashMap<String, ChannelTabPlugin>();
     private Map<String, TaskPlugin> taskPlugins = new LinkedHashMap<String, TaskPlugin>();
     private Map<String, ConnectorSettingsPanel> connectors = new TreeMap<String, ConnectorSettingsPanel>();
@@ -270,6 +276,14 @@ public class LoadedExtensions {
     private void addPluginPoints(ClientPlugin plugin) {
         clientPlugins.add(plugin);
 
+        if (plugin instanceof TlsSettingsPanelProvider) {
+            if (tlsSettingsPanelProvider != null) {
+                logger.error("Multiple TLS settings panel providers are installed (" + tlsSettingsPanelProvider.getPluginPointName() + " and " + plugin.getPluginPointName() + "); keeping the first. The server will refuse to start until one is removed.");
+            } else {
+                tlsSettingsPanelProvider = (TlsSettingsPanelProvider) plugin;
+            }
+        }
+
         if (plugin instanceof SettingsPanelPlugin) {
             settingsPanelPlugins.put(plugin.getPluginPointName(), (SettingsPanelPlugin) plugin);
         }
@@ -369,6 +383,7 @@ public class LoadedExtensions {
         dataTypePlugins.clear();
         transmissionModePlugins.clear();
         connectorPropertiesPlugins.clear();
+        tlsSettingsPanelProvider = null;
         resourceClientPlugins.clear();
         libraryClientPlugins.clear();
         channelTabPlugins.clear();
@@ -445,6 +460,14 @@ public class LoadedExtensions {
 
     public Map<String, ConnectorPropertiesPlugin> getConnectorPropertiesPlugins() {
         return connectorPropertiesPlugins;
+    }
+
+    /**
+     * The active TLS settings panel provider, or null when no extension supplies one, in which case
+     * connectors show no TLS section.
+     */
+    public TlsSettingsPanelProvider getTlsSettingsPanelProvider() {
+        return tlsSettingsPanelProvider;
     }
 
     public Map<String, ResourceClientPlugin> getResourceClientPlugins() {

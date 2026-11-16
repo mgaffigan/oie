@@ -1,11 +1,6 @@
-/*
- * Copyright (c) Mirth Corporation. All rights reserved.
- * 
- * http://www.mirthcorp.com
- * 
- * The software in this package is published under the terms of the MPL license a copy of which has
- * been included with this distribution in the LICENSE.txt file.
- */
+// SPDX-License-Identifier: MPL-2.0
+// SPDX-FileCopyrightText: Mirth Corporation
+// SPDX-FileCopyrightText: Mitch Gaffigan <mitch@gaffigan.net>
 
 package com.mirth.connect.connectors.tcp;
 
@@ -17,6 +12,16 @@ import java.util.Map;
 
 import com.mirth.connect.donkey.server.channel.Connector;
 
+/**
+ * How the TCP connectors create their sockets. This is internal to the engine:
+ * {@link DefaultTcpConfiguration} is the only implementation, and extensions influence TLS through
+ * {@link org.openintegrationengine.engine.tls.TlsContextProvider} instead of by replacing this.
+ * <p>
+ * Keeping socket creation here rather than in an extension is deliberate. When this was an
+ * extension point, an implementation had to remember to override every factory method, and missing
+ * one -- {@link #createResponseSocket()} was the one missed in practice -- meant that traffic
+ * quietly went out unencrypted on a connector the user had configured for TLS.
+ */
 public interface TcpConfiguration {
 
     public void configureConnectorDeploy(Connector connector) throws Exception;

@@ -75,11 +75,15 @@ import org.w3c.dom.Node;
 
 import com.ibm.wsdl.extensions.schema.SchemaImpl;
 import com.ibm.wsdl.extensions.schema.SchemaImportImpl;
+import org.openintegrationengine.engine.tls.TlsContext;
+import org.openintegrationengine.engine.tls.TlsContextRequest;
+
 import com.mirth.connect.client.core.api.MirthApiException;
 import com.mirth.connect.connectors.ws.DefinitionServiceMap.DefinitionPortMap;
 import com.mirth.connect.connectors.ws.DefinitionServiceMap.PortInformation;
 import com.mirth.connect.connectors.ws.SchemaType.SchemaTypeElement;
 import com.mirth.connect.server.api.MirthServlet;
+import com.mirth.connect.server.controllers.ControllerFactory;
 import com.mirth.connect.server.util.ConnectorUtil;
 import com.mirth.connect.server.util.TemplateValueReplacer;
 import com.mirth.connect.util.ConnectionTestResponse;
@@ -187,9 +191,9 @@ public class WebServiceConnectorServlet extends MirthServlet implements WebServi
         try {
             // Test the Location URI first if populated. Otherwise test the WSDL URL
             if (StringUtils.isNotBlank(properties.getLocationURI())) {
-                return testConnection(channelId, channelName, properties.getLocationURI());
+                return testConnection(channelId, channelName, properties.getLocationURI(), properties);
             } else if (StringUtils.isNotBlank(properties.getWsdlUrl())) {
-                return testConnection(channelId, channelName, properties.getWsdlUrl());
+                return testConnection(channelId, channelName, properties.getWsdlUrl(), properties);
             } else {
                 throw new Exception("Both WSDL URL and Location URI are blank. At least one must be populated in order to test connection.");
             }
@@ -198,11 +202,22 @@ public class WebServiceConnectorServlet extends MirthServlet implements WebServi
         }
     }
 
-    protected ConnectionTestResponse testConnection(String channelId, String channelName, String urlString) throws Exception {
+    protected ConnectionTestResponse testConnection(String channelId, String channelName, String urlString, WebServiceDispatcherProperties properties) throws Exception {
         URL url = new URL(replacer.replaceValues(urlString, channelId, channelName));
         int port = url.getPort();
+        boolean https = StringUtils.equalsIgnoreCase(url.getProtocol(), "https");
+
+        /*
+         * Resolved only for an https endpoint, so that testing a plain http endpoint stays a
+         * reachability check and does not report a TLS result it never negotiated.
+         */
+        TlsContext tlsContext = null;
+        if (https) {
+            tlsContext = ControllerFactory.getFactory().createExtensionController().getTlsContextProvider().createTlsContext(TlsContextRequest.forConnectorProperties(channelId, channelName, properties));
+        }
+
         // If no port was provided, default to port 80 or 443.
-        return ConnectorUtil.testConnection(url.getHost(), (port == -1) ? (StringUtils.equalsIgnoreCase(url.getProtocol(), "https") ? 443 : 80) : port, MAX_TIMEOUT);
+        return ConnectorUtil.testConnection(url.getHost(), (port == -1) ? (https ? 443 : 80) : port, MAX_TIMEOUT, null, 0, tlsContext);
     }
 
     protected String getWsdlUrl(String channelId, String channelName, String wsdlUrl, String username, String password) throws Exception {

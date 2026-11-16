@@ -70,6 +70,8 @@ import com.mirth.connect.plugins.ResourcePlugin;
 import com.mirth.connect.plugins.ServerPlugin;
 import com.mirth.connect.plugins.ServicePlugin;
 import com.mirth.connect.plugins.TransmissionModeProvider;
+import org.openintegrationengine.engine.tls.DefaultTlsContextProvider;
+import org.openintegrationengine.engine.tls.TlsContextProvider;
 import com.mirth.connect.server.ExtensionLoader;
 import com.mirth.connect.server.extprops.ExtensionStatuses;
 import com.mirth.connect.server.migration.Migrator;
@@ -100,6 +102,12 @@ public class DefaultExtensionController extends ExtensionController {
     private Map<String, TransmissionModeProvider> transmissionModeProviders = new LinkedHashMap<String, TransmissionModeProvider>();
     private MultiFactorAuthenticationPlugin multiFactorAuthenticationPlugin = null;
     private AuthorizationPlugin authorizationPlugin = null;
+    /*
+     * Null until initPlugins runs, and left null when no extension supplies one, in which case
+     * getTlsContextProvider falls back to the engine's own implementation. The fallback is created
+     * lazily rather than here because it needs the ConfigurationController.
+     */
+    private TlsContextProvider tlsContextProvider = null;
     private ExtensionLoader extensionLoader = ExtensionLoader.getInstance();
     private ExtensionStatuses extensionStatuses = ExtensionStatuses.getInstance();
 
@@ -211,6 +219,14 @@ public class DefaultExtensionController extends ExtensionController {
             }
         }
 
+        /*
+         * Collected rather than assigned directly so that a second one is a startup failure
+         * instead of being swallowed by the per-plugin catch below, the way duplicate
+         * authorization plugins are. Quietly running one of two TLS configurations is worse than
+         * not starting at all.
+         */
+        List<TlsContextProvider> tlsContextProviders = new ArrayList<TlsContextProvider>();
+
         // Load the plugins in order of their weight
         for (List<String> classList : weightedPlugins.descendingMap().values()) {
             for (String clazzName : classList) {
@@ -309,10 +325,30 @@ public class DefaultExtensionController extends ExtensionController {
                         serverPlugins.add(multiFactorAuthenticationPlugin);
                         logger.debug("sucessfully loaded server multi-factor authentication plugin: " + serverPlugin.getPluginPointName());
                     }
+
+                    if (serverPlugin instanceof TlsContextProvider) {
+                        TlsContextProvider tlsContextProvider = (TlsContextProvider) serverPlugin;
+                        tlsContextProviders.add(tlsContextProvider);
+                        serverPlugins.add(tlsContextProvider);
+                        logger.debug("sucessfully loaded server TLS context provider: " + serverPlugin.getPluginPointName());
+                    }
                 } catch (Exception e) {
                     logger.error("Error instantiating plugin: " + pluginName, e);
                 }
             }
+        }
+
+        if (tlsContextProviders.size() > 1) {
+            List<String> names = new ArrayList<String>();
+            for (TlsContextProvider provider : tlsContextProviders) {
+                names.add(provider.getPluginPointName());
+            }
+
+            throw new IllegalStateException("Multiple TLS Context Providers are not permitted, but " + names.size() + " are installed: " + StringUtils.join(names, ", ") + ". Disable all but one and restart.");
+        }
+
+        if (!tlsContextProviders.isEmpty()) {
+            tlsContextProvider = tlsContextProviders.get(0);
         }
     }
 
@@ -352,6 +388,15 @@ public class DefaultExtensionController extends ExtensionController {
     @Override
     public AuthorizationPlugin getAuthorizationPlugin() {
         return authorizationPlugin;
+    }
+
+    @Override
+    public synchronized TlsContextProvider getTlsContextProvider() {
+        if (tlsContextProvider == null) {
+            tlsContextProvider = new DefaultTlsContextProvider();
+        }
+
+        return tlsContextProvider;
     }
 
     @Override

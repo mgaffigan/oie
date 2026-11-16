@@ -57,7 +57,6 @@ import com.mirth.connect.plugins.httpauth.HttpAuthConnectorPluginProperties;
 import com.mirth.connect.plugins.httpauth.HttpAuthConnectorPluginProperties.AuthType;
 import com.mirth.connect.plugins.httpauth.RequestInfo;
 import com.mirth.connect.plugins.httpauth.RequestInfo.EntityProvider;
-import com.mirth.connect.server.controllers.ConfigurationController;
 import com.mirth.connect.server.controllers.ContextFactoryController;
 import com.mirth.connect.server.controllers.ControllerFactory;
 import com.mirth.connect.server.controllers.EventController;
@@ -74,7 +73,6 @@ public class WebServiceReceiver extends SourceConnector {
 
     private Logger logger = LogManager.getLogger(this.getClass());
     private EventController eventController = ControllerFactory.getFactory().createEventController();
-    private ConfigurationController configurationController = ControllerFactory.getFactory().createConfigurationController();
     private ContextFactoryController contextFactoryController = ControllerFactory.getFactory().createContextFactoryController();
     private ExecutorService executor;
     private Endpoint webServiceEndpoint;
@@ -90,14 +88,7 @@ public class WebServiceReceiver extends SourceConnector {
         this.connectorProperties = (WebServiceReceiverProperties) getConnectorProperties();
 
         // load the default configuration
-        String configurationClass = getConfigurationClass();
-
-        try {
-            configuration = (WebServiceConfiguration) Class.forName(configurationClass).newInstance();
-        } catch (Exception e) {
-            logger.trace("could not find custom configuration class, using default");
-            configuration = new DefaultWebServiceConfiguration();
-        }
+        configuration = new DefaultWebServiceConfiguration();
 
         try {
             configuration.configureConnectorDeploy(this);
@@ -268,11 +259,6 @@ public class WebServiceReceiver extends SourceConnector {
     @Override
     public void handleRecoveredResponse(DispatchResult dispatchResult) {
         finishDispatch(dispatchResult);
-    }
-
-    @Override
-    protected String getConfigurationClass() {
-        return configurationController.getProperty(connectorProperties.getProtocol(), "wsConfigurationClass");
     }
 
     public String processData(String message) {

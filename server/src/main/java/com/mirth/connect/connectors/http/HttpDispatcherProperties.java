@@ -18,8 +18,10 @@ import com.mirth.connect.donkey.model.channel.DestinationConnectorProperties;
 import com.mirth.connect.donkey.model.channel.DestinationConnectorPropertiesInterface;
 import com.mirth.connect.donkey.util.DonkeyElement;
 import com.mirth.connect.donkey.util.purge.PurgeUtil;
+import org.openintegrationengine.engine.tls.TlsCapableConnectorPropertiesInterface;
+import org.openintegrationengine.engine.tls.TlsRole;
 
-public class HttpDispatcherProperties extends ConnectorProperties implements DestinationConnectorPropertiesInterface {
+public class HttpDispatcherProperties extends ConnectorProperties implements DestinationConnectorPropertiesInterface, TlsCapableConnectorPropertiesInterface {
 
     private DestinationConnectorProperties destinationConnectorProperties;
 
@@ -431,6 +433,11 @@ public class HttpDispatcherProperties extends ConnectorProperties implements Des
         builder.append(newLine);
         builder.append(content);
         return builder.toString();
+    }
+
+    @Override
+    public TlsRole getTlsRole() {
+        return TlsRole.CLIENT;
     }
 
     @Override

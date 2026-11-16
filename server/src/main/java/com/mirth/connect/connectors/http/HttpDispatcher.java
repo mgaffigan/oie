@@ -98,7 +98,6 @@ import com.mirth.connect.donkey.server.channel.DestinationConnector;
 import com.mirth.connect.donkey.server.event.ConnectionStatusEvent;
 import com.mirth.connect.donkey.server.event.ErrorEvent;
 import com.mirth.connect.donkey.util.Base64Util;
-import com.mirth.connect.server.controllers.ConfigurationController;
 import com.mirth.connect.server.controllers.ControllerFactory;
 import com.mirth.connect.server.controllers.EventController;
 import com.mirth.connect.server.util.TemplateValueReplacer;
@@ -115,7 +114,6 @@ public class HttpDispatcher extends DestinationConnector {
 
     protected Logger logger = LogManager.getLogger(this.getClass());
 
-    protected ConfigurationController configurationController = ControllerFactory.getFactory().createConfigurationController();
     protected EventController eventController = ControllerFactory.getFactory().createEventController();
     protected TemplateValueReplacer replacer = new TemplateValueReplacer();
 
@@ -128,15 +126,7 @@ public class HttpDispatcher extends DestinationConnector {
 
     @Override
     public void onDeploy() throws ConnectorTaskException {
-        // load the default configuration
-        String configurationClass = getConfigurationClass();
-
-        try {
-            configuration = (HttpConfiguration) Class.forName(configurationClass).newInstance();
-        } catch (Exception e) {
-            logger.trace("could not find custom configuration class, using default");
-            configuration = new DefaultHttpConfiguration();
-        }
+        configuration = new DefaultHttpConfiguration();
 
         try {
             socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory> create().register("http", PlainConnectionSocketFactory.getSocketFactory());
@@ -451,11 +441,6 @@ public class HttpDispatcher extends DestinationConnector {
     protected boolean shouldParseMultipart(HttpDispatcherProperties httpDispatcherProperties, String mimeType) {
     	// Only parse multipart if XML Body is selected and Parse Multipart is enabled
     	return httpDispatcherProperties.isResponseXmlBody() && httpDispatcherProperties.isResponseParseMultipart() && mimeType.startsWith(FileUploadBase.MULTIPART);
-    }
-
-    @Override
-    protected String getConfigurationClass() {
-        return configurationController.getProperty(getConnectorProperties().getProtocol(), "httpConfigurationClass");
     }
 
     public RegistryBuilder<ConnectionSocketFactory> getSocketFactoryRegistry() {

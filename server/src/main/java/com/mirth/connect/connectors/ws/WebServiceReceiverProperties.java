@@ -20,8 +20,10 @@ import com.mirth.connect.donkey.model.channel.ListenerConnectorPropertiesInterfa
 import com.mirth.connect.donkey.model.channel.SourceConnectorProperties;
 import com.mirth.connect.donkey.model.channel.SourceConnectorPropertiesInterface;
 import com.mirth.connect.donkey.util.DonkeyElement;
+import org.openintegrationengine.engine.tls.TlsCapableConnectorPropertiesInterface;
+import org.openintegrationengine.engine.tls.TlsRole;
 
-public class WebServiceReceiverProperties extends ConnectorProperties implements ListenerConnectorPropertiesInterface, SourceConnectorPropertiesInterface {
+public class WebServiceReceiverProperties extends ConnectorProperties implements ListenerConnectorPropertiesInterface, SourceConnectorPropertiesInterface, TlsCapableConnectorPropertiesInterface {
     private ListenerConnectorProperties listenerConnectorProperties;
     private SourceConnectorProperties sourceConnectorProperties;
 
@@ -75,6 +77,11 @@ public class WebServiceReceiverProperties extends ConnectorProperties implements
     @Override
     public String toFormattedString() {
         return null;
+    }
+
+    @Override
+    public TlsRole getTlsRole() {
+        return TlsRole.SERVER;
     }
 
     @Override

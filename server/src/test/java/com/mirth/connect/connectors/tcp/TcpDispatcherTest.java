@@ -40,7 +40,9 @@ import com.mirth.connect.model.transmission.framemode.FrameStreamHandler;
 import com.mirth.connect.plugins.TransmissionModeProvider;
 import com.mirth.connect.plugins.mllpmode.MLLPModeProvider;
 import com.mirth.connect.server.attachments.passthru.PassthruAttachmentHandlerProvider;
+import com.mirth.connect.server.controllers.ConfigurationController;
 import com.mirth.connect.server.controllers.ControllerFactory;
+import org.openintegrationengine.engine.tls.DefaultTlsContextProvider;
 import com.mirth.connect.server.controllers.EventController;
 import com.mirth.connect.server.controllers.ExtensionController;
 
@@ -81,6 +83,7 @@ public class TcpDispatcherTest {
         Map<String, TransmissionModeProvider> transmissionModeProviders = new HashMap<>();
         transmissionModeProviders.put("MLLP", new MLLPModeProvider());
         when(extensionController.getTransmissionModeProviders()).thenReturn(transmissionModeProviders);
+        when(extensionController.getTlsContextProvider()).thenReturn(new DefaultTlsContextProvider(mock(ConfigurationController.class)));
         when(controllerFactory.createExtensionController()).thenReturn(extensionController);
         
         Injector injector = Guice.createInjector(new AbstractModule() {

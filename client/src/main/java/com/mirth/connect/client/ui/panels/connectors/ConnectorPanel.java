@@ -16,7 +16,9 @@ import java.awt.Font;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
@@ -42,6 +44,9 @@ import com.mirth.connect.model.InvalidConnectorPluginProperties;
 import com.mirth.connect.model.MessageStorageMode;
 import com.mirth.connect.plugins.ConnectorPropertiesPlugin;
 
+import org.openintegrationengine.engine.tls.TlsCapableConnectorPropertiesInterface;
+import org.openintegrationengine.engine.tls.TlsSettingsPanelProvider;
+
 public class ConnectorPanel extends JPanel {
     private ChannelSetup channelSetup;
     private ConnectorSettingsPanel currentPanel;
@@ -57,8 +62,8 @@ public class ConnectorPanel extends JPanel {
         setBackground(UIConstants.BACKGROUND_COLOR);
         initComponents();
 
-        for (ConnectorPropertiesPlugin connectorPropertiesPlugin : LoadedExtensions.getInstance().getConnectorPropertiesPlugins().values()) {
-            connectorPropertiesPanels.get(connectorPropertiesPlugin.getPluginPointName()).setConnectorPanel(this);
+        for (AbstractConnectorPropertiesPanel connectorPropertiesPanel : connectorPropertiesPanels.values()) {
+            connectorPropertiesPanel.setConnectorPanel(this);
         }
     }
 
@@ -86,8 +91,10 @@ public class ConnectorPanel extends JPanel {
         sourceSettingsPanel.setVisible(connectorProperties instanceof SourceConnectorPropertiesInterface);
         destinationSettingsPanel.setVisible(connectorProperties instanceof DestinationConnectorPropertiesInterface);
 
-        for (ConnectorPropertiesPlugin connectorPropertiesPlugin : LoadedExtensions.getInstance().getConnectorPropertiesPlugins().values()) {
-            connectorPropertiesPanels.get(connectorPropertiesPlugin.getPluginPointName()).setVisible(connectorPropertiesPlugin.isSupported(connectorProperties.getName()));
+        Set<String> activePanelNames = getActivePropertiesPanels(connectorProperties).keySet();
+
+        for (Entry<String, AbstractConnectorPropertiesPanel> entry : connectorPropertiesPanels.entrySet()) {
+            entry.getValue().setVisible(activePanelNames.contains(entry.getKey()));
         }
     }
 
@@ -137,10 +144,8 @@ public class ConnectorPanel extends JPanel {
         if (connectorProperties != null) {
             Set<ConnectorPluginProperties> connectorPluginProperties = new HashSet<ConnectorPluginProperties>();
 
-            for (ConnectorPropertiesPlugin connectorPropertiesPlugin : LoadedExtensions.getInstance().getConnectorPropertiesPlugins().values()) {
-                if (connectorPropertiesPlugin.isSupported(connectorProperties.getName())) {
-                    connectorPluginProperties.add(connectorPropertiesPanels.get(connectorPropertiesPlugin.getPluginPointName()).getProperties());
-                }
+            for (AbstractConnectorPropertiesPanel connectorPropertiesPanel : getActivePropertiesPanels(connectorProperties).values()) {
+                connectorPluginProperties.add(connectorPropertiesPanel.getProperties());
             }
 
             connectorProperties.setPluginProperties(connectorPluginProperties);
@@ -195,11 +200,9 @@ public class ConnectorPanel extends JPanel {
         }
 
         // For any supported plugin properties that weren't in the model, set the defaults
-        for (ConnectorPropertiesPlugin connectorPropertiesPlugin : LoadedExtensions.getInstance().getConnectorPropertiesPlugins().values()) {
-            String pluginPropertiesName = connectorPropertiesPlugin.getPluginPointName();
-
-            if (connectorPropertiesPlugin.isSupported(properties.getName()) && !addedPluginProperties.contains(pluginPropertiesName)) {
-                AbstractConnectorPropertiesPanel connectorPluginPropertiesPanel = connectorPropertiesPanels.get(pluginPropertiesName);
+        for (Entry<String, AbstractConnectorPropertiesPanel> entry : getActivePropertiesPanels(properties).entrySet()) {
+            if (!addedPluginProperties.contains(entry.getKey())) {
+                AbstractConnectorPropertiesPanel connectorPluginPropertiesPanel = entry.getValue();
                 connectorPluginPropertiesPanel.resetInvalidProperties();
                 connectorPluginPropertiesPanel.setProperties(properties, connectorPluginPropertiesPanel.getDefaults(), mode, properties.getName());
             }
@@ -309,10 +312,8 @@ public class ConnectorPanel extends JPanel {
 
         Set<ConnectorPluginProperties> connectorPluginProperties = new HashSet<ConnectorPluginProperties>();
 
-        for (ConnectorPropertiesPlugin connectorPropertiesPlugin : LoadedExtensions.getInstance().getConnectorPropertiesPlugins().values()) {
-            if (connectorPropertiesPlugin.isSupported(properties.getName())) {
-                connectorPluginProperties.add(connectorPropertiesPanels.get(connectorPropertiesPlugin.getPluginPointName()).getDefaults());
-            }
+        for (AbstractConnectorPropertiesPanel connectorPropertiesPanel : getActivePropertiesPanels(properties).values()) {
+            connectorPluginProperties.add(connectorPropertiesPanel.getDefaults());
         }
 
         properties.setPluginProperties(connectorPluginProperties);
@@ -350,6 +351,15 @@ public class ConnectorPanel extends JPanel {
 
     public void updatedField(String field) {
         getConnectorSettingsPanel().updatedField(field);
+
+        /*
+         * Forwarded on as well, because a plugin panel's content can depend on a field owned by the
+         * connector: a TLS panel has to switch between the listening and connecting views when the
+         * TCP mode changes, and nothing else would tell it.
+         */
+        for (AbstractConnectorPropertiesPanel connectorPropertiesPanel : getActivePropertiesPanels(getConnectorSettingsPanel().getDefaults()).values()) {
+            connectorPropertiesPanel.updatedField(field);
+        }
     }
 
     public void updateQueueWarning(MessageStorageMode messageStorageMode) {
@@ -364,23 +374,21 @@ public class ConnectorPanel extends JPanel {
     public void decorateConnectorType() {
         ConnectorTypeDecoration connectorTypeDecoration = currentPanel.getConnectorTypeDecoration();
 
+        Map<String, AbstractConnectorPropertiesPanel> activePanels = getActivePropertiesPanels(currentPanel.getDefaults());
+
         // Give priority to connector property plugins for decoration
-        for (ConnectorPropertiesPlugin connectorPropertiesPlugin : LoadedExtensions.getInstance().getConnectorPropertiesPlugins().values()) {
-            if (connectorPropertiesPlugin.isSupported(currentPanel.getConnectorName())) {
-                ConnectorTypeDecoration tempConnectorTypeDecoration = connectorPropertiesPanels.get(connectorPropertiesPlugin.getPluginPointName()).getConnectorTypeDecoration();
-                if (tempConnectorTypeDecoration != null) {
-                    connectorTypeDecoration = tempConnectorTypeDecoration;
-                }
+        for (AbstractConnectorPropertiesPanel connectorPropertiesPanel : activePanels.values()) {
+            ConnectorTypeDecoration tempConnectorTypeDecoration = connectorPropertiesPanel.getConnectorTypeDecoration();
+            if (tempConnectorTypeDecoration != null) {
+                connectorTypeDecoration = tempConnectorTypeDecoration;
             }
         }
 
         channelSetup.decorateConnectorType(connectorTypeDecoration, getConnectorSettingsPanel().getDefaults() instanceof DestinationConnectorPropertiesInterface);
 
         currentPanel.doLocalDecoration(connectorTypeDecoration);
-        for (ConnectorPropertiesPlugin connectorPropertiesPlugin : LoadedExtensions.getInstance().getConnectorPropertiesPlugins().values()) {
-            if (connectorPropertiesPlugin.isSupported(currentPanel.getConnectorName())) {
-                connectorPropertiesPanels.get(connectorPropertiesPlugin.getPluginPointName()).doLocalDecoration(connectorTypeDecoration);
-            }
+        for (AbstractConnectorPropertiesPanel connectorPropertiesPanel : activePanels.values()) {
+            connectorPropertiesPanel.doLocalDecoration(connectorTypeDecoration);
         }
     }
 
@@ -390,11 +398,9 @@ public class ConnectorPanel extends JPanel {
             public void handle(Object response) {
                 boolean handleResponse = true;
 
-                for (ConnectorPropertiesPlugin connectorPropertiesPlugin : LoadedExtensions.getInstance().getConnectorPropertiesPlugins().values()) {
-                    if (connectorPropertiesPlugin.isSupported(currentPanel.getConnectorName())) {
-                        if (!connectorPropertiesPanels.get(connectorPropertiesPlugin.getPluginPointName()).handleConnectorServiceResponse(currentPanel, method, response)) {
-                            handleResponse = false;
-                        }
+                for (AbstractConnectorPropertiesPanel connectorPropertiesPanel : getActivePropertiesPanels(currentPanel.getDefaults()).values()) {
+                    if (!connectorPropertiesPanel.handleConnectorServiceResponse(currentPanel, method, response)) {
+                        handleResponse = false;
                     }
                 }
 
@@ -403,6 +409,40 @@ public class ConnectorPanel extends JPanel {
                 }
             }
         };
+    }
+
+    /**
+     * The properties panels that apply to a given connector, keyed the same way
+     * {@code connectorPropertiesPanels} is.
+     * <p>
+     * Plugin panels claim connectors by name, whereas the TLS panel is mounted for any connector
+     * whose properties declare TLS support. That is what lets a TLS extension work with connectors
+     * it has no knowledge of.
+     * <p>
+     * The key is the plugin point name, which must equal the {@code getName()} of the properties
+     * the panel produces -- {@link #setProperties(ConnectorProperties)} looks panels up by that
+     * name when restoring saved settings, and a mismatch silently discards them.
+     */
+    private Map<String, AbstractConnectorPropertiesPanel> getActivePropertiesPanels(ConnectorProperties connectorProperties) {
+        Map<String, AbstractConnectorPropertiesPanel> activePanels = new LinkedHashMap<String, AbstractConnectorPropertiesPanel>();
+
+        if (connectorProperties == null) {
+            return activePanels;
+        }
+
+        for (ConnectorPropertiesPlugin connectorPropertiesPlugin : LoadedExtensions.getInstance().getConnectorPropertiesPlugins().values()) {
+            if (connectorPropertiesPlugin.isSupported(connectorProperties.getName())) {
+                activePanels.put(connectorPropertiesPlugin.getPluginPointName(), connectorPropertiesPanels.get(connectorPropertiesPlugin.getPluginPointName()));
+            }
+        }
+
+        TlsSettingsPanelProvider tlsSettingsPanelProvider = LoadedExtensions.getInstance().getTlsSettingsPanelProvider();
+
+        if (tlsSettingsPanelProvider != null && connectorProperties instanceof TlsCapableConnectorPropertiesInterface) {
+            activePanels.put(tlsSettingsPanelProvider.getPluginPointName(), connectorPropertiesPanels.get(tlsSettingsPanelProvider.getPluginPointName()));
+        }
+
+        return activePanels;
     }
 
     private void initComponents() {
@@ -423,6 +463,15 @@ public class ConnectorPanel extends JPanel {
             connectorPropertiesPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(204, 204, 204)), connectorPropertiesPlugin.getSettingsTitle(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Tahoma", 1, 11)));
             connectorPropertiesPanels.put(connectorPropertiesPlugin.getPluginPointName(), connectorPropertiesPanel);
             add(connectorPropertiesPanel, "growx, wrap");
+        }
+
+        TlsSettingsPanelProvider tlsSettingsPanelProvider = LoadedExtensions.getInstance().getTlsSettingsPanelProvider();
+
+        if (tlsSettingsPanelProvider != null) {
+            AbstractConnectorPropertiesPanel tlsSettingsPanel = tlsSettingsPanelProvider.getTlsSettingsPanel();
+            tlsSettingsPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(204, 204, 204)), tlsSettingsPanelProvider.getSettingsTitle(), TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Tahoma", 1, 11)));
+            connectorPropertiesPanels.put(tlsSettingsPanelProvider.getPluginPointName(), tlsSettingsPanel);
+            add(tlsSettingsPanel, "growx, wrap");
         }
 
         connectorSettingsContainer = new JPanel(new BorderLayout());

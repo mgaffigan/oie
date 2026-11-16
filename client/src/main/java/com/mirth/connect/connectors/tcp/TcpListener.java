@@ -51,6 +51,14 @@ import com.mirth.connect.plugins.TransmissionModePlugin;
 
 public class TcpListener extends ConnectorSettingsPanel implements ActionListener {
 
+    /**
+     * Fired through {@link com.mirth.connect.client.ui.panels.connectors.ConnectorPanel#updatedField(String)}
+     * when the client/server mode changes, so that panels contributed by extensions can follow it.
+     * A TLS panel needs this because the mode decides which side of the handshake this connector is
+     * on, and therefore which settings apply.
+     */
+    public static final String FIELD_SERVER_MODE = "serverMode";
+
     public static final String NEW_CONNECTION_PLUGIN_PROPS = "tcpListenerNewConnectionPluginProperties";
 
     private Frame parent;
@@ -607,6 +615,10 @@ public class TcpListener extends ConnectorSettingsPanel implements ActionListene
     }
 
     private void modeClientRadioActionPerformed() {
+        if (getConnectorPanel() != null) {
+            getConnectorPanel().updatedField(FIELD_SERVER_MODE);
+        }
+
         remoteAddressLabel.setEnabled(true);
         remoteAddressField.setEnabled(true);
         remotePortLabel.setEnabled(true);
@@ -621,6 +633,10 @@ public class TcpListener extends ConnectorSettingsPanel implements ActionListene
     }
 
     private void modeServerRadioActionPerformed() {
+        if (getConnectorPanel() != null) {
+            getConnectorPanel().updatedField(FIELD_SERVER_MODE);
+        }
+
         remoteAddressLabel.setEnabled(false);
         remoteAddressField.setEnabled(false);
         remotePortLabel.setEnabled(false);

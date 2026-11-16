@@ -29,8 +29,10 @@ import com.mirth.connect.donkey.util.DonkeyElement.DonkeyElementException;
 import com.mirth.connect.donkey.util.purge.PurgeUtil;
 import com.mirth.connect.donkey.util.xstream.SerializerException;
 import com.mirth.connect.model.converters.ObjectXMLSerializer;
+import org.openintegrationengine.engine.tls.TlsCapableConnectorPropertiesInterface;
+import org.openintegrationengine.engine.tls.TlsRole;
 
-public class WebServiceDispatcherProperties extends ConnectorProperties implements DestinationConnectorPropertiesInterface {
+public class WebServiceDispatcherProperties extends ConnectorProperties implements DestinationConnectorPropertiesInterface, TlsCapableConnectorPropertiesInterface {
 
     private DestinationConnectorProperties destinationConnectorProperties;
 
@@ -384,6 +386,11 @@ public class WebServiceDispatcherProperties extends ConnectorProperties implemen
         builder.append(newLine);
         builder.append(envelope);
         return builder.toString();
+    }
+
+    @Override
+    public TlsRole getTlsRole() {
+        return TlsRole.CLIENT;
     }
 
     @Override

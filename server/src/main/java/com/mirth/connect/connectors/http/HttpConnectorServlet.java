@@ -9,7 +9,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
 
+import org.openintegrationengine.engine.tls.TlsContext;
+import org.openintegrationengine.engine.tls.TlsContextRequest;
+
 import com.mirth.connect.client.core.api.MirthApiException;
+import com.mirth.connect.server.controllers.ControllerFactory;
 import com.mirth.connect.server.api.MirthServlet;
 import com.mirth.connect.server.util.ConnectorUtil;
 import com.mirth.connect.server.util.TemplateValueReplacer;
@@ -38,12 +42,17 @@ public class HttpConnectorServlet extends MirthServlet implements HttpConnectorS
                 port = 80;
             }
 
-            if (!properties.isOverrideLocalBinding()) {
-                return ConnectorUtil.testConnection(url.getHost(), port, TIMEOUT);
-            } else {
-                String localAddr = replacer.replaceValues(properties.getLocalAddress(), channelId, channelName);
-                return ConnectorUtil.testConnection(url.getHost(), port, TIMEOUT, localAddr);
+            /*
+             * Resolved only for an https endpoint, so that testing a plain http destination stays
+             * a reachability check and does not report a TLS result it never negotiated.
+             */
+            TlsContext tlsContext = null;
+            if ("https".equalsIgnoreCase(url.getProtocol())) {
+                tlsContext = ControllerFactory.getFactory().createExtensionController().getTlsContextProvider().createTlsContext(TlsContextRequest.forConnectorProperties(channelId, channelName, properties));
             }
+
+            String localAddr = properties.isOverrideLocalBinding() ? replacer.replaceValues(properties.getLocalAddress(), channelId, channelName) : null;
+            return ConnectorUtil.testConnection(url.getHost(), port, TIMEOUT, localAddr, 0, tlsContext);
         } catch (Exception e) {
             throw new MirthApiException(e);
         }

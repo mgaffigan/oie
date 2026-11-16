@@ -15,22 +15,14 @@ import com.mirth.connect.donkey.server.channel.Connector;
 import com.mirth.connect.plugins.httpauth.Authenticator;
 import com.mirth.connect.plugins.httpauth.AuthenticatorProvider;
 import com.mirth.connect.plugins.httpauth.HttpAuthConnectorPluginProperties;
-import com.mirth.connect.server.controllers.ConfigurationController;
-import com.mirth.connect.server.controllers.ControllerFactory;
 
 public class OAuth2AuthenticatorProvider extends AuthenticatorProvider {
-
-    private static final ConfigurationController configurationController = ControllerFactory.getFactory().createConfigurationController();
 
     private HttpConfiguration configuration;
 
     public OAuth2AuthenticatorProvider(Connector connector, HttpAuthConnectorPluginProperties properties) {
         super(connector, properties);
-        try {
-            configuration = (HttpConfiguration) Class.forName(configurationController.getProperty("HTTP", "httpConfigurationClass")).newInstance();
-        } catch (Exception e) {
-            configuration = new DefaultHttpConfiguration();
-        }
+        configuration = new DefaultHttpConfiguration();
     }
 
     HttpConfiguration getHttpConfiguration() {

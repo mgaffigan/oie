@@ -22,9 +22,11 @@ import com.mirth.connect.model.transmission.TransmissionModeProperties;
 import com.mirth.connect.model.transmission.framemode.FrameModeProperties;
 import com.mirth.connect.util.CharsetUtils;
 import com.mirth.connect.util.TcpUtil;
+import org.openintegrationengine.engine.tls.TlsCapableConnectorPropertiesInterface;
+import org.openintegrationengine.engine.tls.TlsRole;
 
 @SuppressWarnings("serial")
-public class TcpDispatcherProperties extends ConnectorProperties implements DestinationConnectorPropertiesInterface {
+public class TcpDispatcherProperties extends ConnectorProperties implements DestinationConnectorPropertiesInterface, TlsCapableConnectorPropertiesInterface {
 
     private DestinationConnectorProperties destinationConnectorProperties;
 
@@ -275,6 +277,15 @@ public class TcpDispatcherProperties extends ConnectorProperties implements Dest
         builder.append(newLine);
         builder.append(template);
         return builder.toString();
+    }
+
+    /**
+     * A TCP connector presents a server certificate in server mode and a client certificate
+     * otherwise, so the role follows the configured mode rather than the direction.
+     */
+    @Override
+    public TlsRole getTlsRole() {
+        return serverMode ? TlsRole.SERVER : TlsRole.CLIENT;
     }
 
     @Override

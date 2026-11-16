@@ -50,7 +50,6 @@ import com.mirth.connect.donkey.util.ThreadUtils;
 import com.mirth.connect.model.transmission.batch.DefaultBatchStreamReader;
 import com.mirth.connect.plugins.BasicModeProvider;
 import com.mirth.connect.plugins.TransmissionModeProvider;
-import com.mirth.connect.server.controllers.ConfigurationController;
 import com.mirth.connect.server.controllers.ControllerFactory;
 import com.mirth.connect.server.controllers.EventController;
 import com.mirth.connect.server.util.TemplateValueReplacer;
@@ -64,7 +63,6 @@ public class TcpDispatcher extends DestinationConnector {
 
     private Logger logger = LogManager.getLogger(this.getClass());
     protected TcpDispatcherProperties connectorProperties;
-    private ConfigurationController configurationController = ControllerFactory.getFactory().createConfigurationController();
     private EventController eventController = ControllerFactory.getFactory().createEventController();
     private TemplateValueReplacer replacer = new TemplateValueReplacer();
 
@@ -111,14 +109,7 @@ public class TcpDispatcher extends DestinationConnector {
         }
 
         // load the default configuration
-        String configurationClass = getConfigurationClass();
-
-        try {
-            configuration = (TcpConfiguration) Class.forName(configurationClass).newInstance();
-        } catch (Throwable t) {
-            logger.trace("could not find custom configuration class, using default");
-            configuration = new DefaultTcpConfiguration();
-        }
+        configuration = new DefaultTcpConfiguration();
 
         try {
             configuration.configureConnectorDeploy(this);
@@ -622,11 +613,6 @@ public class TcpDispatcher extends DestinationConnector {
         }
 
         return new Response(responseStatus, responseData, responseStatusMessage, responseError, validateResponse);
-    }
-
-    @Override
-    protected String getConfigurationClass() {
-        return configurationController.getProperty(connectorProperties.getProtocol(), "tcpConfigurationClass");
     }
 
     private void closeSocketQuietly(String socketKey) {

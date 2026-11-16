@@ -28,12 +28,16 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
+import org.openintegrationengine.engine.tls.TlsContext;
+import org.openintegrationengine.engine.tls.TlsContextRequest;
+import org.openintegrationengine.engine.tls.TlsRole;
 
-import com.mirth.connect.donkey.model.channel.ConnectorPluginProperties;
+import com.mirth.connect.donkey.server.channel.Connector;
 import com.mirth.connect.plugins.httpauth.AuthenticationResult;
 import com.mirth.connect.plugins.httpauth.Authenticator;
 import com.mirth.connect.plugins.httpauth.RequestInfo;
 import com.mirth.connect.plugins.httpauth.oauth2.OAuth2HttpAuthProperties.TokenLocation;
+import com.mirth.connect.server.controllers.ControllerFactory;
 import com.mirth.connect.server.util.TemplateValueReplacer;
 import com.mirth.connect.util.HttpUtil;
 
@@ -58,11 +62,17 @@ public class OAuth2Authenticator extends Authenticator {
         try {
             // Create and configure the client and context 
             RegistryBuilder<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory> create().register("http", PlainConnectionSocketFactory.getSocketFactory());
-            ConnectorPluginProperties pluginProperties = null;
-            if (CollectionUtils.isNotEmpty(properties.getConnectorPluginProperties())) {
-                pluginProperties = properties.getConnectorPluginProperties().iterator().next();
-            }
-            provider.getHttpConfiguration().configureSocketFactoryRegistry(pluginProperties, socketFactoryRegistry);
+            /*
+             * The token endpoint is reached as a TLS client, and its settings hang off the
+             * authenticator rather than off a connector, so the request is built from the plugin
+             * properties alone.
+             */
+            Connector connector = provider.getConnector();
+            String channelId = connector == null ? null : connector.getChannelId();
+            String channelName = connector == null || connector.getChannel() == null ? null : connector.getChannel().getName();
+            TlsContext tlsContext = ControllerFactory.getFactory().createExtensionController().getTlsContextProvider().createTlsContext(TlsContextRequest.forPluginProperties(channelId, channelName, null, TlsRole.CLIENT, properties.getConnectorPluginProperties()));
+
+            provider.getHttpConfiguration().configureSocketFactoryRegistry(tlsContext, socketFactoryRegistry);
             BasicHttpClientConnectionManager httpClientConnectionManager = new BasicHttpClientConnectionManager(socketFactoryRegistry.build());
             httpClientConnectionManager.setSocketConfig(SocketConfig.custom().setSoTimeout(SOCKET_TIMEOUT).build());
             HttpClientBuilder clientBuilder = HttpClients.custom().setConnectionManager(httpClientConnectionManager);

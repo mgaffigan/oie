@@ -1,11 +1,6 @@
-/*
- * Copyright (c) Mirth Corporation. All rights reserved.
- * 
- * http://www.mirthcorp.com
- * 
- * The software in this package is published under the terms of the MPL license a copy of which has
- * been included with this distribution in the LICENSE.txt file.
- */
+// SPDX-License-Identifier: MPL-2.0
+// SPDX-FileCopyrightText: Mirth Corporation
+// SPDX-FileCopyrightText: Mitch Gaffigan <mitch@gaffigan.net>
 
 package com.mirth.connect.connectors.ws;
 
@@ -13,6 +8,12 @@ import java.util.Map;
 
 import com.mirth.connect.donkey.server.channel.Connector;
 
+/**
+ * How the Web Service connectors build their transport. This is internal to the engine:
+ * {@link DefaultWebServiceConfiguration} is the only implementation, and extensions influence TLS
+ * through {@link org.openintegrationengine.engine.tls.TlsContextProvider} instead of by replacing
+ * this.
+ */
 public interface WebServiceConfiguration {
 
     public void configureConnectorDeploy(Connector connector) throws Exception;
